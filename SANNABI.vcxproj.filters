@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Actor">
+      <UniqueIdentifier>{ce57fb31-8e14-4721-8ae9-08e80b34c912}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{08cecdce-39ec-4a14-a8d8-883f069b3a56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{24328705-9a97-492d-bbeb-884988ee955a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component">
+      <UniqueIdentifier>{5f2fed85-159e-4816-9e0c-5d53a9a5976c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Collision">
+      <UniqueIdentifier>{27aed6f4-a4b9-45d2-96af-65b442bc583c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Render">
+      <UniqueIdentifier>{3c7a9d51-a728-4c5d-8416-19d888981726}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Physics">
+      <UniqueIdentifier>{d39883b5-9ebf-4697-903f-b019f00baad8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Grappling">
+      <UniqueIdentifier>{454bec5a-919a-4fb0-a006-9e7476515112}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\UI">
+      <UniqueIdentifier>{cb59f87e-0520-412e-8034-edda6efd506f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actor\Player">
+      <UniqueIdentifier>{5afb311b-d792-45bb-b667-6fd328ca8a3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{9233e589-e773-4f48-85a6-d18254ef67c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Resource">
+      <UniqueIdentifier>{143694ef-2a3a-4163-8b73-af2080de2fa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utill">
+      <UniqueIdentifier>{bb1b75a9-76ad-4232-be63-eca407cfe6f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Timer">
+      <UniqueIdentifier>{911ad8c2-3c7a-4804-9877-ccbe1955e980}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Input">
+      <UniqueIdentifier>{f5ea3113-6df0-4342-b6bc-a2f5f44bacb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Scene">
+      <UniqueIdentifier>{eaa2bc6c-27e4-4a0d-be24-e05b81f15a72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{0b33338a-a734-4f97-871e-ec62ad03e214}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\GameScene">
+      <UniqueIdentifier>{c7c26b54-b950-4e2e-b544-55af057ccb2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Collision">
+      <UniqueIdentifier>{493e19c9-e9fb-44f8-8d5c-37c8046b042d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Camera">
+      <UniqueIdentifier>{9d992cab-b880-45e7-8565-fb08914af5e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{cf9d8bb5-89eb-4839-85d4-cbc57958f8f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{e416afa5-944b-4262-a739-9f0b0f82e16d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pool">
+      <UniqueIdentifier>{3f1530b7-32dc-41aa-8b7b-fb9d9c1e6734}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actor\GrapplingHook">
+      <UniqueIdentifier>{1f6f809d-0d66-4aa3-bebf-0c9482961c3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\LobbyScene">
+      <UniqueIdentifier>{3be173dd-2566-4d15-8f73-5e220fec15c7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SANNABI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionComponent.h">
+      <Filter>Component\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteRenderComponent.h">
+      <Filter>Component\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsComponent.h">
+      <Filter>Component\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="GrapplingComponent.h">
+      <Filter>Component\Grappling</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Manager\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Actor\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Manager\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>Utill</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>Utill</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Utill</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerManager.h">
+      <Filter>Manager\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Manager\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Manager\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
+      <Filter>Scene\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>Manager\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureResource.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraManager.h">
+      <Filter>Manager\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteAnimation.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="TestGround.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="GrapplingHookProjectilePool.h">
+      <Filter>Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="GrapplingHookProjectile.h">
+      <Filter>Actor\GrapplingHook</Filter>
+    </ClInclude>
+    <ClInclude Include="LobbyScene.h">
+      <Filter>Scene\LobbyScene</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SANNABI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionComponent.cpp">
+      <Filter>Component\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteRenderComponent.cpp">
+      <Filter>Component\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsComponent.cpp">
+      <Filter>Component\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="GrapplingComponent.cpp">
+      <Filter>Component\Grappling</Filter>
+    </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>Manager\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Actor\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Manager\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Singleton.cpp">
+      <Filter>Utill</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Utill</Filter>
+    </ClCompile>
+    <ClCompile Include="Defines.cpp">
+      <Filter>Utill</Filter>
+    </ClCompile>
+    <ClCompile Include="TimerManager.cpp">
+      <Filter>Manager\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Manager\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Manager\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>Scene\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>Manager\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureResource.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraManager.cpp">
+      <Filter>Manager\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteAnimation.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="TestGround.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="GrapplingHookProjectilePool.cpp">
+      <Filter>Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="GrapplingHookProjectile.cpp">
+      <Filter>Actor\GrapplingHook</Filter>
+    </ClCompile>
+    <ClCompile Include="LobbyScene.cpp">
+      <Filter>Scene\LobbyScene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SANNABI.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="SANNABI.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
