@@ -115,6 +115,28 @@ void PhysicsComponent::UpdateNormalPhysics(float deltaTime)
 	if (velocity.y > maxFallSpeed)
 		velocity.y = maxFallSpeed;
 
+	if (bJumping && velocity.y >= 0)
+	{
+		bJumping = false;
+		bFalling = true; 
+
+		Player* player = dynamic_cast<Player*>(owner);
+		if (player)
+			player->UpdateMovementState(EPlayerMovementState::Fall);
+	}
+	else if (!bJumping && !bOnGround && velocity.y > 0)
+	{
+		if (!bFalling)
+		{
+			bFalling = true;
+			Player* player = dynamic_cast<Player*>(owner);
+			if (player)
+				player->UpdateMovementState(EPlayerMovementState::Fall);
+		}
+	}
+	else if (bOnGround && bFalling)
+		bFalling = false;
+
 	owner->SetVelocity(velocity);
 
 	// 위치 업데이트
@@ -394,6 +416,11 @@ void PhysicsComponent::Jump()
 
 		bOnGround = false;
 		bJumping = true;
+		bFalling = false;
+
+		Player* player = dynamic_cast<Player*>(owner);
+		if (player)
+			player->UpdateMovementState(EPlayerMovementState::Jump);
 	}
 }
 
@@ -442,9 +469,11 @@ void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult
 			Player* player = dynamic_cast<Player*>(owner);
 			if (!player) return;
 
-			player->UpdateMovementState(EPlayerMovementState::Idle);
 			SetPhysicsState(EPhysicsState::Normal);
 			bOnGround = true;
+			bFalling = false;
+
+			player->UpdateMovementState(EPlayerMovementState::Idle);
 		}
 		else if (normal.x == 0 && normal.y == 1) // 천장
 		{
@@ -460,6 +489,7 @@ void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult
 			Player* player = dynamic_cast<Player*>(owner);
 			if (!player) return;
 
+			player->UpdateActionState(EPlayerActionState::WallGrab);
  			SetPhysicsState(EPhysicsState::RightWallClimbing);
 			bOverlapRightWall = true;
 		}
@@ -489,6 +519,12 @@ void PhysicsComponent::OnGroundEndOverlap(CollisionComponent* other, HitResult i
 			bOverlapRightWall = false;
 		else if (normal.x == 1 && normal.y == 0) // 오른쪽 벽
 			bOverlapLeftWall = false;
+
+		Player* player = dynamic_cast<Player*>(owner);
+		if (!player) return;
+
+		player->UpdateActionState(EPlayerActionState::None);
+		SetPhysicsState(EPhysicsState::Normal);
 	}
 }
 

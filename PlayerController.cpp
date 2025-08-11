@@ -44,6 +44,10 @@ void PlayerController::Update(float deltaTime)
     {
         PossedCharacter->OnShiftDown();
     }
+    if (inputInstance->GetButtonUp(KeyType::Shift))
+    {
+        PossedCharacter->OnShiftUp();
+    }
     if (inputInstance->GetButtonDown(KeyType::LeftMouse))
     {
         PossedCharacter->OnMouseDown();

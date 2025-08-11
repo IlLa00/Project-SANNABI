@@ -18,11 +18,11 @@
 #include <fstream>
 namespace fs = std::filesystem;
 
-//#include "Json/nlohmann/json.hpp" // nlohmann/json 헤더 파일
-//using json = nlohmann::json;
-//
-//// magic_enum
-//#include "magic_enum/magic_enum.hpp"
+#include "json_fwd.hpp" // nlohmann/json 헤더 파일
+using json = nlohmann::json;
+
+// magic_enum
+// #include "magic_enum/magic_enum.hpp"
 
 
 // transparent Blt

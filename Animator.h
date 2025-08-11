@@ -15,6 +15,7 @@ public:
 	void AddAnimation(const string& name, const string& spriteSheetPath,
 		int frameCount, float duration, bool loop = true);
 	void PlayAnimation(const string& name, bool forceRestart = false);
+	void StopAnimation();
 	string GetCurrentAnimationName() const;
 
 	RECT GetCurrentFrameRect();

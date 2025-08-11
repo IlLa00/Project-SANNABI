@@ -18,10 +18,14 @@ public:
 		int frameCount, float duration, bool loop = true);
 	void PlayAnimation(const string& name, bool forceRestart = false);
 	
+	void SetScale(float value) { scale = scale * value; }
+
 	string GetCurrentAnimationName() const;
 	Animator* GetAnimator() const { return animator; }
 
 private:
 	Animator* animator;
+
+	float scale;
 };
 

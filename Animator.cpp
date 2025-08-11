@@ -60,20 +60,21 @@ void Animator::Render(HDC hdc, float scale)
 	Vector finalRenderPos = pos;
 	int renderWidth = scaledWidth;
 
-	if (bflip) 
+	if (bflip)
 	{
 		renderWidth = -scaledWidth;
-		finalRenderPos.x += scaledWidth;
+		// 반전 시 위치를 수동으로 보정하는 이 코드를 제거합니다.
+		// finalRenderPos.x += scaledWidth; 
 	}
 
 	spriteSheet->Render(hdc,
 		frameRect.left,
 		frameRect.top,
-		originalWidth,  
-		originalHeight,  
+		originalWidth,
+		originalHeight,
 		finalRenderPos,
 		renderWidth,
-		scaledHeight    
+		scaledHeight
 	);
 }
 
@@ -105,12 +106,21 @@ void Animator::PlayAnimation(const string& name, bool forceRestart)
 	if (currentAnimationName == name && !forceRestart)
 		return; // 이미 재생 중
 
+	if (bPlaying) 
+		StopAnimation();
+
 	currentAnimation = it->second;
 	currentAnimationName = name;
 	currentTime = 0.0f;
 	currentFrameIndex = 0;
 	bPlaying = true;
 }
+
+void Animator::StopAnimation()
+{
+	bPlaying = false;
+}
+
 string Animator::GetCurrentAnimationName() const
 {
 	return currentAnimationName;
