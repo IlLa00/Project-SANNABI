@@ -51,6 +51,7 @@ public:
 	void OnMouseDown();
 	void OnMouseUp(); 
 	void OnShiftDown();
+	void OnShiftUp();
 
 	void OnGrappling(Vector projectilePosition);
 	void OffGrappling();
