@@ -18,13 +18,18 @@ void Player::Init()
 	bodyRenderComponent->Init(this);
 	bodyRenderComponent->AddAnimation("Idle", "SNB_Idle", 8, 1.f);
 	bodyRenderComponent->AddAnimation("Run", "SNB_Run", 22, 3.f);
-	bodyRenderComponent->PlayAnimation("Idle");
+	bodyRenderComponent->AddAnimation("Swing", "SNB_Swing", 15, 1.f);
+	bodyRenderComponent->AddAnimation("Ceiling_Idle", "SNB_Ceiling_Idle", 12, 1.f);
+	bodyRenderComponent->AddAnimation("Ceiling_Run", "SNB_Ceiling_Run", 16, 1.f);
+	bodyRenderComponent->AddAnimation("WallClimb_Idle", "SNB_WallClimb_Idle", 9, 1.f);
+	bodyRenderComponent->AddAnimation("WallClimb_Run", "SNB_WallClimb_Run", 10, 1.f);
 	AddComponent(bodyRenderComponent);
 
 	armRenderComponent = new SpriteRenderComponent;
 	armRenderComponent->Init(this);
+	armRenderComponent->SetScale(0.5f);
 	armRenderComponent->AddAnimation("ArmIdle", "SNBArm_Idle", 8, 1.f);
-	armRenderComponent->PlayAnimation("ArmIdle");
+	armRenderComponent->AddAnimation("ArmRun", "SNBArm_Run", 22, 1.f);
 	AddComponent(armRenderComponent);
 
 	grapplingComponent = new GrapplingComponent;
@@ -42,6 +47,9 @@ void Player::Init()
 	AddComponent(physicsComponent);
 
 	chainPen = CreatePen(PS_DOT, 2, RGB(255, 255, 0));
+
+	movementState = EPlayerMovementState::Idle;
+	actionState = EPlayerActionState::None;
 }
 
 void Player::Update(float deltaTime)
@@ -49,6 +57,8 @@ void Player::Update(float deltaTime)
 	Super::Update(deltaTime);
 
 	CameraManager::GetInstance()->Update(position, Vector(GWinSizeX, GWinSizeY));
+
+	
 }
 
 void Player::Render(HDC _hdcBack)
@@ -105,18 +115,7 @@ void Player::NoneInput()
 	physicsComponent->Idle(); // 이건 맞음
 
 	//근데 이건 모르겠음
-	
-	if(actionState != EPlayerActionState::Ceiling && 
-		actionState != EPlayerActionState::WallGrab)
-		UpdateMovementState(EPlayerMovementState::Idle);
-
-	switch (movementState)
-	{
-	case EPlayerMovementState::Idle:
-		bodyRenderComponent->PlayAnimation("Idle");
-		armRenderComponent->PlayAnimation("ArmIdle");
-		break;
-	}
+	UpdateMovementState(EPlayerMovementState::Idle);
 }
 
 void Player::OnPressA()
@@ -129,18 +128,9 @@ void Player::OnPressA()
 
 	physicsComponent->Move();
 
-	if (actionState != EPlayerActionState::Ceiling)
-		UpdateMovementState(EPlayerMovementState::Run);
 
-	switch (movementState)
-	{
-	case EPlayerMovementState::Run:
-		// 나중에 액션 고려..
-		
-		bodyRenderComponent->PlayAnimation("Run");
-		//armRenderComponent->PlayAnimation("ArmRun");
-		break;
-	}
+	UpdateMovementState(EPlayerMovementState::Run);
+
 }
 
 void Player::OnPressD()
@@ -152,19 +142,9 @@ void Player::OnPressD()
 	direction = Vector(1, 0);
 
 	physicsComponent->Move();
-	
-	if (actionState != EPlayerActionState::Ceiling)
-		UpdateMovementState(EPlayerMovementState::Run);
 
-	switch (movementState)
-	{
-	case EPlayerMovementState::Run:
-		// 나중에 액션 고려..
-		
-		bodyRenderComponent->PlayAnimation("Run");
-		//armRenderComponent->PlayAnimation("ArmRun");
-		break;
-	}
+	UpdateMovementState(EPlayerMovementState::Run);
+
 }
 
 void Player::OnPressW()
@@ -179,14 +159,6 @@ void Player::OnPressW()
 
 	if (actionState != EPlayerActionState::WallGrab)
 		UpdateMovementState(EPlayerMovementState::Run);
-
-	switch (movementState)
-	{
-	case EPlayerMovementState::Run:
-		bodyRenderComponent->PlayAnimation("Run");
-		//armRenderComponent->PlayAnimation("ArmRun");
-		break;
-	}
 }
 
 void Player::OnPressS()
@@ -199,16 +171,6 @@ void Player::OnPressS()
 
 	physicsComponent->Move();
 	UpdateMovementState(EPlayerMovementState::Run);
-
-	switch (movementState)
-	{
-	case EPlayerMovementState::Run:
-		// 나중에 액션 고려..
-		
-		bodyRenderComponent->PlayAnimation("Run");
-		//armRenderComponent->PlayAnimation("ArmRun");
-		break;
-	}
 }
 
 void Player::OnSpaceBarDown()
@@ -245,9 +207,6 @@ void Player::OnMouseDown()
 {
 	if (!grapplingComponent) return;
 
-	// 기본적으로 사슬팔 발사
-	// 안되는 구간이? 일단 천장이랑 벽에 붙어있을때? ㄴㄴ 다됨
-
 	Vector mousePos = InputManager::GetInstance()->GetMousePos();
 	Vector mouse_direction = mousePos - position;
 	mouse_direction.Normalize();
@@ -266,21 +225,28 @@ void Player::OnGrappling(Vector projectilePosition)
 
 	// UpdateMovementState(EPlayerMovementState::Grappling);
 	UpdateActionState(EPlayerActionState::GrappleSwing);
+
+	
 }
 
 void Player::OffGrappling()
 {
 	UpdateMovementState(EPlayerMovementState::Idle); // 진짜 이건가?
-	UpdateActionState(EPlayerActionState::None);
+
+	if(physicsComponent->GetPhysicsState() == EPhysicsState::CeilingHang)
+		UpdateActionState(EPlayerActionState::Ceiling);
+	else
+		UpdateActionState(EPlayerActionState::None);
 }
 
 void Player::OnMouseUp()
 {
 	// 그래플링 종료 인데 조건제대로 따져야할듯
 
-	OffGrappling();
 	physicsComponent->EndGrappling();
 	grapplingComponent->OffGrappling();
+
+	OffGrappling();
 
 }
 
@@ -294,14 +260,79 @@ void Player::OnShiftDown()
 	physicsComponent->ReadyForDash();*/
 }
 
+void Player::OnShiftUp()
+{
+
+}
+
 void Player::UpdateMovementState(EPlayerMovementState state)
 {
+	if (movementState == state)
+		return;
+
 	movementState = state;
+
+	switch (actionState)
+	{
+	case EPlayerActionState::None:
+		if (movementState == EPlayerMovementState::Idle)
+		{
+			bodyRenderComponent->PlayAnimation("Idle");
+			armRenderComponent->PlayAnimation("ArmIdle");
+			break;
+		}
+		else if (movementState == EPlayerMovementState::Run)
+		{
+			bodyRenderComponent->PlayAnimation("Run");
+			armRenderComponent->PlayAnimation("ArmRun");
+			break;
+		}
+		else if (movementState == EPlayerMovementState::Jump)
+		{
+			bodyRenderComponent->PlayAnimation("Jump");
+			//armRenderComponent->PlayAnimation("ArmJump");
+			break;
+		}
+		else if (movementState == EPlayerMovementState::Fall)
+		{
+			bodyRenderComponent->PlayAnimation("Fall");
+			//armRenderComponent->PlayAnimation("ArmJump");
+			break;
+		}
+	case EPlayerActionState::GrappleSwing:
+		if (movementState == EPlayerMovementState::Idle)
+		{
+			bodyRenderComponent->PlayAnimation("Swing");
+			break;
+		}
+	case EPlayerActionState::Ceiling:
+		if (movementState == EPlayerMovementState::Idle)
+		{
+			bodyRenderComponent->PlayAnimation("Ceiling_Idle");
+			break;
+		}
+		else if (movementState == EPlayerMovementState::Run)
+		{
+			bodyRenderComponent->PlayAnimation("Ceiling_Run");
+			break;
+		}
+	case EPlayerActionState::WallGrab:
+		if (movementState == EPlayerMovementState::Idle)
+		{
+			bodyRenderComponent->PlayAnimation("WallClimb_Idle");
+			break;
+		}
+		else if (movementState == EPlayerMovementState::Run)
+		{
+			bodyRenderComponent->PlayAnimation("WallClimb_Run");
+			break;
+		}
+	}
 }
 
 void Player::UpdateActionState(EPlayerActionState state)
 {
-	actionState = state;
+ 	actionState = state;
 }
 
 const wchar_t* Player::GetMovementStateString(EPlayerMovementState state)

@@ -11,7 +11,7 @@ void SceneManager::Init()
 	LobbyScene* lobbyScene = new LobbyScene;
 	Scenes.push_back(lobbyScene);
 
-	currentScene = lobbyScene;
+	currentScene = gameScene;
 
 	currentScene->Init();
 }

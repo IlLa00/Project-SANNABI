@@ -66,6 +66,7 @@ private:
 	EPhysicsState physicsState = EPhysicsState::Normal;
 	bool bOnGround = false;
 	bool bJumping = false;
+	bool bFalling = false;
 
 	Vector grapplePoint;
 	float grappleLength = 10.0f;

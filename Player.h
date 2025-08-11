@@ -69,6 +69,7 @@ private:
 private:
 	SpriteRenderComponent* bodyRenderComponent = nullptr;
 	SpriteRenderComponent* armRenderComponent = nullptr;
+	
 	GrapplingComponent* grapplingComponent = nullptr;
 	CollisionComponent* collisionComponent = nullptr;
 	PhysicsComponent* physicsComponent = nullptr;  
