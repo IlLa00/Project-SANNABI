@@ -83,5 +83,8 @@ private:
 	bool bOverlapCeiling = false; 
 	bool bOverlapLeftWall = false;
 	bool bOverlapRightWall = false;
+
+	bool bBlockedLeft = false;
+	bool bBlockedRight = false;
 };
 

@@ -1,15 +1,16 @@
 ﻿#include "pch.h"
 #include "Engine.h"
 #include "TimerManager.h"
-#include "InputManager.h"
 #include "SceneManager.h"
 #include "CollisionManager.h"
 #include "ResourceManager.h"
 #include "CameraManager.h"
+#include "InputManager.h"
 
-void Engine::Init(HWND hwnd)
+void Engine::Init(HWND hwnd, HWND subWnd)
 {
 	_hwnd = hwnd;
+	_hwndSub = subWnd;
 
 	// 기본 도화지 넘겨받기
 	_hdc = ::GetDC(hwnd);	
@@ -27,11 +28,11 @@ void Engine::Init(HWND hwnd)
 	::DeleteObject(prev);
 
 	TimerManager::GetInstance()->Init();
-	InputManager::GetInstance()->Init(hwnd);
+	
 	CollisionManager::GetInstance()->Init(hwnd);
 	ResourceManager::GetInstance()->Init();
 
-	SceneManager::GetInstance()->Init();
+	SceneManager::GetInstance()->Init(_hwnd, _hwndSub);
 }
 
 void Engine::Update()
@@ -39,14 +40,14 @@ void Engine::Update()
 	SceneManager::GetInstance()->Update(TimerManager::GetInstance()->GetDeltaTime());
 
 	TimerManager::GetInstance()->Update();
-	InputManager::GetInstance()->Update();
+	
 	CollisionManager::GetInstance()->Update();
 }
 
 void Engine::Destroy()
 {
 	TimerManager::GetInstance()->DestroyInstance();
-	InputManager::GetInstance()->DestroyInstance();
+	//InputManager::GetInstance()->DestroyInstance();
 	CollisionManager::GetInstance()->DestroyInstance();
 	ResourceManager::GetInstance()->DestroyInstance();
 	CameraManager::GetInstance()->DestroyInstance();

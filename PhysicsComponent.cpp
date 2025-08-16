@@ -399,7 +399,12 @@ void PhysicsComponent::Move()
 	Vector direction = owner->GetDirection();
 	Vector velocity = owner->GetVelocity();
 
-	velocity.x = owner->GetSpeed() * direction.x;
+	if (direction.x > 0 && !bBlockedRight) 
+		velocity.x = owner->GetSpeed() * direction.x;
+	else if (direction.x < 0 && !bBlockedLeft) 
+		velocity.x = owner->GetSpeed() * direction.x;
+	else 
+		velocity.x = 0;
 
 	owner->SetVelocity(velocity);
 }
@@ -417,10 +422,6 @@ void PhysicsComponent::Jump()
 		bOnGround = false;
 		bJumping = true;
 		bFalling = false;
-
-		Player* player = dynamic_cast<Player*>(owner);
-		if (player)
-			player->UpdateMovementState(EPlayerMovementState::Jump);
 	}
 }
 
@@ -463,41 +464,46 @@ void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult
 	if (other && other->GetCollisionChannel() == ECollisionChannel::WorldStatic)
 	{
 		Vector normal = info.collisionNormal;
+		Player* player = dynamic_cast<Player*>(owner);
+		if (!player) return;
 
 		if (normal.x == 0 && normal.y == -1) // 지면
 		{
-			Player* player = dynamic_cast<Player*>(owner);
-			if (!player) return;
-
 			SetPhysicsState(EPhysicsState::Normal);
 			bOnGround = true;
 			bFalling = false;
 
 			player->UpdateMovementState(EPlayerMovementState::Idle);
+			player->UpdateActionState(EPlayerActionState::None);
 		}
 		else if (normal.x == 0 && normal.y == 1) // 천장
 		{
-			Player* player = dynamic_cast<Player*>(owner);
-			if (!player) return;
-
 			player->UpdateActionState(EPlayerActionState::Ceiling);
 			SetPhysicsState(EPhysicsState::CeilingHang);
 			bOverlapCeiling = true;
 		}
 		else if (normal.x == -1 && normal.y == 0) // 오른쪽 벽
 		{
-			Player* player = dynamic_cast<Player*>(owner);
-			if (!player) return;
+			if (bOnGround) 
+			{
+				bBlockedRight = true;  // 오른쪽 이동 차단 플래그
+				return;
+			}
 
+			// 공중에서만 벽 붙기
 			player->UpdateActionState(EPlayerActionState::WallGrab);
- 			SetPhysicsState(EPhysicsState::RightWallClimbing);
+			SetPhysicsState(EPhysicsState::RightWallClimbing);
 			bOverlapRightWall = true;
 		}
 		else if (normal.x == 1 && normal.y == 0) // 왼쪽 벽
 		{
-			Player* player = dynamic_cast<Player*>(owner);
-			if (!player) return;
+			if (bOnGround) 
+			{
+				bBlockedLeft = true;  // 왼쪽 이동 차단 플래그
+				return;
+			}
 
+			// 공중에서만 벽 붙기
 			player->UpdateActionState(EPlayerActionState::WallGrab);
 			SetPhysicsState(EPhysicsState::LeftWallClimbing);
 			bOverlapLeftWall = true;
@@ -510,21 +516,41 @@ void PhysicsComponent::OnGroundEndOverlap(CollisionComponent* other, HitResult i
 	if (other && other->GetCollisionChannel() == ECollisionChannel::WorldStatic)
 	{
 		Vector normal = info.collisionNormal;
-
-		if (normal.x == 0 && normal.y == -1) // 지면
-			bOnGround = false;
-		else if (normal.x == 0 && normal.y == 1) // 천장
-			bOverlapCeiling = false;
-		else if (normal.x == -1 && normal.y == 0) // 왼쪽 벽
-			bOverlapRightWall = false;
-		else if (normal.x == 1 && normal.y == 0) // 오른쪽 벽
-			bOverlapLeftWall = false;
-
 		Player* player = dynamic_cast<Player*>(owner);
 		if (!player) return;
 
-		player->UpdateActionState(EPlayerActionState::None);
-		SetPhysicsState(EPhysicsState::Normal);
+		if (normal.x == 0 && normal.y == -1) // 지면
+		{
+			bOnGround = false;
+
+			if (player->GetActionState() == EPlayerActionState::Jump) return;
+
+			player->UpdateActionState(EPlayerActionState::None);
+			SetPhysicsState(EPhysicsState::Normal);
+		}
+		else if (normal.x == 0 && normal.y == 1) // 천장
+		{
+			bOverlapCeiling = false;
+
+			player->UpdateActionState(EPlayerActionState::None);
+			SetPhysicsState(EPhysicsState::Normal);
+		}
+		else if (normal.x == -1 && normal.y == 0) // 왼쪽 벽
+		{
+			bBlockedRight = false;
+			bOverlapRightWall = false;
+
+			player->UpdateActionState(EPlayerActionState::None);
+			SetPhysicsState(EPhysicsState::Normal);
+		}
+		else if (normal.x == 1 && normal.y == 0) // 오른쪽 벽
+		{
+			bBlockedLeft = false;
+			bOverlapLeftWall = false;
+
+			player->UpdateActionState(EPlayerActionState::None);
+			SetPhysicsState(EPhysicsState::Normal);
+		}
 	}
 }
 
@@ -585,5 +611,3 @@ void PhysicsComponent::SetPhysicsState(EPhysicsState newState)
 {
  	 physicsState = newState; 
 }
-
-

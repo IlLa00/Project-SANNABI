@@ -3,17 +3,20 @@
 #include <windowsx.h>
 #include <format>
 #include "Engine.h"
+#include "InputManager.h"
 
 #define MAX_LOADSTRING 100
 
-HINSTANCE hInst; 
-HWND gHwnd;
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];             // the main window class name
+HINSTANCE hInst; 
+HWND gHwnd, gSubWnd;
 
 ATOM                MyRegisterClass(HINSTANCE hInstance);
+ATOM                RegisterSubWindowClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK    SubWndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -29,7 +32,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_SANNABI, szWindowClass, MAX_LOADSTRING);
+    
     MyRegisterClass(hInstance);
+    RegisterSubWindowClass(hInstance);
 
     // Perform application initialization:
     if (!InitInstance (hInstance, nCmdShow))
@@ -43,7 +48,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // 엔진 초기화
     Engine* engine = Engine::GetInstance();  // 변수 선언 주소 : 0x01
-    engine->Init(gHwnd);
+    engine->Init(gHwnd, gSubWnd);
+
+    InputManager::GetInstance()->Init(gHwnd, gSubWnd);
 
     LARGE_INTEGER frequency, now, prev;
     ::QueryPerformanceFrequency(&frequency);
@@ -66,6 +73,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
             if (elapsed >= targetFrameTime)
             {
+                InputManager::GetInstance()->Update();
                 engine->Update();
                 engine->Render();
 
@@ -108,6 +116,24 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return RegisterClassExW(&wcex);
 }
 
+ATOM RegisterSubWindowClass(HINSTANCE hInstance) {
+    WNDCLASSEX wcex;
+    wcex.cbSize = sizeof(WNDCLASSEX);
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = SubWndProc; // 서브 메세지 처리
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = NULL;
+    wcex.lpszClassName = L"SubWindowClass";
+    wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+
+    return RegisterClassEx(&wcex);
+}
+
 //
 //   FUNCTION: InitInstance(HINSTANCE, int)
 //
@@ -120,8 +146,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // Store instance handle in our global variable
-
    hInst = hInstance; // Store instance handle in our global variable
 
    RECT windowRect = { 0, 0, GWinSizeX, GWinSizeY };
@@ -139,6 +163,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(gHwnd, nCmdShow);
    UpdateWindow(gHwnd);
+
+   gSubWnd = CreateWindowW(
+       L"SubWindowClass", L"타일 에디터 - 타일 선택",
+       WS_OVERLAPPEDWINDOW,
+       CW_USEDEFAULT, 0, TileMapWidth * OriginTileSize + 100, TileMapHeight * OriginTileSize + 100,
+       nullptr, nullptr, hInst, nullptr);
+
+   if (!gSubWnd)
+   {
+       return FALSE;
+   }
+
+   
+  
 
    return TRUE;
 }
@@ -185,6 +223,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+LRESULT CALLBACK SubWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    switch (message) {
+    case WM_PAINT: {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
+        break;
+    }
+    case WM_MOUSEWHEEL:
+    {
+        // wParam의 HIWORD에 마우스 휠 델타 값이 저장되어 있습니다.
+        short delta = HIWORD(wParam);
+        InputManager::GetInstance()->SetMouseWheelDelta(delta);
+        break;
+    }
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

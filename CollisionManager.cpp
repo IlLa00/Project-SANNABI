@@ -14,12 +14,15 @@ void CollisionManager::Init(HWND hwnd)
 	bBlock[(int)ECollisionChannel::Character][(int)ECollisionChannel::WorldDynamic] = 1;
 	bBlock[(int)ECollisionChannel::Character][(int)ECollisionChannel::Projectile] = 1;
 	bBlock[(int)ECollisionChannel::Character][(int)ECollisionChannel::Character] = 1;
+	bBlock[(int)ECollisionChannel::Character][(int)ECollisionChannel::Perception] = 1;
 
 	bBlock[(int)ECollisionChannel::WorldStatic][(int)ECollisionChannel::Projectile] = 1;
 	bBlock[(int)ECollisionChannel::WorldStatic][(int)ECollisionChannel::Character] = 1;
 
 	bBlock[(int)ECollisionChannel::WorldDynamic][(int)ECollisionChannel::Projectile] = 1;
 	bBlock[(int)ECollisionChannel::WorldDynamic][(int)ECollisionChannel::Character] = 1;
+
+	bBlock[(int)ECollisionChannel::Perception][(int)ECollisionChannel::Character] = 1;
 
 	bIgnore[(int)ECollisionChannel::Projectile][(int)ECollisionChannel::Projectile] = 1;
 
@@ -28,6 +31,8 @@ void CollisionManager::Init(HWND hwnd)
 
 	bIgnore[(int)ECollisionChannel::WorldDynamic][(int)ECollisionChannel::WorldDynamic] = 1;
 	bIgnore[(int)ECollisionChannel::WorldDynamic][(int)ECollisionChannel::WorldStatic] = 1;
+
+
 }
 
 void CollisionManager::Update()

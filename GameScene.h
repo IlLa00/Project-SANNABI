@@ -2,12 +2,12 @@
 
 #include "Scene.h"
 
+class TileMap;
+class TileCollisionAdapter;
 class Actor;
 class Player;
 class PlayerController;
-
-class TestGround;
-
+class Turret;
 
 class GameScene : public Scene
 {
@@ -22,10 +22,14 @@ public:
 private:
 	unordered_map<Actor*, int> actors; 
 
+	TileMap* tileMap;
+	TileCollisionAdapter* tileCollisionApdater = nullptr;
+
 	Player* player = nullptr;
 	PlayerController* PC = nullptr;
-	TestGround* TG = nullptr;
-	TestGround* TG2 = nullptr;
-	TestGround* TG3 = nullptr;
+
+	Turret* turret = nullptr;
+
+	bool bIsDebug = false;
 };
 

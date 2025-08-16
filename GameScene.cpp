@@ -1,15 +1,32 @@
 ﻿#include "pch.h"
 #include "GameScene.h"
+#include "TileMap.h"
+#include "TileCollisionAdapter.h"
 #include "Actor.h"
 #include "Player.h"
 #include "PlayerController.h"
-
-
-#include "TestGround.h"
+#include "Turret.h"
+#include "CameraManager.h"
+#include "InputManager.h"
 
 void GameScene::Init()
 {
-	// 여기서 타일맵 읽고? 로드
+	tileMap = new TileMap();
+
+	fs::path mapPath = fs::current_path();
+	mapPath /= "TileMap";
+	mapPath /= L"Test.tilemap";  
+
+	if (fs::exists(mapPath)) 
+	{
+		tileMap->LoadFromFile(mapPath.wstring());
+		//MessageBox(NULL, L"타일맵 로드 완료", L"Success", MB_OK);
+	}
+	else 
+		MessageBox(NULL, L"타일맵 파일을 찾을 수 없습니다", L"Warning", MB_OK);
+
+	tileCollisionApdater = new TileCollisionAdapter();
+	tileCollisionApdater->LoadFromTileMap(tileMap->GetCollisionRects());
 
 	player = new Player;
 	player->Init();
@@ -18,21 +35,9 @@ void GameScene::Init()
 	PC = new PlayerController;
 	PC->Posses(player);
 	PC->Init();
-	
-	TG = new TestGround;
-	TG->Init();
-	TG->SetPosition(Vector(GWinSizeX / 2, GWinSizeY - 200));
-	actors[TG]++;
 
-	TG2 = new TestGround;
-	TG2->Init();
-	TG2->SetPosition(Vector(GWinSizeX / 2, GWinSizeY /2 - 400));
-	actors[TG2]++;
-
-	TG3 = new TestGround;
-	TG3->Init();
-	TG3->SetPosition(Vector(GWinSizeX - 300, GWinSizeY / 2));
-	actors[TG3]++;
+	turret = new Turret();
+	turret->Init();
 }
 
 void GameScene::Update(float deltaTime)
@@ -44,15 +49,27 @@ void GameScene::Update(float deltaTime)
 	}
 
 	PC->Update(deltaTime);
+	turret->Update(deltaTime);
+
+	if (InputManager::GetInstance()->GetButtonDown(KeyType::Tab))
+		bIsDebug = !bIsDebug;
 }
 
 void GameScene::Render(HDC _hdcBack)
 {
+	if (tileMap) 
+		tileMap->Render(_hdcBack, CameraManager::GetInstance()->GetCameraPos());
+
 	for (auto& actor : actors)
 	{
 		if (actor.first)
 			actor.first->Render(_hdcBack);
 	}
+
+	turret->Render(_hdcBack);
+
+	if (bIsDebug)
+		tileCollisionApdater->Render(_hdcBack);
 }
 
 void GameScene::Destroy()
@@ -65,7 +82,4 @@ void GameScene::Destroy()
 
 	PC->Destroy();
 	SAFE_DELETE(PC);
-
-	TG->Destroy();
-	SAFE_DELETE(TG);
 }

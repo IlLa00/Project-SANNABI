@@ -17,7 +17,9 @@ void Player::Init()
 	bodyRenderComponent = new SpriteRenderComponent;
 	bodyRenderComponent->Init(this);
 	bodyRenderComponent->AddAnimation("Idle", "SNB_Idle", 8, 1.f);
-	bodyRenderComponent->AddAnimation("Run", "SNB_Run", 22, 3.f);
+	bodyRenderComponent->AddAnimation("Run", "SNB_Run", 18, 1.0f);
+	bodyRenderComponent->AddAnimation("Jump", "SNB_Jump", 6, 1.0f, false);
+	bodyRenderComponent->AddAnimation("Fall", "SNB_Fall", 6, 1.0f,false);
 	bodyRenderComponent->AddAnimation("Swing", "SNB_Swing", 15, 1.f);
 	bodyRenderComponent->AddAnimation("Ceiling_Idle", "SNB_Ceiling_Idle", 12, 1.f);
 	bodyRenderComponent->AddAnimation("Ceiling_Run", "SNB_Ceiling_Run", 16, 1.f);
@@ -29,7 +31,13 @@ void Player::Init()
 	armRenderComponent->Init(this);
 	armRenderComponent->SetScale(0.5f);
 	armRenderComponent->AddAnimation("ArmIdle", "SNBArm_Idle", 8, 1.f);
-	armRenderComponent->AddAnimation("ArmRun", "SNBArm_Run", 22, 1.f);
+	armRenderComponent->AddAnimation("ArmRun", "SNBArm_Run", 20, 1.f);
+	bodyRenderComponent->AddAnimation("ArmJump", "SNBArm_Jump", 6, 1.0f, false);
+	bodyRenderComponent->AddAnimation("ArmFall", "SNBArm_Fall", 6, 1.0f, false);
+	armRenderComponent->AddAnimation("ArmCeiling_Idle", "SNBArm_Ceiling_Idle", 12, 1.f);
+	armRenderComponent->AddAnimation("ArmCeiling_Run", "SNBArm_Ceiling_Run", 16, 1.f);
+	//armRenderComponent->AddAnimation("ArmWallClimb_Idle", "SNBArm_WallClimb_Idle", 12, 1.f);
+	armRenderComponent->AddAnimation("ArmWallClimb_Run", "SNBArm_WallClimb_Run", 10, 1.f);
 	AddComponent(armRenderComponent);
 
 	grapplingComponent = new GrapplingComponent;
@@ -56,9 +64,7 @@ void Player::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
 
-	CameraManager::GetInstance()->Update(position, Vector(GWinSizeX, GWinSizeY));
-
-	
+	CameraManager::GetInstance()->Update(position, Vector(10000, 10000));
 }
 
 void Player::Render(HDC _hdcBack)
@@ -70,7 +76,9 @@ void Player::Render(HDC _hdcBack)
 		Vector mousePos = InputManager::GetInstance()->GetMousePos();
 
 		// 거리 계산
-		float distance = (mousePos - position).Length();
+		Vector screenPos = CameraManager::GetInstance()->ConvertScreenPos(position);
+
+		float distance = (mousePos - screenPos).Length();
 		const float MAX_GRAPPLE_DISTANCE = 400.0f; // 최대 그래플링 거리
 
 		// 거리에 따른 색상 변경
@@ -84,7 +92,7 @@ void Player::Render(HDC _hdcBack)
 		HPEN oldPen = (HPEN)SelectObject(_hdcBack, CreatePen(PS_DOT, 2, lineColor));
 
 		// 사슬 조준선 그리기 (점선)
-		MoveToEx(_hdcBack, (int)position.x, (int)position.y, NULL);
+		MoveToEx(_hdcBack, (int)screenPos.x, (int)screenPos.y, NULL);
 		LineTo(_hdcBack, (int)mousePos.x, (int)mousePos.y);
 
 		// 마우스 커서 위치에 작은 원 그리기 (조준점)
@@ -115,6 +123,10 @@ void Player::NoneInput()
 	physicsComponent->Idle(); // 이건 맞음
 
 	//근데 이건 모르겠음
+
+	if (movementState == EPlayerMovementState::Jump) return;
+	if (movementState == EPlayerMovementState::Fall) return;
+
 	UpdateMovementState(EPlayerMovementState::Idle);
 }
 
@@ -128,9 +140,7 @@ void Player::OnPressA()
 
 	physicsComponent->Move();
 
-
 	UpdateMovementState(EPlayerMovementState::Run);
-
 }
 
 void Player::OnPressD()
@@ -179,7 +189,6 @@ void Player::OnSpaceBarDown()
 
 	// 사슬걸고 있을때는 사슬감기
 	// 아니면 점프
-
 	if (actionState == EPlayerActionState::GrappleSwing)
 	{
 		physicsComponent->ExtendChain();
@@ -198,8 +207,8 @@ void Player::OnSpaceBarDown()
 	{
 		physicsComponent->Jump();
 
+		UpdateActionState(EPlayerActionState::Jump);
 		UpdateMovementState(EPlayerMovementState::Jump);
-		// armRenderComponent->PlayAnimation("ArmJump");
 	}
 }
 
@@ -208,7 +217,8 @@ void Player::OnMouseDown()
 	if (!grapplingComponent) return;
 
 	Vector mousePos = InputManager::GetInstance()->GetMousePos();
-	Vector mouse_direction = mousePos - position;
+	Vector worldMousePos = CameraManager::GetInstance()->ConvertWorldPos(mousePos);
+	Vector mouse_direction = worldMousePos - position;
 	mouse_direction.Normalize();
 
 	UpdateActionState(EPlayerActionState::GrappleFire);
@@ -226,14 +236,14 @@ void Player::OnGrappling(Vector projectilePosition)
 	// UpdateMovementState(EPlayerMovementState::Grappling);
 	UpdateActionState(EPlayerActionState::GrappleSwing);
 
-	
+
 }
 
 void Player::OffGrappling()
 {
 	UpdateMovementState(EPlayerMovementState::Idle); // 진짜 이건가?
 
-	if(physicsComponent->GetPhysicsState() == EPhysicsState::CeilingHang)
+	if (physicsComponent->GetPhysicsState() == EPhysicsState::CeilingHang)
 		UpdateActionState(EPlayerActionState::Ceiling);
 	else
 		UpdateActionState(EPlayerActionState::None);
@@ -253,10 +263,10 @@ void Player::OnMouseUp()
 void Player::OnShiftDown()
 {
 	// 사슬팔이 부착되어있으면 대쉬
-	
+
 	// 아니면 구르며 공격
 
-	/*UpdateActionState(EPlayerActionState::Attack); 
+	/*UpdateActionState(EPlayerActionState::Attack);
 	physicsComponent->ReadyForDash();*/
 }
 
@@ -287,16 +297,17 @@ void Player::UpdateMovementState(EPlayerMovementState state)
 			armRenderComponent->PlayAnimation("ArmRun");
 			break;
 		}
-		else if (movementState == EPlayerMovementState::Jump)
-		{
-			bodyRenderComponent->PlayAnimation("Jump");
-			//armRenderComponent->PlayAnimation("ArmJump");
-			break;
-		}
 		else if (movementState == EPlayerMovementState::Fall)
 		{
 			bodyRenderComponent->PlayAnimation("Fall");
-			//armRenderComponent->PlayAnimation("ArmJump");
+			armRenderComponent->PlayAnimation("ArmFall");
+			break;
+		}
+	case EPlayerActionState::Jump:
+		if (movementState == EPlayerMovementState::Jump)
+		{
+			bodyRenderComponent->PlayAnimation("Jump");
+			armRenderComponent->PlayAnimation("ArmJump");
 			break;
 		}
 	case EPlayerActionState::GrappleSwing:
@@ -309,22 +320,26 @@ void Player::UpdateMovementState(EPlayerMovementState state)
 		if (movementState == EPlayerMovementState::Idle)
 		{
 			bodyRenderComponent->PlayAnimation("Ceiling_Idle");
+			armRenderComponent->PlayAnimation("ArmCeiling_Idle");
 			break;
 		}
 		else if (movementState == EPlayerMovementState::Run)
 		{
 			bodyRenderComponent->PlayAnimation("Ceiling_Run");
+			armRenderComponent->PlayAnimation("ArmCeiling_Run");
 			break;
 		}
 	case EPlayerActionState::WallGrab:
 		if (movementState == EPlayerMovementState::Idle)
 		{
 			bodyRenderComponent->PlayAnimation("WallClimb_Idle");
+			armRenderComponent->PlayAnimation("ArmWallClimb_Idle");
 			break;
 		}
 		else if (movementState == EPlayerMovementState::Run)
 		{
 			bodyRenderComponent->PlayAnimation("WallClimb_Run");
+			armRenderComponent->PlayAnimation("ArmWallClimb_Run");
 			break;
 		}
 	}
@@ -332,7 +347,7 @@ void Player::UpdateMovementState(EPlayerMovementState state)
 
 void Player::UpdateActionState(EPlayerActionState state)
 {
- 	actionState = state;
+	actionState = state;
 }
 
 const wchar_t* Player::GetMovementStateString(EPlayerMovementState state)
@@ -358,6 +373,8 @@ const wchar_t* Player::GetActionStateString(EPlayerActionState state)
 	{
 	case EPlayerActionState::None:
 		return L"Idle";
+	case EPlayerActionState::Jump:
+		return L"Jump";
 	case EPlayerActionState::Attack:
 		return L"Attack";
 	case EPlayerActionState::GrappleFire:
@@ -402,14 +419,17 @@ const wchar_t* Player::GetPhysicsStateString(EPhysicsState state)
 
 void Player::DebugRender(HDC _hdcBack)
 {
+	wstring positionoutput = std::format(L"Postion({:.2f}, {:.2f})", GetPosition().x, GetPosition().y);
+	::TextOut(_hdcBack, 25, 25, positionoutput.c_str(), static_cast<int32>(positionoutput.size()));
+
 	wstring output = std::format(L"Velocity({:.2f}, {:.2f})", velocity.x, velocity.y);
-	::TextOut(_hdcBack, 25, 25, output.c_str(), static_cast<int32>(output.size()));
+	::TextOut(_hdcBack, 25, 40, output.c_str(), static_cast<int32>(output.size()));
 
 	wstring movementStr = GetMovementStateString(movementState);
 	wstring actionStr = GetActionStateString(actionState);
 	wstring physicsStr = GetPhysicsStateString(physicsComponent->GetPhysicsState());
 	wstring outputStr = L"Movement(" + movementStr + L"), Action(" + actionStr + L"), Physics(" + physicsStr + L")";
-	::TextOut(_hdcBack, 25, 50, outputStr.c_str(), static_cast<int32>(outputStr.size()));
+	::TextOut(_hdcBack, 25, 60, outputStr.c_str(), static_cast<int32>(outputStr.size()));
 
 	bool isOnGround = physicsComponent->IsOnGround();
 	wstring outputGroundStr = L"IsOnGround(" + wstring(GetBoolString(isOnGround)) + L")";

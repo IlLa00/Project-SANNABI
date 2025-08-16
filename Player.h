@@ -16,6 +16,7 @@ enum class EPlayerMovementState
 enum class EPlayerActionState
 {
 	None,
+	Jump, // 위방향 공중
 	GrappleFire, // 사슬 발사
 	GrappleSwing, // 사슬 스윙
 	GrappleReelIn, // 사슬 감기
@@ -58,6 +59,9 @@ public:
 
 	void UpdateMovementState(EPlayerMovementState state);
 	void UpdateActionState(EPlayerActionState state);
+
+	EPlayerMovementState GetMovementState() { return movementState; }
+	EPlayerActionState GetActionState() { return actionState; }
 
 private:
 	const wchar_t* GetMovementStateString(EPlayerMovementState state);
