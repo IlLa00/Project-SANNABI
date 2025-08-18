@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CollisionComponent.h"
 #include "Actor.h"
+#include "CameraManager.h"
 
 void CollisionComponent::Init(Actor* _owner)
 {
@@ -24,10 +25,12 @@ void CollisionComponent::Render(HDC hdc)
 	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0)); 
 	HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
 
-	int left = position.x - offsetX;
-	int top = position.y - offsetY;
-	int right = position.x + offsetX;
-	int bottom = position.y + offsetY;
+	Vector screenPos = CameraManager::GetInstance()->ConvertScreenPos(position);
+
+	int left = screenPos.x - offsetX;
+	int top = screenPos.y - offsetY;
+	int right = screenPos.x + offsetX;
+	int bottom = screenPos.y + offsetY;
 
 	MoveToEx(hdc, left, top, NULL);
 	LineTo(hdc, right, top);

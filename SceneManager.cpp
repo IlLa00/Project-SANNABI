@@ -2,8 +2,9 @@
 #include "SceneManager.h"
 #include "GameScene.h"
 #include "LobbyScene.h"
+#include "EditorScene.h"
 
-void SceneManager::Init()
+void SceneManager::Init(HWND hwnd, HWND subWnd)
 {
 	GameScene* gameScene = new GameScene;
 	Scenes.push_back(gameScene);
@@ -11,7 +12,12 @@ void SceneManager::Init()
 	LobbyScene* lobbyScene = new LobbyScene;
 	Scenes.push_back(lobbyScene);
 
-	currentScene = lobbyScene;
+	EditorScene* editorScene = new EditorScene;
+	editorScene->SetMainWin(hwnd);
+	editorScene->SetSubWin(subWnd);
+	Scenes.push_back(editorScene);
+	
+	currentScene = gameScene;
 
 	currentScene->Init();
 }

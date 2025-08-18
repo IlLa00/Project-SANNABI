@@ -22,7 +22,12 @@ enum class KeyType
 	A = 'A',
 	D = 'D',
 	W = 'W',
-	S = 'S'
+	S = 'S',
+	T = 'T',
+	L = 'L',
+	Q = 'Q',
+	E = 'E',
+	Tab = VK_TAB
 };
 
 constexpr int32 KEY_TYPE_COUNT = static_cast<int32>(UINT8_MAX) + 1;
@@ -35,22 +40,26 @@ private:
 	InputManager() {}
 
 public:
-
-	void Init(HWND hwnd);
+	void Init(HWND hwnd, HWND subwnd);
 	void Update();
 
 	bool GetButtonPressed(KeyType key) { return GetState(key) == KeyState::Press; }
 	bool GetButtonDown(KeyType key) { return GetState(key) == KeyState::Down; }
 	bool GetButtonUp(KeyType key) { return GetState(key) == KeyState::Up; }
-
+	int GetMouseWheelDelta() const { return _mouseWheelDelta; }
+	void SetMouseWheelDelta(int delta) { _mouseWheelDelta = delta; }
+	
 	POINT GetMousePos() { return _mousePos; }
-
+	POINT GetSubMousePos() { return _subMousePos; }
 private:
 	KeyState GetState(KeyType key) { return _states[static_cast<uint8>(key)]; }
 
 private:
 	HWND _hwnd = 0;	
+	HWND _subwnd = 0;
 	vector<KeyState> _states;
 	POINT _mousePos = {};
+	POINT _subMousePos = {};
+	int _mouseWheelDelta = 0;
 };
 

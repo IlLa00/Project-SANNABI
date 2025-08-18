@@ -53,6 +53,10 @@ public:
 	void SetPhysicsState(EPhysicsState newState);
 	EPhysicsState GetPhysicsState() { return physicsState;}
 
+	void SetGrapplePoint(Vector newPoint) { grapplePoint = newPoint; }
+
+	bool IsJustRelaeasedGrapple() { return bJustReleasedGrapple; }
+
 private:
 	float gravity = 1200.f;
 	float jumpForce = 500.f;  // 점프 힘
@@ -66,6 +70,7 @@ private:
 	EPhysicsState physicsState = EPhysicsState::Normal;
 	bool bOnGround = false;
 	bool bJumping = false;
+	bool bFalling = false;
 
 	Vector grapplePoint;
 	float grappleLength = 10.0f;
@@ -73,6 +78,10 @@ private:
 
 	float currentAngle = 0.0f;
 	Vector toHook;
+
+	bool bJustReleasedGrapple = false;  // 멤버 변수 추가
+	float grappleReleaseTimer = 0.0f;   // 타이머 추가
+	const float GRAPPLE_RELEASE_TIME = 0.5f; // 0.5초간 보호
 
 	bool bExtendingChain = false;        // 체인 확장 중인지
 	float chainExtendSpeed = 10000.0f;     // 체인 확장 속도
@@ -82,5 +91,8 @@ private:
 	bool bOverlapCeiling = false; 
 	bool bOverlapLeftWall = false;
 	bool bOverlapRightWall = false;
+
+	bool bBlockedLeft = false;
+	bool bBlockedRight = false;
 };
 

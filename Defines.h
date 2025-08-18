@@ -176,6 +176,16 @@ enum class ECollisionChannel
 	WorldDynamic, // 동적인 플랫폼
 	Character, // 캐릭터
 	Projectile, // 발사체
+	Perception, // 감지영역
 
 	Max
 };
+
+const int TileSize = 52;
+const int OriginTileSize = 52;	// 원본 타일 사이즈
+
+const int GridWidth = 60;
+const int GridHeight = 40;
+
+const int TileMapWidth = 4;
+const int TileMapHeight = 4;

@@ -29,7 +29,7 @@ private:
 
 	float maxChainLength = 500.0f;
 	float fireChainLength = 1500.f;
-	float pullSpeed = 3000.0f;
+	float pullSpeed = 5000.0f;
 	float fireCooldown = 0.5f;
 
 	bool bFiring = false;

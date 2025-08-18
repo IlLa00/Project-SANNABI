@@ -12,7 +12,7 @@ private:
 	SceneManager() {}
 
 public:
-	void Init();
+	void Init(HWND hwnd, HWND subWnd);
 	void Update(float deltaTime);
 	void Render(HDC _hdcBack);
 	void Destroy();

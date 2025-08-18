@@ -16,6 +16,7 @@ public:
 	void Destroy() override;
 
 	void SetCollisionSize(int _offsetX, int _offsetY);
+	void SetPosition(Vector newPosition) { position = newPosition; }
 
 	void SetPendginKill(bool state) { bPendingKill = state; }
 	bool IsPendingKill() { return bPendingKill; }

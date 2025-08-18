@@ -88,6 +88,21 @@
     <Filter Include="Scene\LobbyScene">
       <UniqueIdentifier>{3be173dd-2566-4d15-8f73-5e220fec15c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\EditorScene">
+      <UniqueIdentifier>{7519f0c0-c214-45d9-9024-80a0fc7ad728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\TileMap">
+      <UniqueIdentifier>{cc95af46-4e93-40af-9f17-002fe7652826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Adapter">
+      <UniqueIdentifier>{bdda8a51-2f3a-4c6b-bc09-c41adee42061}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actor\Enemy">
+      <UniqueIdentifier>{c9ff7b51-a719-4f59-9f41-4547810e9046}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actor\Bullet">
+      <UniqueIdentifier>{5e0debb1-31e3-478f-b6c9-65eb2c7a1577}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -186,6 +201,30 @@
     <ClInclude Include="LobbyScene.h">
       <Filter>Scene\LobbyScene</Filter>
     </ClInclude>
+    <ClInclude Include="EditorScene.h">
+      <Filter>Scene\EditorScene</Filter>
+    </ClInclude>
+    <ClInclude Include="TileEditor.h">
+      <Filter>Scene\EditorScene</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMap.h">
+      <Filter>Scene\TileMap</Filter>
+    </ClInclude>
+    <ClInclude Include="TileCollisionAdapter.h">
+      <Filter>Adapter</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Actor\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Turret.h">
+      <Filter>Actor\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletPool.h">
+      <Filter>Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Actor\Bullet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SANNABI.cpp">
@@ -274,6 +313,30 @@
     </ClCompile>
     <ClCompile Include="LobbyScene.cpp">
       <Filter>Scene\LobbyScene</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorScene.cpp">
+      <Filter>Scene\EditorScene</Filter>
+    </ClCompile>
+    <ClCompile Include="TileEditor.cpp">
+      <Filter>Scene\EditorScene</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMap.cpp">
+      <Filter>Scene\TileMap</Filter>
+    </ClCompile>
+    <ClCompile Include="TileCollisionAdapter.cpp">
+      <Filter>Adapter</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Actor\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Turret.cpp">
+      <Filter>Actor\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletPool.cpp">
+      <Filter>Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Actor\Bullet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

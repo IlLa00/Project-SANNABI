@@ -9,6 +9,8 @@ void SpriteRenderComponent::Init(Actor* _owner)
 
 	animator = new Animator;
 	animator->Init(_owner);
+
+	scale = GetOwner()->GetScale();
 }
 
 void SpriteRenderComponent::Update(float deltaTime)
@@ -27,8 +29,6 @@ void SpriteRenderComponent::Update(float deltaTime)
 void SpriteRenderComponent::Render(HDC _hdcBack)
 {
 	Super::Render(_hdcBack);
-
-	float scale = GetOwner()->GetScale();
 
 	if (animator)
 		animator->Render(_hdcBack, scale);

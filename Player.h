@@ -16,12 +16,14 @@ enum class EPlayerMovementState
 enum class EPlayerActionState
 {
 	None,
+	Jump, // 위방향 공중
 	GrappleFire, // 사슬 발사
 	GrappleSwing, // 사슬 스윙
 	GrappleReelIn, // 사슬 감기
 	Ceiling, // 천장
 	WallGrab, // 벽타기
-	Attack, // 공격
+	CharageDashStart, 
+	DashAttack, // 사슬팔 대쉬 공격
 	TakeDamage, // 피격
 	Die // 죽음
 };
@@ -51,12 +53,20 @@ public:
 	void OnMouseDown();
 	void OnMouseUp(); 
 	void OnShiftDown();
+	void OnShiftUp();
 
 	void OnGrappling(Vector projectilePosition);
 	void OffGrappling();
 
+	void Dash(Vector position);
+
 	void UpdateMovementState(EPlayerMovementState state);
 	void UpdateActionState(EPlayerActionState state);
+
+	void UpdateAnimation();
+
+	EPlayerMovementState GetMovementState() { return movementState; }
+	EPlayerActionState GetActionState() { return actionState; }
 
 private:
 	const wchar_t* GetMovementStateString(EPlayerMovementState state);
@@ -69,6 +79,7 @@ private:
 private:
 	SpriteRenderComponent* bodyRenderComponent = nullptr;
 	SpriteRenderComponent* armRenderComponent = nullptr;
+	
 	GrapplingComponent* grapplingComponent = nullptr;
 	CollisionComponent* collisionComponent = nullptr;
 	PhysicsComponent* physicsComponent = nullptr;  

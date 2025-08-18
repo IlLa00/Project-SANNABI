@@ -4,7 +4,6 @@
 #include "GrapplingHookProjectilePool.h"
 #include "CollisionManager.h"
 
-
 void GrapplingHookProjectile::Init()
 {
 	Super::Init();
@@ -27,8 +26,6 @@ void GrapplingHookProjectile::Update(float deltaTime)
 	Vector currentPos = GetPosition();
 	Vector newPos = currentPos + (direction * speed * deltaTime);
 	SetPosition(newPos);
-	
-	
 }
 
 void GrapplingHookProjectile::Render(HDC _hdcBack)

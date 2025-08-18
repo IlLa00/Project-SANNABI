@@ -10,7 +10,7 @@ protected:
 	Engine() {};
 
 public:
-	void Init(HWND	hwnd);	
+	void Init(HWND hwnd, HWND subWnd);
 	void Destroy();
 
 	void Update();	
@@ -20,6 +20,7 @@ public:
 
 private:
 	HWND	_hwnd;	// 윈도우 핸들
+	HWND	_hwndSub;
 	HDC		_hdc;	// 기본 도화지 정보 (프론트 버퍼)
 
 	// Double Buffering

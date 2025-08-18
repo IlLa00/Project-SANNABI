@@ -128,11 +128,15 @@
   <ItemGroup>
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Animator.h" />
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="BulletPool.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Defines.h" />
+    <ClInclude Include="EditorScene.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameScene.h" />
@@ -151,7 +155,11 @@
     <ClInclude Include="SpriteAnimation.h" />
     <ClInclude Include="TestGround.h" />
     <ClInclude Include="TextureResource.h" />
+    <ClInclude Include="TileCollisionAdapter.h" />
+    <ClInclude Include="TileEditor.h" />
+    <ClInclude Include="TileMap.h" />
     <ClInclude Include="TimerManager.h" />
+    <ClInclude Include="Turret.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="SpriteRenderComponent.h" />
@@ -162,11 +170,15 @@
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Animator.cpp" />
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="BulletPool.cpp" />
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="CollisionComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Defines.cpp" />
+    <ClCompile Include="EditorScene.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GrapplingComponent.cpp" />
@@ -186,7 +198,11 @@
     <ClCompile Include="SpriteAnimation.cpp" />
     <ClCompile Include="TestGround.cpp" />
     <ClCompile Include="TextureResource.cpp" />
+    <ClCompile Include="TileCollisionAdapter.cpp" />
+    <ClCompile Include="TileEditor.cpp" />
+    <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="TimerManager.cpp" />
+    <ClCompile Include="Turret.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="PhysicsComponent.cpp" />
     <ClCompile Include="SpriteRenderComponent.cpp" />

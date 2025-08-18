@@ -10,8 +10,10 @@ void PlayerController::Init()
 
 void PlayerController::Update(float deltaTime)
 {
-	if (!inputInstance) return;
-	if (!PossedCharacter) return;
+	if (!inputInstance) 
+        return;
+	if (!PossedCharacter) 
+        return;
 
 	bool isMoving = false;
 
@@ -43,6 +45,10 @@ void PlayerController::Update(float deltaTime)
     if (inputInstance->GetButtonDown(KeyType::Shift))
     {
         PossedCharacter->OnShiftDown();
+    }
+    if (inputInstance->GetButtonUp(KeyType::Shift))
+    {
+        PossedCharacter->OnShiftUp();
     }
     if (inputInstance->GetButtonDown(KeyType::LeftMouse))
     {

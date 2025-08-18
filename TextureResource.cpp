@@ -76,36 +76,52 @@ void TextureResource::Render(HDC hdc, Vector pos)
 
 void TextureResource::Render(HDC hdc, int srcX, int srcY, int srcWidth, int srcHeight, Vector destPos, int destWidth, int destHeight)
 {
-	int renderPosX = (int32)destPos.x - (abs(destWidth) / 2); 
+	_transparent = RGB(255, 255, 255);
+
+	int renderPosX = (int32)destPos.x - (abs(destWidth) / 2);
 	int renderPosY = (int32)destPos.y - (destHeight / 2);
 
 	Vector renderPos = Vector(renderPosX, renderPosY);
 	Vector screenPos = CameraManager::GetInstance()->ConvertScreenPos(renderPos);
 
-	int finalX = screenPos.x;
-	int finalWidth = destWidth;
+	HDC tempHdc = ::CreateCompatibleDC(hdc);
+	HBITMAP tempBitmap = ::CreateCompatibleBitmap(hdc, abs(destWidth), destHeight);
+	HBITMAP oldBitmap = (HBITMAP)::SelectObject(tempHdc, tempBitmap);
 
-	::TransparentBlt(hdc, // 투명처리를 위함
-		finalX,
-		screenPos.y,
-		finalWidth,
+	int finalSrcX = srcX;
+	int finalSrcWidth = srcWidth;
+
+	if (destWidth < 0)
+	{
+		finalSrcX = srcX + srcWidth;
+		finalSrcWidth = -srcWidth;
+	}
+
+	::StretchBlt(tempHdc,
+		0,
+		0,
+		abs(destWidth),
 		destHeight,
 		_textureHdc,
-		srcX,
+		finalSrcX,
 		srcY,
-		srcWidth,
-		srcHeight,
-		_transparent);
-
-	::StretchBlt(hdc, // 반전을 위함
-		finalX,        
-		screenPos.y,
-		finalWidth,     
-		destHeight,
-		_textureHdc,
-		srcX,
-		srcY,
-		srcWidth,
+		finalSrcWidth,
 		srcHeight,
 		SRCCOPY);
+
+	::TransparentBlt(hdc,
+		screenPos.x,
+		screenPos.y,
+		abs(destWidth),
+		destHeight,
+		tempHdc,
+		0,
+		0,
+		abs(destWidth),
+		destHeight,
+		_transparent);
+
+	::SelectObject(tempHdc, oldBitmap);
+	::DeleteObject(tempBitmap);
+	::DeleteDC(tempHdc);
 }
