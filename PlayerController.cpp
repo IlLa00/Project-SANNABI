@@ -41,7 +41,6 @@ void PlayerController::Update(float deltaTime)
     if (inputInstance->GetButtonDown(KeyType::SpaceBar))
     {
         PossedCharacter->OnSpaceBarDown();
-        OutputDebugStringA("Check SpaceBar\n");
     }
     if (inputInstance->GetButtonDown(KeyType::Shift))
     {

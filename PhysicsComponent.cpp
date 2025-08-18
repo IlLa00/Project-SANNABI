@@ -38,6 +38,16 @@ void PhysicsComponent::Update(float deltaTime)
 
 	if (!owner) return;
 
+	if (bJustReleasedGrapple)
+	{
+		grappleReleaseTimer += deltaTime;
+		if (grappleReleaseTimer >= GRAPPLE_RELEASE_TIME)
+		{
+			bJustReleasedGrapple = false;
+			grappleReleaseTimer = 0.0f;
+		}
+	}
+
 	switch (physicsState)
 	{
 	case EPhysicsState::Normal:
@@ -61,7 +71,7 @@ void PhysicsComponent::Update(float deltaTime)
 	Vector velocity = owner->GetVelocity();
 	bool velocityChanged = false;
 
-	if (bOnGround)
+	if (bOnGround && !bJustReleasedGrapple)
 	{
 		velocity.y = 0;
 		velocityChanged = true;
@@ -193,10 +203,10 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 
 	grappleLength = currentDistance;
 
-	currentAngle = atan2f(toHookCurrent.x, toHookCurrent.y);
+	currentAngle = atan2f(toHookCurrent.y, toHookCurrent.x);
 
 	// 각가속도 계산 (진자 운동의 기본 공식)
-	float angularAccel = -(gravity / grappleLength) * sinf(currentAngle) * swingGravityMult;
+	float angularAccel = (gravity / grappleLength) * cosf(currentAngle) * swingGravityMult;
 
 	swingInputForce -= 50.0f;
 	swingInputForce = clamp(swingInputForce, 0.f, 250.f);
@@ -204,7 +214,7 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 	Vector direction = owner->GetDirection();
 	if (direction.x != 0)
 	{
-		angularAccel += direction.x * (swingInputForce / grappleLength);
+		angularAccel += -direction.x * (swingInputForce / grappleLength);
 
 		if ((direction.x > 0 && angularVelocity > 0) ||
 			(direction.x < 0 && angularVelocity < 0))
@@ -230,8 +240,8 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 
 	// 새 위치 계산 (원형 운동)
 	Vector newPos;
-	newPos.x = grapplePoint.x + grappleLength * sinf(currentAngle);
-	newPos.y = grapplePoint.y + grappleLength * cosf(currentAngle);
+	newPos.x = grapplePoint.x + grappleLength * cosf(currentAngle);
+	newPos.y = grapplePoint.y + grappleLength * sinf(currentAngle);
 
 	bool willCollide = false;
 
@@ -247,15 +257,16 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 		currentAngle += angularVelocity * deltaTime;
 
 		Vector newPos;
-		newPos.x = grapplePoint.x + grappleLength * sinf(currentAngle);
-		newPos.y = grapplePoint.y + grappleLength * cosf(currentAngle);
+		newPos.x = grapplePoint.x + grappleLength * cosf(currentAngle);
+		newPos.y = grapplePoint.y + grappleLength * sinf(currentAngle);
 
 		owner->SetPosition(newPos);
 	}
 
 	// 속도 계산 (해제 시 필요)
 	float tangentialSpeed = angularVelocity * grappleLength;
-	Vector tangent(-cosf(currentAngle), sinf(currentAngle));
+
+	Vector tangent(-sinf(currentAngle), cosf(currentAngle));
 	Vector velocity = tangent * tangentialSpeed;
 
 	owner->SetVelocity(velocity);
@@ -361,7 +372,10 @@ void PhysicsComponent::Idle()
 {
 	if (!owner) return;
 
-	
+	// 그래플링 중일 때는 속도를 건드리지 않음 (진자 운동 유지)
+	if (physicsState == EPhysicsState::Grappling)
+		return;
+
 	Vector velocity = owner->GetVelocity();
 	velocity.x = 0;
 
@@ -433,7 +447,10 @@ void PhysicsComponent::ReadyForDash()
 
 void PhysicsComponent::ExtendChain()
 {
-	if (physicsState != EPhysicsState::Grappling || !owner)
+	/*if (physicsState != EPhysicsState::Grappling || !owner)
+		return;*/
+
+	if (!owner)
 		return;
 
 	SetPhysicsState(EPhysicsState::ExtendingChain);
@@ -479,6 +496,7 @@ void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult
 		else if (normal.x == 0 && normal.y == 1) // 천장
 		{
 			player->UpdateActionState(EPlayerActionState::Ceiling);
+			player->UpdateMovementState(EPlayerMovementState::Idle);
 			SetPhysicsState(EPhysicsState::CeilingHang);
 			bOverlapCeiling = true;
 		}
@@ -492,6 +510,7 @@ void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult
 
 			// 공중에서만 벽 붙기
 			player->UpdateActionState(EPlayerActionState::WallGrab);
+			player->UpdateMovementState(EPlayerMovementState::Idle);
 			SetPhysicsState(EPhysicsState::RightWallClimbing);
 			bOverlapRightWall = true;
 		}
@@ -505,6 +524,7 @@ void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult
 
 			// 공중에서만 벽 붙기
 			player->UpdateActionState(EPlayerActionState::WallGrab);
+			player->UpdateMovementState(EPlayerMovementState::Idle);
 			SetPhysicsState(EPhysicsState::LeftWallClimbing);
 			bOverlapLeftWall = true;
 		}
@@ -526,6 +546,7 @@ void PhysicsComponent::OnGroundEndOverlap(CollisionComponent* other, HitResult i
 			if (player->GetActionState() == EPlayerActionState::Jump) return;
 
 			player->UpdateActionState(EPlayerActionState::None);
+			player->UpdateMovementState(EPlayerMovementState::Fall);
 			SetPhysicsState(EPhysicsState::Normal);
 		}
 		else if (normal.x == 0 && normal.y == 1) // 천장
@@ -533,6 +554,7 @@ void PhysicsComponent::OnGroundEndOverlap(CollisionComponent* other, HitResult i
 			bOverlapCeiling = false;
 
 			player->UpdateActionState(EPlayerActionState::None);
+			player->UpdateMovementState(EPlayerMovementState::Fall);
 			SetPhysicsState(EPhysicsState::Normal);
 		}
 		else if (normal.x == -1 && normal.y == 0) // 왼쪽 벽
@@ -541,6 +563,7 @@ void PhysicsComponent::OnGroundEndOverlap(CollisionComponent* other, HitResult i
 			bOverlapRightWall = false;
 
 			player->UpdateActionState(EPlayerActionState::None);
+			player->UpdateMovementState(EPlayerMovementState::Fall);
 			SetPhysicsState(EPhysicsState::Normal);
 		}
 		else if (normal.x == 1 && normal.y == 0) // 오른쪽 벽
@@ -549,6 +572,7 @@ void PhysicsComponent::OnGroundEndOverlap(CollisionComponent* other, HitResult i
 			bOverlapLeftWall = false;
 
 			player->UpdateActionState(EPlayerActionState::None);
+			player->UpdateMovementState(EPlayerMovementState::Fall);
 			SetPhysicsState(EPhysicsState::Normal);
 		}
 	}
@@ -559,6 +583,9 @@ void PhysicsComponent::StartGrappling(Vector projectilePosition)
 	grapplePoint = projectilePosition;
 	grappleLength = (owner->GetPosition() - projectilePosition).Length();
 	physicsState = EPhysicsState::Grappling;
+
+	bJustReleasedGrapple = false;
+	grappleReleaseTimer = 0.0f;
 
 	Vector velocity = owner->GetVelocity();
 	toHook = projectilePosition - owner->GetPosition();
@@ -581,30 +608,25 @@ void PhysicsComponent::StartGrappling(Vector projectilePosition)
 
 void PhysicsComponent::EndGrappling()
 {
-	if (physicsState == EPhysicsState::CeilingHang)
+	if (physicsState == EPhysicsState::CeilingHang ||
+		physicsState == EPhysicsState::RightWallClimbing ||
+		physicsState == EPhysicsState::LeftWallClimbing)
 		return;
 
-	if (physicsState == EPhysicsState::RightWallClimbing)
-		return;
+	SetPhysicsState(EPhysicsState::Normal);
+	
+	bJustReleasedGrapple = true;
+	grappleReleaseTimer = 0.0f;
 
-	if (physicsState == EPhysicsState::LeftWallClimbing)
-		return;
+	Player* player = dynamic_cast<Player*>(owner);
+	if (player && !bOnGround)
+	{
+		player->UpdateMovementState(EPlayerMovementState::Fall);
+		player->UpdateActionState(EPlayerActionState::None);
+	}
 
-	physicsState = EPhysicsState::Normal;
-
-	// 각속도를 선속도로 변환하여 자연스러운 날아가기
-	Vector currentPos = owner->GetPosition();
-	Vector toHookEnd = currentPos - grapplePoint;
-	float angle = atan2f(toHookEnd.x, toHookEnd.y);
-
-	Vector tangent(-cosf(angle), sinf(angle));
-	Vector releaseVelocity = tangent * (angularVelocity * grappleLength);
-
-	owner->SetVelocity(releaseVelocity);
-
-	// 변수 초기화
 	angularVelocity = 0.0f;
-	currentAngle = 0.0f;
+	grappleLength = 0.0f;
 }
 
 void PhysicsComponent::SetPhysicsState(EPhysicsState newState)

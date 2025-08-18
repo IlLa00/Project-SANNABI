@@ -22,7 +22,8 @@ enum class EPlayerActionState
 	GrappleReelIn, // 사슬 감기
 	Ceiling, // 천장
 	WallGrab, // 벽타기
-	Attack, // 공격
+	CharageDashStart, 
+	DashAttack, // 사슬팔 대쉬 공격
 	TakeDamage, // 피격
 	Die // 죽음
 };
@@ -57,8 +58,12 @@ public:
 	void OnGrappling(Vector projectilePosition);
 	void OffGrappling();
 
+	void Dash(Vector position);
+
 	void UpdateMovementState(EPlayerMovementState state);
 	void UpdateActionState(EPlayerActionState state);
+
+	void UpdateAnimation();
 
 	EPlayerMovementState GetMovementState() { return movementState; }
 	EPlayerActionState GetActionState() { return actionState; }

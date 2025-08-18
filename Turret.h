@@ -4,6 +4,7 @@
 #include "CollisionManager.h"
 
 class BulletPool;
+class Bullet;
 class SpriteRenderComponent;
 
 enum class ETurretState
@@ -35,6 +36,10 @@ public:
 	void SetTurretState(ETurretState newState);
 
 private:
+	void DebugRender(HDC _hdcBack);
+	const wchar_t* GetTurretStateString(ETurretState state);
+
+private:
 	SpriteRenderComponent* bodyRenderComponent;
 	SpriteRenderComponent* gunRenderComponent;
 
@@ -49,8 +54,9 @@ private:
 	Vector gunDirection = Vector(0, 0);
 
 	BulletPool* poolInstance = nullptr;
+	vector<Bullet*> currentBullets;
 
-	float bulletSpeed = 200.f;
+	float bulletSpeed = 250.f;
 	float bulletElapsedTime = 0.f;
 };
 

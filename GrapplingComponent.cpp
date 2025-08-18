@@ -76,7 +76,22 @@ void GrapplingComponent::FireGrapple(Vector direction)
 							return;
 						
 						curProjectile->SetFlying(false);
-						OnGrappling();
+
+						// 여기서 지면 천장 벽 등등일지.. 캐릭터일지!
+						if(other->GetCollisionChannel() == ECollisionChannel::WorldStatic)
+							OnGrappling();
+						else if (other->GetCollisionChannel() == ECollisionChannel::Character)
+						{
+							GrapplingHookProjectilePool::GetInstance()->ReturnProjectile(curProjectile);
+							curProjectile = nullptr; // 주의!
+							bFiring = false;
+
+							// 날아가야됨
+
+							Player* player = dynamic_cast<Player*>(owner);
+							if (player)
+								player->Dash(result.collisionPoint);
+						}
 					};
 			}
 		}

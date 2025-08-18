@@ -116,17 +116,29 @@ HitResult CollisionManager::CheckAABBCollision(CollisionComponent* comp1, Collis
 	{
 		// comp1이 comp2의 왼쪽에 있다면
 		if (rect1.left < rect2.left)
+		{
 			info.collisionNormal = Vector(-1, 0); // 오른쪽면 충돌
+			info.collisionPoint = Vector(rect1.right, (rect1.top + rect1.bottom) / 2.0f);
+		}
 		else
+		{
 			info.collisionNormal = Vector(1, 0); // 왼쪽면 충돌
+			info.collisionPoint = Vector(rect1.left, (rect1.top + rect1.bottom) / 2.0f);
+		}
 	}
 	else // Y축 겹침이 X축 겹침보다 작다면, 수평 충돌
 	{
 		// comp1이 comp2의 위에 있다면
 		if (rect1.top < rect2.top)
+		{
 			info.collisionNormal = Vector(0, -1); // 윗면 충돌
+			info.collisionPoint = Vector((rect1.left + rect1.right) / 2.0f, rect1.bottom); // comp1의 아래 중앙
+		}
 		else
+		{
 			info.collisionNormal = Vector(0, 1); // 아랫면 충돌
+			info.collisionPoint = Vector((rect1.left + rect1.right) / 2.0f, rect1.top); // comp1의 위 중앙
+		}
 	}
 
 	return info;

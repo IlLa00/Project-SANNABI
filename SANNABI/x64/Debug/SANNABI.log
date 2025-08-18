@@ -1,4 +1,8 @@
-﻿  GameScene.cpp
-  Turret.cpp
-  Generating Code...
-  SANNABI.vcxproj -> C:\KHJ\SVN\Project-SANNABI\x64\Debug\SANNABI.exe
+﻿  CollisionManager.cpp
+D:\KHJ\Project-SANNABI\CollisionManager.cpp(111,17): warning C4244: 'initializing': conversion from 'LONG' to 'float', possible loss of data
+D:\KHJ\Project-SANNABI\CollisionManager.cpp(112,17): warning C4244: 'initializing': conversion from 'LONG' to 'float', possible loss of data
+D:\KHJ\Project-SANNABI\CollisionManager.cpp(121,38): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
+D:\KHJ\Project-SANNABI\CollisionManager.cpp(126,38): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
+D:\KHJ\Project-SANNABI\CollisionManager.cpp(135,73): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
+D:\KHJ\Project-SANNABI\CollisionManager.cpp(140,73): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
+  SANNABI.vcxproj -> D:\KHJ\Project-SANNABI\x64\Debug\SANNABI.exe

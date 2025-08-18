@@ -4,6 +4,7 @@
 #include "CollisionComponent.h"
 #include "BulletPool.h"
 #include "Bullet.h"
+#include "CameraManager.h"
 
 void Turret::Init()
 {
@@ -28,7 +29,10 @@ void Turret::Init()
 
 	poolInstance = BulletPool::GetInstance();
 	if (poolInstance)
+	{
 		poolInstance->CreatePool(20);
+		currentBullets.reserve(20);
+	}
 }
 
 void Turret::Update(float deltaTime)
@@ -83,11 +87,56 @@ void Turret::Update(float deltaTime)
 		UpdateShooting(deltaTime);
 		break;
 	}
+
+	for (auto it = currentBullets.begin(); it != currentBullets.end();)
+	{
+		Bullet* bullet = *it;
+		if (!bullet)
+		{
+			it = currentBullets.erase(it);
+			continue;
+		}
+
+		bool shouldRemove = false;
+
+		// 화면 밖 체크
+		if (bullet->GetPosition().x < (CameraManager::GetInstance()->GetCameraPos().x - GWinSizeX / 2) - 200 ||
+			bullet->GetPosition().x >(CameraManager::GetInstance()->GetCameraPos().x + GWinSizeX / 2) + 200 ||
+			bullet->GetPosition().y < (CameraManager::GetInstance()->GetCameraPos().y - GWinSizeY / 2) - 200 ||
+			bullet->GetPosition().y >(CameraManager::GetInstance()->GetCameraPos().y + GWinSizeY / 2) + 200)
+		{
+			shouldRemove = true;
+		}
+		else if (!bullet->IsActive())
+		{
+			shouldRemove = true;
+		}
+
+		if (shouldRemove)
+		{
+			poolInstance->ReturnProjectile(bullet);
+			it = currentBullets.erase(it); 
+		}
+		else
+		{
+			bullet->Update(deltaTime);
+			++it;
+		}
+	}
 }
 
 void Turret::Render(HDC _hdcBack)
 {
 	Super::Render(_hdcBack);
+
+	for (auto& bullet : currentBullets)
+	{
+		if (!bullet || !bullet->IsActive()) continue;
+
+		bullet->Render(_hdcBack);
+	}
+
+	DebugRender(_hdcBack);
 }
 
 void Turret::Destroy()
@@ -106,6 +155,7 @@ void Turret::UpdateAiming(float deltaTime)
 	bShooting = false;
 
 	gunDirection = target->GetPosition() - position;
+	gunDirection.Normalize();
 }
 
 void Turret::UpdateShooting(float deltaTime)
@@ -120,8 +170,11 @@ void Turret::UpdateShooting(float deltaTime)
 	{
 		Bullet* curProjectile = poolInstance->GetProjectile(GetPosition(), gunDirection, bulletSpeed);
 		if (curProjectile)
+		{
+			currentBullets.push_back(curProjectile);
 			curProjectile->SetOwner(owner);
 
+		}
 		bulletElapsedTime = 0.f;
 	}
 }
@@ -172,3 +225,28 @@ void Turret::SetTurretState(ETurretState newState)
 		break;
 	}
 }
+
+void Turret::DebugRender(HDC _hdcBack)
+{
+	wstring stateStr = GetTurretStateString(turretState);
+
+	wstring outputStr = L"TurretState(" + stateStr + L")";
+	::TextOut(_hdcBack, 25, 400, outputStr.c_str(), static_cast<int32>(outputStr.size()));
+}
+
+const wchar_t* Turret::GetTurretStateString(ETurretState state)
+{
+	switch (state)
+	{
+	case ETurretState::Idle:
+		return L"Idle";
+	case ETurretState::Aiming:
+		return L"Aiming";
+	case ETurretState::Shooting:
+		return L"Shooting";
+	default:
+		return L"Unknown";
+	}
+}
+
+

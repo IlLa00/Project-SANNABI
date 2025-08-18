@@ -39,7 +39,7 @@ void Bullet::Activate(Vector _position, Vector _direction, float _speed)
 
 	direction = _direction;
 	speed = _speed;
-	position = _position;
+	SetPosition(_position);
 }
 
 void Bullet::Deactivate()
@@ -48,5 +48,5 @@ void Bullet::Deactivate()
 
 	direction = Vector(0, 0);
 	speed = 0.f;
-	position = Vector(0, 0);
+	SetPosition(Vector(0, 0));
 }

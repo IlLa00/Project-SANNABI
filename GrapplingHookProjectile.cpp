@@ -4,7 +4,6 @@
 #include "GrapplingHookProjectilePool.h"
 #include "CollisionManager.h"
 
-
 void GrapplingHookProjectile::Init()
 {
 	Super::Init();
