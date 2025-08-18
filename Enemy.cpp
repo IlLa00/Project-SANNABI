@@ -58,6 +58,13 @@ void Enemy::Destroy()
 	Super::Destroy();
 }
 
+void Enemy::TakeDamage()
+{
+	Super::TakeDamage();
+
+
+}
+
 void Enemy::OnCharacterBeginOverlap(CollisionComponent* other, HitResult info)
 {
 	// 상태바꾸기?

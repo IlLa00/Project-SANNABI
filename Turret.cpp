@@ -144,6 +144,14 @@ void Turret::Destroy()
 	Super::Destroy();
 }
 
+void Turret::TakeDamage()
+{
+	Super::TakeDamage();
+
+	// 애니메이션 재생
+	// 폭발
+}
+
 void Turret::UpdateIdle(float deltaTime)
 {
 	// 여긴 애니메이션이 필요없을듯.

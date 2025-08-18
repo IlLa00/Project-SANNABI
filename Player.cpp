@@ -247,13 +247,10 @@ void Player::OffGrappling()
 		UpdateActionState(EPlayerActionState::Ceiling);
 	else if (!physicsComponent->IsOnGround()) // 공중에 있으면 Fall 상태
 	{
-		// Fall 상태로 변경하지만 물리 컴포넌트의 속도는 건드리지 않음
 		UpdateMovementState(EPlayerMovementState::Fall);
 		UpdateActionState(EPlayerActionState::None);
-
-		// 중요: 여기서 physicsComponent의 어떤 메서드도 호출하지 않음
 	}
-	else // 지면에 있으면 Idle 상태
+	else
 	{
 		UpdateMovementState(EPlayerMovementState::Idle);
 		UpdateActionState(EPlayerActionState::None);
@@ -264,19 +261,35 @@ void Player::Dash(Vector position)
 {
 	// 애니메이션
 
+	UpdateActionState(EPlayerActionState::DashAttack);
 
 	physicsComponent->SetGrapplePoint(position);
 	physicsComponent->ExtendChain();
 }
 
+void Player::Attack()
+{
+	if (!target) return;
+
+	
+}
+
 void Player::OnMouseUp()
 {
 	// 그래플링 종료 인데 조건제대로 따져야할듯
-
-	grapplingComponent->OffGrappling();
-	OffGrappling();
-	physicsComponent->EndGrappling();
-
+	if (actionState == EPlayerActionState::DashAttack)
+	{
+		// 여기 들어오니까 부수기..
+		Attack();
+		UpdateActionState(EPlayerActionState::None);
+		UpdateMovementState(EPlayerMovementState::Idle);
+	}
+	else
+	{
+		grapplingComponent->OffGrappling();
+		OffGrappling();
+		physicsComponent->EndGrappling();
+	}
 }
 
 void Player::OnShiftDown()

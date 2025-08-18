@@ -34,6 +34,11 @@ void Actor::Destroy()
 	}
 }
 
+void Actor::TakeDamage()
+{
+
+}
+
 void Actor::AddComponent(Component* component)
 {
 	if(component)

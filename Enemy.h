@@ -15,6 +15,8 @@ public:
 	virtual void Render(HDC _hdcBack) override;
 	virtual void Destroy() override;
 
+	virtual void TakeDamage() override;
+
 	virtual void OnCharacterBeginOverlap(CollisionComponent* other, HitResult info);
 	virtual void OnCharacterEndOverlap(CollisionComponent* other, HitResult info);
 	virtual void OnPerceiveCharacter(CollisionComponent* other, HitResult info);

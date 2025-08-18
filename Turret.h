@@ -24,6 +24,8 @@ public:
 	void Render(HDC _hdcBack) override;
 	void Destroy() override;
 
+	void TakeDamage() override;
+
 	void OnCharacterBeginOverlap(CollisionComponent* other, HitResult info) override;
 	void OnCharacterEndOverlap(CollisionComponent* other, HitResult info) override;
 	void OnPerceiveCharacter(CollisionComponent* other, HitResult info) override;

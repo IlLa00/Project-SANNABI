@@ -86,11 +86,12 @@ void GrapplingComponent::FireGrapple(Vector direction)
 							curProjectile = nullptr; // 주의!
 							bFiring = false;
 
-							// 날아가야됨
-
 							Player* player = dynamic_cast<Player*>(owner);
 							if (player)
+							{
+								player->SetTarget(other->GetOwner());
 								player->Dash(result.collisionPoint);
+							}
 						}
 					};
 			}
@@ -107,6 +108,8 @@ void GrapplingComponent::OnGrappling()
 
 void GrapplingComponent::OffGrappling()
 {
+	if (!curProjectile) return;
+
 	GrapplingHookProjectilePool::GetInstance()->ReturnProjectile(curProjectile);
 	curProjectile = nullptr; // 주의!
 	bFiring = false;

@@ -10,6 +10,8 @@ public:
 	virtual void Render(HDC _hdcBack);
 	virtual void Destroy();
 
+	virtual void TakeDamage();
+
 	void AddComponent(Component* component);
 
 	template<typename T>

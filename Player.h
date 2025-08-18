@@ -59,9 +59,13 @@ public:
 	void OffGrappling();
 
 	void Dash(Vector position);
+	void Attack();
 
 	void UpdateMovementState(EPlayerMovementState state);
 	void UpdateActionState(EPlayerActionState state);
+
+	void SetTarget(Actor* newTarget) { target = newTarget; }
+	Actor* GetTarget() { return target; }
 
 	void UpdateAnimation();
 
@@ -86,6 +90,8 @@ private:
 
 	EPlayerMovementState movementState;
 	EPlayerActionState actionState;
+
+	Actor* target = nullptr;
 
 	bool showAimingLine = true;  
 	HPEN chainPen;               
