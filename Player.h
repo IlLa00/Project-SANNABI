@@ -17,14 +17,24 @@ enum class EPlayerActionState
 {
 	None,
 	Jump, // 위방향 공중
+
 	GrappleFire, // 사슬 발사
 	GrappleSwing, // 사슬 스윙
 	GrappleReelIn, // 사슬 감기
+	
 	Ceiling, // 천장
 	WallGrab, // 벽타기
-	CharageDashStart, 
+
+	CharageDashStart, // 차지 공격 준비
+	ChargeReady, // 차지 완
+	ChargeAttack, // 차지 공격
+
 	DashAttack, // 사슬팔 대쉬 공격
+
+	AirDash,
+
 	TakeDamage, // 피격
+
 	Die // 죽음
 };
 
@@ -44,6 +54,10 @@ public:
 	void Render(HDC _hdcBack) override;
 	void Destroy() override;
 
+	void OnCharacterBeginOverlap(CollisionComponent* other, HitResult info) override;
+
+	void SetDelayedFunction(void (Player::* func1)(), void (Player::* func2)(), float delay1 = 1.0f, float delay2 = 1.0f);
+
 	void NoneInput();
 	void OnPressA();
 	void OnPressD();
@@ -58,7 +72,8 @@ public:
 	void OnGrappling(Vector projectilePosition);
 	void OffGrappling();
 
-	void Dash(Vector position);
+	void Dash();
+	void EndDash();
 	void Attack();
 
 	void UpdateMovementState(EPlayerMovementState state);
@@ -70,9 +85,17 @@ public:
 	void UpdateAnimation();
 
 	EPlayerMovementState GetMovementState() { return movementState; }
+
+	void SetActionState(EPlayerActionState newState) { actionState = newState; }
 	EPlayerActionState GetActionState() { return actionState; }
 
+	SpriteRenderComponent* GetArmRenderComponent() { return armRenderComponent; }
+
+
 private:
+	void OnDelayedControlRecovery();
+	void OnDelayedCollisionRecovery();
+
 	const wchar_t* GetMovementStateString(EPlayerMovementState state);
 	const wchar_t* GetActionStateString(EPlayerActionState state);
 	const wchar_t* GetPhysicsStateString(EPhysicsState state);
@@ -92,8 +115,23 @@ private:
 	EPlayerActionState actionState;
 
 	Actor* target = nullptr;
+	vector<CollisionComponent*> detectComponents;
+
+	float chargingTimer = 0.f;
+	float chargeTime = 1.f;
+	float maxChargeTime = 5.f;
+	bool bHasDetected = false;
+
+	bool bAttacking = false;
+	bool bDamaging = false;
 
 	bool showAimingLine = true;  
-	HPEN chainPen;               
+	HPEN chainPen;
+
+	float delayTimer1 = 0.0f;
+	float delayTimer2 = 0.0f;
+	bool bHasDelayedFunction = false;
+	void (Player::* delayedFunctionPtr1)() = nullptr; 
+	void (Player::* delayedFunctionPtr2)() = nullptr;  
 };
 

@@ -19,7 +19,7 @@ public:
 	bool IsActive() const { return bActive; }
 
 private:
-	CollisionComponent* collsionComponent = nullptr;
+	CollisionComponent* collisionComponent = nullptr;
 
 	Vector direction;
 	float speed;

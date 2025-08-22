@@ -40,7 +40,7 @@ private:
 	InputManager() {}
 
 public:
-	void Init(HWND hwnd, HWND subwnd);
+	void Init(HWND hwnd, HWND subwnd, HWND subwnd2);
 	void Update();
 
 	bool GetButtonPressed(KeyType key) { return GetState(key) == KeyState::Press; }
@@ -51,15 +51,18 @@ public:
 	
 	POINT GetMousePos() { return _mousePos; }
 	POINT GetSubMousePos() { return _subMousePos; }
+	POINT GetSub2MousePos() { return _sub2MousePos; }
 private:
 	KeyState GetState(KeyType key) { return _states[static_cast<uint8>(key)]; }
 
 private:
 	HWND _hwnd = 0;	
 	HWND _subwnd = 0;
+	HWND _subwnd2 = 0;
 	vector<KeyState> _states;
 	POINT _mousePos = {};
 	POINT _subMousePos = {};
+	POINT _sub2MousePos = {};
 	int _mouseWheelDelta = 0;
 };
 

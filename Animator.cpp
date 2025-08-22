@@ -4,11 +4,15 @@
 #include "SpriteAnimation.h"
 #include "TextureResource.h"
 #include "Actor.h"
+#include "Component.h"
 
-void Animator::Init(Actor* _owner)
+void Animator::Init(Actor* _owner, Component* _ownerComponent)
 {
 	if (_owner)
+	{
 		owner = _owner;
+		ownerComponent = _ownerComponent;
+	}
 }
 
 void Animator::Update()
@@ -43,39 +47,39 @@ void Animator::Render(HDC hdc, float scale)
 {
 	if (!currentAnimation || !owner)
 		return;
-
 	TextureResource* spriteSheet = currentAnimation->GetSpriteSheet();
 	if (!spriteSheet)
 		return;
 
 	RECT frameRect = GetCurrentFrameRect();
-	Vector pos = owner->GetPosition();
+	Vector pos = ownerComponent->GetPosition();
+
+	float rotation = ownerComponent->GetRotation();
 
 	int originalWidth = frameRect.right - frameRect.left;
 	int originalHeight = frameRect.bottom - frameRect.top;
-
 	int scaledWidth = static_cast<int>(originalWidth * scale);
 	int scaledHeight = static_cast<int>(originalHeight * scale);
 
-	Vector finalRenderPos = pos;
-	int renderWidth = scaledWidth;
-
-	if (bflip)
+	if (useRotation && rotationAngle != 0.0f)
 	{
-		renderWidth = -scaledWidth;
-		// 반전 시 위치를 수동으로 보정하는 이 코드를 제거합니다.
-		// finalRenderPos.x += scaledWidth; 
+		spriteSheet->RenderRotated(hdc,
+			frameRect.left, frameRect.top,
+			originalWidth, originalHeight,
+			pos, scaledWidth, scaledHeight,
+			rotationAngle, rotationPivot, bflip);
 	}
+	else
+	{
+		int renderWidth = scaledWidth;
+		if (bflip)
+			renderWidth = -scaledWidth;
 
-	spriteSheet->Render(hdc,
-		frameRect.left,
-		frameRect.top,
-		originalWidth,
-		originalHeight,
-		finalRenderPos,
-		renderWidth,
-		scaledHeight
-	);
+		spriteSheet->Render(hdc,
+			frameRect.left, frameRect.top,
+			originalWidth, originalHeight,
+			pos, renderWidth, scaledHeight);
+	}
 }
 
 void  Animator::Destroy()
@@ -145,4 +149,39 @@ TextureResource* Animator::GetCurrentSpriteSheet()
 bool Animator::IsFinished() const
 {
 	return bPlaying;
+}
+
+void Animator::SetRotationInfo(bool bUse, float angle, Vector pivot)
+{
+	useRotation = bUse;
+	rotationAngle = angle;
+	rotationPivot = pivot;
+}
+
+void Animator::CalculateRotatePoints(POINT destPoint[3], int width, int height, Vector centerPos, float angle, Vector pivot)
+{
+	float cosA = cos(angle);
+	float sinA = sin(angle);
+
+	float pivotOffsetX = width * (pivot.x - 0.5f);
+	float pivotOffsetY = height * (pivot.y - 0.5f);
+
+	float halfWidth = width * 0.5f;
+	float halfHeight = height * 0.5f;
+
+	float x1 = -halfWidth - pivotOffsetX;
+	float y1 = -halfHeight - pivotOffsetY;
+	float x2 = halfWidth - pivotOffsetX;
+	float y2 = -halfHeight - pivotOffsetY;
+	float x3 = -halfWidth - pivotOffsetX;
+	float y3 = halfHeight - pivotOffsetY;
+
+	destPoint[0].x = centerPos.x + (x1 * cosA - y1 * sinA);
+	destPoint[0].y = centerPos.y + (x1 * sinA + y1 * cosA);
+
+	destPoint[1].x = centerPos.x + (x2 * cosA - y2 * sinA);
+	destPoint[1].y = centerPos.y + (x2 * sinA + y2 * cosA);
+
+	destPoint[2].x = centerPos.x + (x3 * cosA - y3 * sinA);
+	destPoint[2].y = centerPos.y + (x3 * sinA + y3 * cosA);
 }

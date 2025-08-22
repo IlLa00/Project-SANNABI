@@ -28,14 +28,6 @@ void GrapplingComponent::Update(float deltaTime)
 
 	if (!bFiring) return;
 
-	// 화면 밖으로 나가면 풀에게 돌려주기
-	if (projectilePos.x < (CameraManager::GetInstance()->GetCameraPos().x - GWinSizeX / 2) - 200 || // 200을 한이유는 화면 끝자락과 충돌체가 맞닿아있을때, 어느정도 여유?를 준 것
-		projectilePos.x > (CameraManager::GetInstance()->GetCameraPos().x + GWinSizeX / 2) - 200||
-		projectilePos.y < (CameraManager::GetInstance()->GetCameraPos().y - GWinSizeY / 2) - 200||
-		projectilePos.y > (CameraManager::GetInstance()->GetCameraPos().y + GWinSizeY / 2) - 200
-		)
-		OffGrappling();
-
 	// 사슬팔의 최대길이보다 길면 돌려주기
 	Vector player_to_projectile = projectilePos - owner->GetPosition();
 	if (player_to_projectile.Length() > fireChainLength)
@@ -63,6 +55,7 @@ void GrapplingComponent::FireGrapple(Vector direction)
 		if (curProjectile)
 		{
 			bFiring = true;
+			curProjectile->SetActive(true);
 			curProjectile->SetOwner(owner);
 
 			CollisionComponent* comp = curProjectile->GetComponent<CollisionComponent>();
@@ -78,20 +71,22 @@ void GrapplingComponent::FireGrapple(Vector direction)
 						curProjectile->SetFlying(false);
 
 						// 여기서 지면 천장 벽 등등일지.. 캐릭터일지!
-						if(other->GetCollisionChannel() == ECollisionChannel::WorldStatic)
+						if(other->GetCollisionChannel() == ECollisionChannel::WorldStatic ||
+							other->GetCollisionChannel() == ECollisionChannel::WorldDynamic)
 							OnGrappling();
 						else if (other->GetCollisionChannel() == ECollisionChannel::Character)
 						{
-							GrapplingHookProjectilePool::GetInstance()->ReturnProjectile(curProjectile);
-							curProjectile = nullptr; // 주의!
 							bFiring = false;
 
 							Player* player = dynamic_cast<Player*>(owner);
 							if (player)
 							{
 								player->SetTarget(other->GetOwner());
-								player->Dash(result.collisionPoint);
+								player->Dash();
 							}
+
+							GrapplingHookProjectilePool::GetInstance()->ReturnProjectile(curProjectile);
+							curProjectile = nullptr; // 주의!
 						}
 					};
 			}

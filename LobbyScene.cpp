@@ -1,8 +1,10 @@
 ﻿#include "pch.h"
 #include "LobbyScene.h"
+#include "Button.h"
 #include "ResourceManager.h"
 #include "TextureResource.h"
 #include "TimerManager.h"
+#include "SceneManager.h"
 
 void LobbyScene::Init()
 {
@@ -20,9 +22,18 @@ void LobbyScene::Init()
     
     logo = new TextureResource();
     logo->Load("Spr_Logo_Kor_");
-    
 
 	currentBG = BG1;
+
+    playButton = new Button();
+    playButton->Init(Vector(1675,700), L"게임 시작");
+
+    editorButton = new Button();
+    editorButton->Init(Vector(1675, 800), L"에디터 열기");
+        ;
+    exitButton = new Button();
+    exitButton->Init(Vector(1675, 900), L"게임 종료");
+
 }
 
 void LobbyScene::Update(float deltaTime)
@@ -44,9 +55,32 @@ void LobbyScene::Update(float deltaTime)
         else
             currentBG = BG3;
     }
+
+    if (totalTime >= 3.f)
+    {
+        if (!playButton->GetActive())
+            playButton->SetActive(true);
+
+        if (!editorButton->GetActive())
+            editorButton->SetActive(true);
+
+        if (!exitButton->GetActive())
+            exitButton->SetActive(true);
+    }
+
+    playButton->Update();
+    editorButton->Update();
+    exitButton->Update();
+
+    if (playButton->IsClicked())
+        SceneManager::GetInstance()->ChangeScene("GameScene");
+    else if (editorButton->IsClicked())
+        SceneManager::GetInstance()->ChangeScene("EditorScene");
+    else if (exitButton->IsClicked())
+        ::PostQuitMessage(0);
 }
 
-void  LobbyScene::Render(HDC _hdcBack)
+void LobbyScene::Render(HDC _hdcBack)
 {
 	currentBG->Render(_hdcBack, Vector(0, 0));
 
@@ -54,6 +88,10 @@ void  LobbyScene::Render(HDC _hdcBack)
     {
         UIBG->Render(_hdcBack, Vector(0, 0));
         logo->Render(_hdcBack, Vector(500, -280));
+        
+        playButton->Render(_hdcBack);
+        editorButton->Render(_hdcBack);
+        exitButton->Render(_hdcBack);
     }
 }
 
@@ -62,4 +100,8 @@ void  LobbyScene::Destroy()
 	SAFE_DELETE(BG1);
 	SAFE_DELETE(BG2);
 	SAFE_DELETE(BG3);
+
+    SAFE_DELETE(playButton);
+    SAFE_DELETE(editorButton);
+    SAFE_DELETE(exitButton);
 }

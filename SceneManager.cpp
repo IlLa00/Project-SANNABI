@@ -4,18 +4,20 @@
 #include "LobbyScene.h"
 #include "EditorScene.h"
 
-void SceneManager::Init(HWND hwnd, HWND subWnd)
+void SceneManager::Init(HWND hwnd, HWND subWnd, HWND subWnd2)
 {
-	GameScene* gameScene = new GameScene;
-	Scenes.push_back(gameScene);
+	gameScene = new GameScene;
+	gameScene->SetHDC(hwnd);
+	Scenes.insert({ "GameScene",gameScene });
 
-	LobbyScene* lobbyScene = new LobbyScene;
-	Scenes.push_back(lobbyScene);
+	lobbyScene = new LobbyScene;
+	Scenes.insert({ "LobbyScene",lobbyScene });
 
-	EditorScene* editorScene = new EditorScene;
+	editorScene = new EditorScene;
 	editorScene->SetMainWin(hwnd);
 	editorScene->SetSubWin(subWnd);
-	Scenes.push_back(editorScene);
+	editorScene->SetSub2Win(subWnd2);
+	Scenes.insert({ "EditorScene",editorScene });
 	
 	currentScene = gameScene;
 
@@ -39,6 +41,22 @@ void SceneManager::Render(HDC _hdcBack)
 void SceneManager::Destroy()
 {
 	for (auto& scene : Scenes)
-		scene->Destroy();
+		scene.second->Destroy();
 
+	Scenes.clear();
+}
+
+void SceneManager::ChangeScene(string sceneName)
+{
+	auto it = Scenes.find(sceneName);
+
+	if (it != Scenes.end())
+	{
+		if (currentScene)
+			currentScene->Destroy();
+
+		currentScene = it->second;
+		currentScene->Init();
+	}
+		
 }

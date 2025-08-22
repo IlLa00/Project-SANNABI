@@ -128,8 +128,10 @@
   <ItemGroup>
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Animator.h" />
+    <ClInclude Include="BuildingEditor.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="BulletPool.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="CollisionManager.h" />
@@ -146,6 +148,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LobbyScene.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="ResourceManager.h" />
@@ -153,7 +156,6 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SpriteAnimation.h" />
-    <ClInclude Include="TestGround.h" />
     <ClInclude Include="TextureResource.h" />
     <ClInclude Include="TileCollisionAdapter.h" />
     <ClInclude Include="TileEditor.h" />
@@ -170,8 +172,10 @@
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Animator.cpp" />
+    <ClCompile Include="BuildingEditor.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="BulletPool.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="CollisionComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
@@ -189,6 +193,7 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -196,7 +201,6 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="SpriteAnimation.cpp" />
-    <ClCompile Include="TestGround.cpp" />
     <ClCompile Include="TextureResource.cpp" />
     <ClCompile Include="TileCollisionAdapter.cpp" />
     <ClCompile Include="TileEditor.cpp" />

@@ -41,9 +41,45 @@ void TextureResource::Load(string fileName)
 	}
 }
 
-void TextureResource::Render(HDC hdc, Vector pos)
+void TextureResource::Load(wstring fileName)
 {
-	Vector screenPos = CameraManager::GetInstance()->ConvertScreenPos(pos);
+	HDC hdc = ::GetDC(Engine::GetInstance()->GetHwnd());
+
+	_textureHdc = ::CreateCompatibleDC(hdc);
+	_bitmap = (HBITMAP)::LoadImageW(
+		nullptr,
+		fileName.c_str(),
+		IMAGE_BITMAP,
+		0,
+		0,
+		LR_LOADFROMFILE | LR_CREATEDIBSECTION
+	);
+
+	if (_bitmap == 0)
+	{
+		::MessageBox(Engine::GetInstance()->GetHwnd(), fileName.c_str(), L"Invalid Texture Load", MB_OK);
+		// 여기에 디버깅을 위한 출력 추가
+		OutputDebugStringW(L"Failed to load: ");
+		OutputDebugStringW(fileName.c_str());
+		OutputDebugStringW(L"\n");
+		return;
+	}
+
+	_transparent = RGB(255, 255, 255);
+
+	HBITMAP prev = (HBITMAP)::SelectObject(_textureHdc, _bitmap);
+	::DeleteObject(prev);
+
+	BITMAP bit = {};
+	::GetObject(_bitmap, sizeof(BITMAP), &bit);
+
+	_sizeX = bit.bmWidth;
+	_sizeY = bit.bmHeight;
+}
+
+void TextureResource::Render(HDC hdc, Vector pos, bool applyCamera)
+{
+	Vector screenPos = applyCamera ? CameraManager::GetInstance()->ConvertScreenPos(pos) : pos;
 
 	if (_transparent == -1)
 	{
@@ -124,4 +160,72 @@ void TextureResource::Render(HDC hdc, int srcX, int srcY, int srcWidth, int srcH
 	::SelectObject(tempHdc, oldBitmap);
 	::DeleteObject(tempBitmap);
 	::DeleteDC(tempHdc);
+}
+
+void TextureResource::RenderRotated(HDC hdc, int srcX, int srcY, int srcWidth, int srcHeight, Vector destPos, int destWidth, int destHeight, float rotationAngle, Vector rotationPivot, bool flip)
+{
+	COLORREF transparent = RGB(255, 255, 255);
+	Vector screenPos = CameraManager::GetInstance()->ConvertScreenPos(destPos);
+
+	int finalSrcX = srcX;
+	int finalSrcWidth = srcWidth;
+	int finalDestWidth = abs(destWidth);
+
+	if (flip || destWidth < 0)
+	{
+		finalSrcX = srcX + srcWidth;
+		finalSrcWidth = -srcWidth;
+	}
+
+	// 임시 회전된 이미지를 만들기 위한 HDC
+	HDC rotatedHdc = ::CreateCompatibleDC(hdc);
+
+	// 회전 후 필요한 크기 계산
+	float diagonal = sqrt(finalDestWidth * finalDestWidth + destHeight * destHeight);
+	int rotatedSize = (int)ceil(diagonal);
+
+	HBITMAP rotatedBitmap = ::CreateCompatibleBitmap(hdc, rotatedSize, rotatedSize);
+	HBITMAP oldRotatedBitmap = (HBITMAP)::SelectObject(rotatedHdc, rotatedBitmap);
+
+	// 배경을 투명색으로 채우기
+	HBRUSH transparentBrush = ::CreateSolidBrush(transparent);
+	RECT bgRect = { 0, 0, rotatedSize, rotatedSize };
+	::FillRect(rotatedHdc, &bgRect, transparentBrush);
+	::DeleteObject(transparentBrush);
+
+	// 회전 변환 매트릭스 설정
+	int oldMode = ::SetGraphicsMode(rotatedHdc, GM_ADVANCED);
+
+	XFORM xform;
+	float cosA = cos(rotationAngle);
+	float sinA = sin(rotationAngle);
+
+	xform.eM11 = cosA;
+	xform.eM12 = sinA;
+	xform.eM21 = -sinA;
+	xform.eM22 = cosA;
+	xform.eDx = rotatedSize / 2.0f;
+	xform.eDy = rotatedSize / 2.0f;
+
+	::SetWorldTransform(rotatedHdc, &xform);
+
+	// 원본 이미지를 회전된 HDC에 그리기
+	::StretchBlt(rotatedHdc, -finalDestWidth / 2, -destHeight / 2, finalDestWidth, destHeight,
+		_textureHdc, finalSrcX, srcY, finalSrcWidth, srcHeight, SRCCOPY);
+
+	// 변환 리셋
+	::ModifyWorldTransform(rotatedHdc, nullptr, MWT_IDENTITY);
+	::SetGraphicsMode(rotatedHdc, oldMode);
+
+	// TransparentBlt로 투명화 처리하며 최종 출력
+	::TransparentBlt(hdc,
+		screenPos.x - rotatedSize / 2, screenPos.y - rotatedSize / 2,
+		rotatedSize, rotatedSize,
+		rotatedHdc, 0, 0, rotatedSize, rotatedSize,
+		transparent);
+
+	// 리소스 정리
+	::SelectObject(rotatedHdc, oldRotatedBitmap);
+	::DeleteObject(rotatedBitmap);
+	::DeleteDC(rotatedHdc);
 }

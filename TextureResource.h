@@ -4,10 +4,14 @@ class TextureResource
 {
 public:
 	void Load(string fileName);
+	void Load(wstring fileName);
 
 	// 해당 리소스가 그려지는 부분
-	void Render(HDC hdc, Vector pos);
+	void Render(HDC hdc, Vector pos, bool applyCamera = true);
 	void Render(HDC hdc, int srcX, int srcY, int srcWidth, int srcHeight, Vector destPos, int destWidth, int destHeight);
+	void RenderRotated(HDC hdc, int srcX, int srcY, int srcWidth, int srcHeight,
+		Vector destPos, int destWidth, int destHeight,
+		float rotationAngle, Vector rotationPivot, bool flip = false);
 
 	int32 GetSizeX() { return _sizeX; }
 	int32 GetSizeY() { return _sizeY; }

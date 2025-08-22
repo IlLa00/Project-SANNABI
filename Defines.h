@@ -174,7 +174,9 @@ enum class ECollisionChannel
 {
 	WorldStatic, // 정적인 지형
 	WorldDynamic, // 동적인 플랫폼
+	DeathTile,
 	Character, // 캐릭터
+	CharacterInvincible, // 캐릭터 무적
 	Projectile, // 발사체
 	Perception, // 감지영역
 
@@ -189,3 +191,11 @@ const int GridHeight = 40;
 
 const int TileMapWidth = 4;
 const int TileMapHeight = 4;
+
+const int BuildingMapWidth = 4;
+const int BuildingMapHeight = 4;
+
+constexpr const wchar_t* fontPath = L"C:\\KHJ\\SVN\\Project-SANNABI\\Font";
+constexpr const wchar_t* fontName = L"NotoSansTC-Regular";
+
+extern HFONT hFont;

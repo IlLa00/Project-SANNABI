@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "GrapplingHookProjectile.h"
 #include "CollisionComponent.h"
+#include "TextureResource.h"
 #include "GrapplingHookProjectilePool.h"
 #include "CollisionManager.h"
 
@@ -10,10 +11,13 @@ void GrapplingHookProjectile::Init()
 
 	collsionComponent = new CollisionComponent;
 	collsionComponent->Init(this);
+	collsionComponent->SetActive(false);
 	collsionComponent->SetCollisionSize(5, 5);
 	collsionComponent->SetCollisionChannel(ECollisionChannel::Projectile);
 	AddComponent(collsionComponent);
 
+	texture = new TextureResource();
+	texture->Load("SNBArm");
 }
 
 void GrapplingHookProjectile::Update(float deltaTime)
@@ -33,6 +37,8 @@ void GrapplingHookProjectile::Render(HDC _hdcBack)
 	Super::Render(_hdcBack);
 
 	if (!bActive) return;
+
+	texture->Render(_hdcBack, GetPosition());
 }
 
 void GrapplingHookProjectile::Destroy()
@@ -43,6 +49,8 @@ void GrapplingHookProjectile::Destroy()
 void GrapplingHookProjectile::Activate(Vector _position, Vector _direction, float _speed)
 {
 	bActive = true;
+
+	collsionComponent->SetActive(true);
 
 	direction = _direction;
 	speed = _speed;
@@ -57,7 +65,7 @@ void GrapplingHookProjectile::Deactivate()
 
 	direction = Vector(0, 0);
 	speed = 0.f;
-	position = Vector(0, 0);
+	position = Vector(-100, -100);
 
 	SetFlying(false);
 

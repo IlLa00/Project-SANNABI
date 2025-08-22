@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "Defines.h"
 
+HFONT hFont = nullptr;
+
 float RadianToDegree(float radian)
 {
 	float degree = radian * (180.0f / std::numbers::pi_v<float>);

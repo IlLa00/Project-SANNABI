@@ -3,6 +3,7 @@
 #include "Actor.h"
 
 class CollisionComponent;
+class TextureResource;
 
 class GrapplingHookProjectile : public Actor
 {
@@ -24,6 +25,7 @@ public:
 
 private:
 	CollisionComponent* collsionComponent = nullptr;
+	TextureResource* texture = nullptr;
 
 	Vector direction;
 	float speed;

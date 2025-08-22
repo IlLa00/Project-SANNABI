@@ -1,0 +1,54 @@
+﻿#include "pch.h"
+#include "Platform.h"
+#include "CollisionComponent.h"
+#include "TextureResource.h"
+
+void Platform::Init()
+{
+	Super::Init();
+
+	position = Vector(2500, 650);
+
+	texture = new TextureResource();
+	texture->Load("Platform");
+	
+	collisionComponent = new CollisionComponent;
+	collisionComponent->Init(this);
+	collisionComponent->SetCollisionSize(texture->GetSizeX() / 2, texture->GetSizeY() / 2);
+	collisionComponent->SetCollisionChannel(ECollisionChannel::WorldDynamic);
+	collisionComponent->OnComponentBeginOverlap = [this](CollisionComponent* other, HitResult info)
+		{
+			OnBeginOverlap(other, info);
+		};
+	AddComponent(collisionComponent);
+}
+
+void Platform::Update(float deltaTime)
+{
+	Super::Update(deltaTime);
+
+	if (bFalling)
+	{
+		Vector movement = Vector(0, fallingSpeed * deltaTime);
+		position = position + movement;
+	}
+}
+
+void Platform::Render(HDC _hdcBack)
+{
+	Super::Render(_hdcBack);
+
+	texture->Render(_hdcBack, position);
+}
+
+void Platform::OnBeginOverlap(CollisionComponent* other, HitResult info)
+{
+	if (other && other->GetCollisionChannel() == ECollisionChannel::Projectile)
+	{
+		Vector normal = info.collisionNormal;
+
+		if (normal.x == 0 && normal.y == -1) // 지면
+			bFalling = true;
+	}
+}
+

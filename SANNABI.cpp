@@ -3,20 +3,27 @@
 #include <windowsx.h>
 #include <format>
 #include "Engine.h"
+#include "SceneManager.h"
+#include "EditorScene.h"
 #include "InputManager.h"
+#include "BuildingEditor.h"
 
 #define MAX_LOADSTRING 100
 
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];             // the main window class name
 HINSTANCE hInst; 
-HWND gHwnd, gSubWnd;
+HWND gHwnd, gSubWnd, gSub2Wnd;
+
+Engine* engine;
 
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 ATOM                RegisterSubWindowClass(HINSTANCE hInstance);
+ATOM                RegisterSub2WindowClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK    SubWndProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK    Sub2WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -35,6 +42,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     
     MyRegisterClass(hInstance);
     RegisterSubWindowClass(hInstance);
+    RegisterSub2WindowClass(hInstance);
 
     // Perform application initialization:
     if (!InitInstance (hInstance, nCmdShow))
@@ -47,10 +55,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg = {};
 
     // 엔진 초기화
-    Engine* engine = Engine::GetInstance();  // 변수 선언 주소 : 0x01
-    engine->Init(gHwnd, gSubWnd);
+    engine = Engine::GetInstance();  // 변수 선언 주소 : 0x01
+    engine->Init(gHwnd, gSubWnd, gSub2Wnd);
 
-    InputManager::GetInstance()->Init(gHwnd, gSubWnd);
+    InputManager::GetInstance()->Init(gHwnd, gSubWnd, gSub2Wnd);
 
     LARGE_INTEGER frequency, now, prev;
     ::QueryPerformanceFrequency(&frequency);
@@ -71,7 +79,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             ::QueryPerformanceCounter(&now);
             float elapsed = (now.QuadPart - prev.QuadPart) / static_cast<float>(frequency.QuadPart) * 1000.0f;
 
-            if (elapsed >= targetFrameTime)
+            //if (elapsed >= targetFrameTime)
             {
                 InputManager::GetInstance()->Update();
                 engine->Update();
@@ -134,6 +142,24 @@ ATOM RegisterSubWindowClass(HINSTANCE hInstance) {
     return RegisterClassEx(&wcex);
 }
 
+ATOM RegisterSub2WindowClass(HINSTANCE hInstance) {
+    WNDCLASSEX wcex;
+    wcex.cbSize = sizeof(WNDCLASSEX);
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = Sub2WndProc; // 서브 메세지 처리
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = NULL;
+    wcex.lpszClassName = L"Sub2WindowClass";
+    wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+
+    return RegisterClassEx(&wcex);
+}
+
 //
 //   FUNCTION: InitInstance(HINSTANCE, int)
 //
@@ -175,8 +201,18 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
        return FALSE;
    }
 
-   
-  
+   gSub2Wnd = CreateWindowW(
+       L"Sub2WindowClass", L"건축물 에디터 - 건축물 선택",
+       WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX,
+       CW_USEDEFAULT, 0, 1000, 1000,
+       nullptr, 
+       LoadMenu(hInstance, MAKEINTRESOURCE(IDR_MENU1)), // 이 부분이 핵심, 
+       hInst, nullptr);
+
+   if (!gSub2Wnd)
+   {
+       return FALSE;
+   }
 
    return TRUE;
 }
@@ -232,6 +268,60 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK SubWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
     case WM_PAINT: {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
+        break;
+    }
+    case WM_MOUSEWHEEL:
+    {
+        // wParam의 HIWORD에 마우스 휠 델타 값이 저장되어 있습니다.
+        short delta = HIWORD(wParam);
+        InputManager::GetInstance()->SetMouseWheelDelta(delta);
+        break;
+    }
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+LRESULT CALLBACK Sub2WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message) 
+    {
+    case WM_COMMAND:
+    { // 메뉴 항목 클릭 시 이 메시지가 발생
+        int wmId = LOWORD(wParam);
+        switch (wmId)
+        {
+        case ID_FILE_LOAD:
+        {
+            OPENFILENAME ofn;
+            wchar_t szFile[MAX_PATH] = { 0, };
+
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = hWnd;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = L"Bitmap Files (*.bmp)\0*.bmp\0";
+            ofn.nFilterIndex = 1;
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+            if (GetOpenFileName(&ofn) == TRUE)
+                engine->GetBuildingEditor()->SetSelectedBitmapPath(szFile);
+
+            break;
+        }
+        }
+    }
+    case WM_PAINT: 
+    {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
         EndPaint(hWnd, &ps);

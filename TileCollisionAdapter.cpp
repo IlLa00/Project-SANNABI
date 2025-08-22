@@ -4,20 +4,24 @@
 #include "CollisionManager.h"
 #include "CollisionComponent.h"
 
-void TileCollisionAdapter::LoadFromTileMap(const vector<RECT>& Collisions)
+void TileCollisionAdapter::LoadFromTileMap(const vector<CollisionRect>& Collisions)
 {
-    for (const auto& rect : Collisions)
+    for (const auto& collision : Collisions)
     {
         CollisionComponent* collisionComponent = new CollisionComponent();
         collisionComponent->Init(nullptr);
 
-        float centerX = rect.left + (rect.right - rect.left) / 2.0f;
-        float centerY = rect.top + (rect.bottom - rect.top) / 2.0f;
+        float centerX = collision.rect.left + (collision.rect.right - collision.rect.left) / 2.0f;
+        float centerY = collision.rect.top + (collision.rect.bottom - collision.rect.top) / 2.0f;
 
         collisionComponent->SetPosition(Vector(centerX, centerY));
-        collisionComponent->SetCollisionSize((rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2);
+        collisionComponent->SetCollisionSize((collision.rect.right - collision.rect.left) / 2, (collision.rect.bottom - collision.rect.top) / 2);
 
-        collisionComponent->SetCollisionChannel(ECollisionChannel::WorldStatic);
+        if (collision.type == CollisionType::Normal)
+            collisionComponent->SetCollisionChannel(ECollisionChannel::WorldStatic);
+        else
+            collisionComponent->SetCollisionChannel(ECollisionChannel::DeathTile);
+
         CollisionManager::GetInstance()->RegisterCollisionComponent(collisionComponent);
         staticCollisions.push_back(collisionComponent);
     }

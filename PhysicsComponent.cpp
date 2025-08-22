@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "CollisionComponent.h"
 #include "GrapplingComponent.h"
+#include "SpriteRenderComponent.h"
 
 void PhysicsComponent::Init(Actor* _owner)
 {
@@ -26,7 +27,12 @@ void PhysicsComponent::Init(Actor* _owner)
 					if (other->GetCollisionChannel() == ECollisionChannel::Projectile && other->GetOwner()->GetOwner() == owner)
 						return;
 
-					OnGroundEndOverlap(other, info);
+					if (other->GetCollisionChannel() == ECollisionChannel::Projectile ||
+						other->GetCollisionChannel() == ECollisionChannel::DeathTile
+						)
+						owner->OnCharacterBeginOverlap(other, info);
+					else
+						OnGroundEndOverlap(other, info);
 				};
 		}
 	}
@@ -48,6 +54,8 @@ void PhysicsComponent::Update(float deltaTime)
 		}
 	}
 
+	if (bRolling) return;
+
 	switch (physicsState)
 	{
 	case EPhysicsState::Normal:
@@ -63,8 +71,13 @@ void PhysicsComponent::Update(float deltaTime)
 		UpdateCeilingPhysics(deltaTime);
 		break;
 	case EPhysicsState::RightWallClimbing:
+		UpdateClimbingPhysics(deltaTime);
+		break;
 	case EPhysicsState::LeftWallClimbing:
 		UpdateClimbingPhysics(deltaTime);
+		break;
+	case EPhysicsState::Dashing:
+		UpdateDash(deltaTime);
 		break;
 	}
 
@@ -107,6 +120,14 @@ void PhysicsComponent::Destroy()
 
 void PhysicsComponent::UpdateNormalPhysics(float deltaTime)
 {
+	Player* player = dynamic_cast<Player*>(owner);
+	if (!player) return;
+
+	if (player->GetDirection().x <= 0)
+		player->GetArmRenderComponent()->SetPosition(owner->GetPosition() + Vector(15, 3));
+	else
+		player->GetArmRenderComponent()->SetPosition(owner->GetPosition() + Vector(-15, 3));
+
 	// 중력 업데이트
 	Vector acceleration = owner->GetAcceleration();
 
@@ -125,27 +146,22 @@ void PhysicsComponent::UpdateNormalPhysics(float deltaTime)
 	if (velocity.y > maxFallSpeed)
 		velocity.y = maxFallSpeed;
 
-	if (bJumping && velocity.y >= 0)
+	if (!bOnGround && velocity.y > 0 && !bFalling)
 	{
-		bJumping = false;
-		bFalling = true; 
+		bFalling = true;
+		bJumping = false; // 점프 상태도 해제
 
-		Player* player = dynamic_cast<Player*>(owner);
-		if (player)
-			player->UpdateMovementState(EPlayerMovementState::Fall);
+		if (player->GetActionState() == EPlayerActionState::AirDash)
+			player->SetActionState(EPlayerActionState::None);
+
+		player->UpdateMovementState(EPlayerMovementState::Fall);
 	}
-	else if (!bJumping && !bOnGround && velocity.y > 0)
-	{
-		if (!bFalling)
-		{
-			bFalling = true;
-			Player* player = dynamic_cast<Player*>(owner);
-			if (player)
-				player->UpdateMovementState(EPlayerMovementState::Fall);
-		}
-	}
+	// 착지했을 때 Fall 상태 종료
 	else if (bOnGround && bFalling)
+	{
 		bFalling = false;
+		bJumping = false;
+	}
 
 	owner->SetVelocity(velocity);
 
@@ -162,6 +178,11 @@ void PhysicsComponent::UpdateNormalPhysics(float deltaTime)
 void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 {
 	if (!owner) return;
+
+	Player* player = dynamic_cast<Player*>(owner);
+	if (!player) return;
+
+	player->GetArmRenderComponent()->SetPosition(player->GetPosition() + Vector(0, -20));
 
 	Vector currentPos = owner->GetPosition();
  	Vector toHookCurrent = currentPos - grapplePoint;
@@ -276,6 +297,11 @@ void PhysicsComponent::UpdateExtendChainPhysics(float deltaTime)
 {
 	if (!owner) return;
 
+	Player* player = dynamic_cast<Player*>(owner);
+	if (!player) return;
+
+	player->GetArmRenderComponent()->SetPosition(player->GetPosition() + Vector(0, -20));
+
 	Vector currentPos = owner->GetPosition();
 	Vector toGrapplePoint = grapplePoint - currentPos;
 	float distanceToGrapple = toGrapplePoint.Length();
@@ -284,32 +310,57 @@ void PhysicsComponent::UpdateExtendChainPhysics(float deltaTime)
 	if (!collisionComp) return;
 
 	RECT boundingBox = collisionComp->GetBoundingBox();
-
 	float halfWidth = (boundingBox.right - boundingBox.left) / 2.0f;
 	float halfHeight = (boundingBox.bottom - boundingBox.top) / 2.0f;
 
 	toGrapplePoint.Normalize();
-
-	// 진행 방향에 따른 실제 충돌 크기 계산
-	float xExtent = abs(toGrapplePoint.x) * halfWidth;
-	float yExtent = abs(toGrapplePoint.y) * halfHeight;
-	float colliderRadius = xExtent + yExtent;
-	float minDistance = colliderRadius + minGrappleDistance;
+	float effectiveRadius = max(halfWidth, halfHeight);  // 더 합리적인 계산
+	float minDistance = effectiveRadius + 10.0f;  // 여유 거리 추가
 
 	if (distanceToGrapple <= minDistance)
+	{
+		owner->SetVelocity(Vector(0, 0));
+
+		// 정확한 위치에 배치
+		Vector finalPos = grapplePoint - toGrapplePoint * minDistance;
+		owner->SetPosition(finalPos);
 		return;
+	}
 
-	toGrapplePoint.Normalize();
 	Vector extendVelocity = toGrapplePoint * chainExtendSpeed;
-	Vector nextPos = currentPos + extendVelocity * deltaTime;
+	Vector desiredPos = currentPos + extendVelocity * deltaTime;
 
-	owner->SetVelocity(extendVelocity);
-	owner->SetPosition(nextPos);
+	float movedDistance = (desiredPos - currentPos).Length();
+	float intendedDistance = (desiredPos - currentPos).Length();
+
+	if (movedDistance > intendedDistance * 0.1f)
+	{
+		owner->SetVelocity(extendVelocity);
+		owner->SetPosition(desiredPos);
+	}
+	else
+	{
+		// 거의 못 움직였으면 정지
+		owner->SetVelocity(Vector(0, 0));
+
+		// 벽에 딱 붙이기
+		if (movedDistance > 0.001f)
+			owner->SetPosition(desiredPos);
+	}
 }
+
 
 void PhysicsComponent::UpdateCeilingPhysics(float deltaTime)
 {
 	if (!owner) return;
+
+	Player* player = dynamic_cast<Player*>(owner);
+	if (!player) return;
+
+	if(owner->GetDirection().x >= 0)
+		player->GetArmRenderComponent()->SetPosition(owner->GetPosition() + Vector(-20, -50));
+	else
+		player->GetArmRenderComponent()->SetPosition(owner->GetPosition() + Vector(20, -50));
 
 	Vector currentPos = owner->GetPosition();
 	Vector direction = owner->GetDirection();
@@ -354,17 +405,59 @@ void PhysicsComponent::UpdateClimbingPhysics(float deltaTime)
 {
 	if (!owner) return;
 
-	Vector currentPos = owner->GetPosition();
-	Vector direction = owner->GetDirection();
+	Player* player = dynamic_cast<Player*>(owner);
+	if (!player) return;
 
+	player->GetArmRenderComponent()->SetPosition(player->GetPosition() + Vector(0, -20));
+
+	Vector direction = owner->GetDirection();
 	Vector velocity = owner->GetVelocity();
 
 	velocity.x = 0;
-	velocity.y = owner->GetSpeed() * direction.y;
+
+	if (direction.y == 0)
+		velocity.y = 0; 
+
 	owner->SetVelocity(velocity);
 
-	// 위치 업데이트
 	Vector newPos = owner->GetPosition() + velocity * deltaTime;
+	owner->SetPosition(newPos);
+}
+
+void PhysicsComponent::UpdateDash(float deltaTime)
+{
+	if (!bIsDash || !owner) return;
+
+	dashCurrentTime += deltaTime;
+
+	if (dashCurrentTime >= dashTotalTime)
+	{
+		owner->SetPosition(dashTargetPostion);
+		bIsDash = false;
+		dashCurrentTime = 0.0f;
+
+		AirDash();
+
+		SetPhysicsState(EPhysicsState::Normal);
+
+		Player* player = dynamic_cast<Player*>(owner);
+		if (!player) return;
+
+		player->EndDash();
+
+		return;
+	}
+
+	float progress = dashCurrentTime / dashTotalTime;
+	float curvedProgress = GetDashCurve(progress);
+
+	Vector currentPos = owner->GetPosition();
+	Vector toTarget = dashTargetPostion - dashStartPostion;
+	Vector desiredPos = dashStartPostion + (toTarget * curvedProgress);
+
+	Vector movementDelta = desiredPos - currentPos;
+	Vector newPos = currentPos + movementDelta;
+
 	owner->SetPosition(newPos);
 }
 
@@ -394,7 +487,6 @@ void PhysicsComponent::Move()
 	{
 		swingInputForce += 50.f;
 		swingInputForce = clamp(swingInputForce, 0.f, 250.f);
-
 		return;
 	}
 	else if (physicsState == EPhysicsState::RightWallClimbing ||
@@ -403,21 +495,25 @@ void PhysicsComponent::Move()
 		Vector direction = owner->GetDirection();
 		Vector velocity = owner->GetVelocity();
 
-		velocity.y = owner->GetSpeed() * direction.y;
+		velocity.x = 0; // 수평 이동 차단
+
+		if (abs(direction.y) > 0.1f) // 부동소수점 오차 고려
+			velocity.y = owner->GetSpeed() * direction.y;
+		else
+			velocity.y = 0; // direction.y가 0이면 정지
 
 		owner->SetVelocity(velocity);
-
 		return;
 	}
 
 	Vector direction = owner->GetDirection();
 	Vector velocity = owner->GetVelocity();
 
-	if (direction.x > 0 && !bBlockedRight) 
+	if (direction.x > 0 && !bBlockedRight)
 		velocity.x = owner->GetSpeed() * direction.x;
-	else if (direction.x < 0 && !bBlockedLeft) 
+	else if (direction.x < 0 && !bBlockedLeft)
 		velocity.x = owner->GetSpeed() * direction.x;
-	else 
+	else
 		velocity.x = 0;
 
 	owner->SetVelocity(velocity);
@@ -441,15 +537,11 @@ void PhysicsComponent::Jump()
 
 void PhysicsComponent::ReadyForDash()
 {
-	// 잠깐 포지션 고정
-	// 
+	bRolling = true;
 }
 
 void PhysicsComponent::ExtendChain()
 {
-	/*if (physicsState != EPhysicsState::Grappling || !owner)
-		return;*/
-
 	if (!owner)
 		return;
 
@@ -458,10 +550,6 @@ void PhysicsComponent::ExtendChain()
 	Vector currentPos = owner->GetPosition();
 	Vector toGrapplePoint = grapplePoint - currentPos;
 	float distanceToGrapple = toGrapplePoint.Length();
-
-	// 이미 충분히 가까이 있으면 실행 안함
-	if (distanceToGrapple <= minGrappleDistance)
-		return;
 
 	// 체인 확장 모드 시작
 	bExtendingChain = true;
@@ -476,9 +564,75 @@ void PhysicsComponent::ExtendChain()
 	angularVelocity = 0.0f;
 }
 
+void PhysicsComponent::DashToPosition(Vector position)
+{
+	if (bIsDash || !owner) return; 
+
+	SetPhysicsState(EPhysicsState::Dashing);
+
+	dashStartPostion = owner->GetPosition();
+	dashTargetPostion = position;
+	dashCurrentTime = 0.0f;
+	bIsDash = true;
+}
+
+void PhysicsComponent::EndDash()
+{
+	bRolling = false;
+}
+
+void PhysicsComponent::AirDash()
+{
+	if (!owner) return;
+
+	Vector direction = owner->GetDirection();
+
+	if (direction.x == 0 && direction.y == 0)
+		direction.x = 1.0f;
+
+	float dashForce = 500.0f;       // 수평 속도
+	float upwardForce = 300.0f;     // 수직 속도
+
+	Vector velocity = owner->GetVelocity();
+
+	velocity.x = dashForce * direction.x;
+	velocity.y = -upwardForce;  // 위쪽으로 (음수)
+
+	owner->SetVelocity(velocity);
+}
+
+void PhysicsComponent::KnockBack(Vector collisionNormal)
+{
+	if (!owner) return;
+
+	Vector knockbackDirection = Vector(collisionNormal.x, -collisionNormal.y);
+
+	float knockbackForce = 200.0f;     
+	float upwardForce = 150.0f;       
+
+	Vector velocity = owner->GetVelocity();
+
+	Vector knockbackVelocity;
+	knockbackVelocity.x = knockbackForce * knockbackDirection.x;
+	knockbackVelocity.y = (collisionNormal.y > 0) ? upwardForce : -upwardForce;
+
+	float blendRatio = 0.7f;  // 70% 넉백
+	Vector finalVelocity = velocity * (1.0f - blendRatio) + knockbackVelocity * blendRatio;
+
+	// 최대 속도 제한
+	float maxKnockbackSpeed = 200.0f;
+	if (finalVelocity.Length() > maxKnockbackSpeed)
+	{
+		finalVelocity.Normalize();
+		finalVelocity *= maxKnockbackSpeed;
+	}
+
+	owner->SetVelocity(finalVelocity);
+}
+
 void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult info)
 {
-	if (other && other->GetCollisionChannel() == ECollisionChannel::WorldStatic)
+	if (other && (other->GetCollisionChannel() == ECollisionChannel::WorldStatic || other->GetCollisionChannel() == ECollisionChannel::WorldDynamic))
 	{
 		Vector normal = info.collisionNormal;
 		Player* player = dynamic_cast<Player*>(owner);
@@ -509,6 +663,8 @@ void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult
 			}
 
 			// 공중에서만 벽 붙기
+			player->SetDirection(Vector(1, player->GetDirection().x));
+
 			player->UpdateActionState(EPlayerActionState::WallGrab);
 			player->UpdateMovementState(EPlayerMovementState::Idle);
 			SetPhysicsState(EPhysicsState::RightWallClimbing);
@@ -523,6 +679,8 @@ void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult
 			}
 
 			// 공중에서만 벽 붙기
+			player->SetDirection(Vector(-1, player->GetDirection().x));
+
 			player->UpdateActionState(EPlayerActionState::WallGrab);
 			player->UpdateMovementState(EPlayerMovementState::Idle);
 			SetPhysicsState(EPhysicsState::LeftWallClimbing);
@@ -533,7 +691,7 @@ void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult
 
 void PhysicsComponent::OnGroundEndOverlap(CollisionComponent* other, HitResult info)
 {
-	if (other && other->GetCollisionChannel() == ECollisionChannel::WorldStatic)
+	if (other && (other->GetCollisionChannel() == ECollisionChannel::WorldStatic || other->GetCollisionChannel() == ECollisionChannel::WorldDynamic))
 	{
 		Vector normal = info.collisionNormal;
 		Player* player = dynamic_cast<Player*>(owner);
@@ -588,22 +746,28 @@ void PhysicsComponent::StartGrappling(Vector projectilePosition)
 	grappleReleaseTimer = 0.0f;
 
 	Vector velocity = owner->GetVelocity();
-	toHook = projectilePosition - owner->GetPosition();
-	toHook.Normalize();
 
-	// 초기 각도를 여기서 계산하여 저장
-	currentAngle = atan2f(toHook.x, toHook.y);
+	Vector fromGrappleToPlayer = owner->GetPosition() - projectilePosition;
+	currentAngle = atan2f(fromGrappleToPlayer.y, fromGrappleToPlayer.x);
 
-	float radialSpeed = velocity.Dot(toHook);
-	Vector tangentialVelocity = velocity - toHook * radialSpeed;
-	float tangentialSpeed = tangentialVelocity.Length();
+	Vector tangent(-sin(currentAngle), cos(currentAngle));
+	float tangentialSpeed = velocity.Dot(tangent);
+	float velocityRetention = 0.8f;  // 80% 유지
 
-	Vector tangent(-toHook.y, toHook.x);
+	// 방사 방향과 접선 방향 분리
+	Vector radialDir = fromGrappleToPlayer.Normalized();
+	float radialSpeed = velocity.Dot(radialDir);
+	Vector tangentialVelocity = velocity - radialDir * radialSpeed;
 
+	// 접선 속도만 유지하고 방사 속도는 제거
+	owner->SetVelocity(tangentialVelocity * velocityRetention);
+
+	// 각속도 계산
+	angularVelocity = tangentialVelocity.Length() / grappleLength;
 	if (tangentialVelocity.Dot(tangent) < 0)
-		tangentialSpeed *= -1;
+		angularVelocity *= -1;
 
-	angularVelocity = tangentialSpeed / grappleLength;
+	owner->SetVelocity(tangent * tangentialSpeed);
 }
 
 void PhysicsComponent::EndGrappling()
@@ -619,7 +783,7 @@ void PhysicsComponent::EndGrappling()
 	grappleReleaseTimer = 0.0f;
 
 	Player* player = dynamic_cast<Player*>(owner);
-	if (player && !bOnGround)
+	if (player && !bOnGround && player->GetActionState() != EPlayerActionState::TakeDamage)
 	{
 		player->UpdateMovementState(EPlayerMovementState::Fall);
 		player->UpdateActionState(EPlayerActionState::None);
@@ -633,3 +797,34 @@ void PhysicsComponent::SetPhysicsState(EPhysicsState newState)
 {
  	 physicsState = newState; 
 }
+
+float PhysicsComponent::GetDashCurve(float t)
+{
+	if (t <= 0.0f) return 0.0f;
+	if (t >= 1.0f) return 1.0f;
+
+	// 여러 커브 옵션 중 선택
+
+	// 옵션 1: 시작 느림 → 중간 빠름 → 끝 느림 (S-curve)
+	// return t * t * (3.0f - 2.0f * t); // smoothstep
+
+	// 옵션 2: 느린 시작 → 급가속 (제곱 커브)
+	 return t * t;
+
+	// 옵션 3: 빠른 시작 → 감속 (제곱근 커브)
+	// return sqrt(t);
+
+	// 옵션 4: 커스텀 커브 - 0.2초까지는 0.3배속, 이후 0.8배속
+	// 
+	//float timeThreshold = 0.2f / dashTotalTime; // 전체 시간 대비 비율
+	//if (t <= timeThreshold)
+	//{
+	//	return 0.3f * (t / timeThreshold);
+	//}
+	//else
+	//{
+	//	float remainingT = (t - timeThreshold) / (1.0f - timeThreshold);
+	//	return 0.3f + 0.8f * remainingT;
+	//}
+}
+

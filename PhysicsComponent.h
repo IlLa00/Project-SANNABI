@@ -12,7 +12,8 @@ enum class EPhysicsState
 	ExtendingChain,
 	RightWallClimbing,
 	LeftWallClimbing,
-	CeilingHang
+	CeilingHang,
+	Dashing
 };
 
 class PhysicsComponent : public Component
@@ -29,12 +30,19 @@ public:
 	void UpdateExtendChainPhysics(float deltaTime);
 	void UpdateCeilingPhysics(float deltaTime);
 	void UpdateClimbingPhysics(float deltaTime);
+	void UpdateDash(float deltaTime);
 
 	void Idle();
 	void Move();
 	void Jump();
 	void ReadyForDash();
 	void ExtendChain();
+
+	void DashToPosition(Vector position);
+	void EndDash();
+
+	void AirDash();
+	void KnockBack(Vector collisionNormal);
 
 	bool CanJump() { return bOnGround && !bJumping; }
 	bool IsOnGround() { return bOnGround; }
@@ -54,6 +62,10 @@ public:
 	EPhysicsState GetPhysicsState() { return physicsState;}
 
 	void SetGrapplePoint(Vector newPoint) { grapplePoint = newPoint; }
+	Vector GetGrapplePoint() { return grapplePoint; }
+
+	float GetDashCurve(float t);
+	bool IsDashing() const { return bIsDash; }
 
 	bool IsJustRelaeasedGrapple() { return bJustReleasedGrapple; }
 
@@ -84,9 +96,18 @@ private:
 	const float GRAPPLE_RELEASE_TIME = 0.5f; // 0.5초간 보호
 
 	bool bExtendingChain = false;        // 체인 확장 중인지
-	float chainExtendSpeed = 10000.0f;     // 체인 확장 속도
-	float minGrappleDistance = 10.0f;    // 최소 그래플 거리 (너무 가까이 가지 않도록)
+	float chainExtendSpeed = 2000.0f;     // 체인 확장 속도
 	
+	bool bRolling = false;
+
+	bool bIsDash = false;
+	Vector dashStartPostion;
+	Vector dashTargetPostion;
+	float dashCurrentTime = 0.f;
+	float dashTotalTime = 0.5f;
+	float dashSpeed = 1000.f;
+
+
 	// 이것들은 충돌여부를 나타냄, 실제 피직스 상태를 나타내는게 아님
 	bool bOverlapCeiling = false; 
 	bool bOverlapLeftWall = false;

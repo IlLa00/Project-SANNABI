@@ -76,9 +76,6 @@
     <Filter Include="Controller">
       <UniqueIdentifier>{cf9d8bb5-89eb-4839-85d4-cbc57958f8f0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Test">
-      <UniqueIdentifier>{e416afa5-944b-4262-a739-9f0b0f82e16d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Pool">
       <UniqueIdentifier>{3f1530b7-32dc-41aa-8b7b-fb9d9c1e6734}</UniqueIdentifier>
     </Filter>
@@ -102,6 +99,9 @@
     </Filter>
     <Filter Include="Actor\Bullet">
       <UniqueIdentifier>{5e0debb1-31e3-478f-b6c9-65eb2c7a1577}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actor\Platform">
+      <UniqueIdentifier>{49dad835-e82b-4ce5-bf99-81574fa91308}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -189,9 +189,6 @@
     <ClInclude Include="PlayerController.h">
       <Filter>Controller</Filter>
     </ClInclude>
-    <ClInclude Include="TestGround.h">
-      <Filter>Test</Filter>
-    </ClInclude>
     <ClInclude Include="GrapplingHookProjectilePool.h">
       <Filter>Pool</Filter>
     </ClInclude>
@@ -224,6 +221,15 @@
     </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Actor\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildingEditor.h">
+      <Filter>Scene\EditorScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Manager\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform.h">
+      <Filter>Actor\Platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -302,9 +308,6 @@
     <ClCompile Include="PlayerController.cpp">
       <Filter>Controller</Filter>
     </ClCompile>
-    <ClCompile Include="TestGround.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
     <ClCompile Include="GrapplingHookProjectilePool.cpp">
       <Filter>Pool</Filter>
     </ClCompile>
@@ -337,6 +340,15 @@
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Actor\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildingEditor.cpp">
+      <Filter>Scene\EditorScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Manager\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform.cpp">
+      <Filter>Actor\Platform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

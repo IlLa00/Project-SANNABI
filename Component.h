@@ -16,9 +16,18 @@ public:
 	void SetActive(bool state) { bActive = state; }
 	bool IsActive() { return bActive; }
 
+	void SetPosition(Vector newPosition) { position = newPosition; }
+	Vector GetPosition() { return position; }
+
+	void SetRotation(float newRotation) { rotation = newRotation; }
+	float GetRotation() { return rotation; }
+
 protected:
 	Actor* owner;
 
 	bool bActive = true;
+
+	Vector position;
+	float rotation;
 };
 

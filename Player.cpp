@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Player.h"
+#include "CollisionManager.h"
 #include "SpriteRenderComponent.h"
 #include "CollisionComponent.h"
 #include "GrapplingComponent.h"
@@ -11,7 +12,7 @@
 void Player::Init()
 {
 	Super::Init();
-
+	
 	position = Vector(GWinSizeX / 2 - 300, GWinSizeY / 2 - 100);
 
 	bodyRenderComponent = new SpriteRenderComponent;
@@ -20,22 +21,30 @@ void Player::Init()
 	bodyRenderComponent->AddAnimation("Run", "SNB_Run", 18, 1.0f);
 	bodyRenderComponent->AddAnimation("Jump", "SNB_Jump", 6, 1.0f, false);
 	bodyRenderComponent->AddAnimation("Fall", "SNB_Fall", 6, 1.0f, false);
-	bodyRenderComponent->AddAnimation("Swing", "SNB_Swing", 15, 1.f);
+	bodyRenderComponent->AddAnimation("Shot", "SNB_Shot", 4, 0.2f, false);
+	bodyRenderComponent->AddAnimation("Swing", "SNB_Swing", 14, 1.f);
 	bodyRenderComponent->AddAnimation("Ceiling_Idle", "SNB_Ceiling_Idle", 12, 1.f);
 	bodyRenderComponent->AddAnimation("Ceiling_Run", "SNB_Ceiling_Run", 16, 1.f);
 	bodyRenderComponent->AddAnimation("WallClimb_Idle", "SNB_WallClimb_Idle", 9, 1.f);
 	bodyRenderComponent->AddAnimation("WallClimb_Run", "SNB_WallClimb_Run", 10, 1.f);
-	bodyRenderComponent->AddAnimation("ChargeStart", "SNB_ChargeDashStart", 23, 0.15f, false);
+	bodyRenderComponent->AddAnimation("ChargeStart", "SNB_ChargeDashStart", 23, 1.0f, false);
 	bodyRenderComponent->AddAnimation("Charging", "SNB_ChargeDashLoop", 8, 1.f);
+	bodyRenderComponent->AddAnimation("Dash", "SNB_Dash", 4, 0.3f);
+	bodyRenderComponent->AddAnimation("AirDash", "SNB_ExcDash", 17, 1.f, false);
+	bodyRenderComponent->AddAnimation("TakeDamage", "SNB_Damaged", 5, 0.75f);
 	AddComponent(bodyRenderComponent);
 
 	armRenderComponent = new SpriteRenderComponent;
 	armRenderComponent->Init(this);
+	armRenderComponent->SetTransformMode(ETransformMode::Relative);
 	armRenderComponent->SetScale(0.5f);
+	armRenderComponent->SetRotationPivot({0.f,0.5f}); 
+
 	armRenderComponent->AddAnimation("ArmIdle", "SNBArm_Idle", 8, 1.f);
 	armRenderComponent->AddAnimation("ArmRun", "SNBArm_Run", 20, 1.f);
 	armRenderComponent->AddAnimation("ArmJump", "SNBArm_Jump", 6, 1.0f, false);
 	armRenderComponent->AddAnimation("ArmFall", "SNBArm_Fall", 6, 1.0f, false);
+	armRenderComponent->AddAnimation("ArmSwing", "SNBArm_Winding", 10, 1.0f, false);
 	armRenderComponent->AddAnimation("ArmCeiling_Idle", "SNBArm_Ceiling_Idle", 12, 1.f);
 	armRenderComponent->AddAnimation("ArmCeiling_Run", "SNBArm_Ceiling_Run", 16, 1.f);
 	//armRenderComponent->AddAnimation("ArmWallClimb_Idle", "SNBArm_WallClimb_Idle", 12, 1.f);
@@ -66,7 +75,90 @@ void Player::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
 
-	CameraManager::GetInstance()->Update(position, Vector(10000, 10000));
+	CameraManager::GetInstance()->Update(position, Vector(10000, 10000), deltaTime);
+
+	if (actionState == EPlayerActionState::GrappleSwing ||
+		actionState == EPlayerActionState::GrappleReelIn)
+	{
+		armRenderComponent->SetUseRotation(true);
+
+		Vector grapplePoint = physicsComponent->GetGrapplePoint();
+		Vector direction = grapplePoint - position;
+		float armAngle = atan2(direction.y, direction.x);
+		armRenderComponent->SetRotation(armAngle);
+	}
+	else if (actionState == EPlayerActionState::GrappleFire)
+	{
+		armRenderComponent->SetUseRotation(true);
+
+		Vector mousePoint = InputManager::GetInstance()->GetMousePos();
+		Vector direction = mousePoint - position;
+		float armAngle = atan2(direction.y, direction.x);
+		armRenderComponent->SetRotation(armAngle);
+
+	}
+	else
+		armRenderComponent->SetUseRotation(false);
+
+
+	if (bHasDelayedFunction)
+	{
+		delayTimer1 -= deltaTime;
+		delayTimer2 -= deltaTime;
+
+		if (delayTimer1 <= 0.0f)
+		{
+			if (delayedFunctionPtr1)
+				(this->*delayedFunctionPtr1)();
+
+			delayTimer1 = 0.0f;
+			delayedFunctionPtr1 = nullptr;
+		}
+		if (delayTimer2 <= 0.0f)
+		{
+			if (delayedFunctionPtr2)
+				(this->*delayedFunctionPtr2)();
+
+			delayTimer2 = 0.0f;
+			delayedFunctionPtr2 = nullptr;
+		}
+
+		if(!delayedFunctionPtr1 && !delayedFunctionPtr2)
+			bHasDelayedFunction = false;
+	}
+
+	if (actionState == EPlayerActionState::CharageDashStart ||
+		actionState == EPlayerActionState::ChargeReady)
+	{
+		chargingTimer += deltaTime;
+
+		if (chargingTimer >= chargeTime && !bHasDetected) // 1초가 지나면
+		{
+			UpdateActionState(EPlayerActionState::ChargeReady);
+			detectComponents = CollisionManager::GetInstance()->DetectEnemiesInRange(position, 500.f, collisionComponent);
+
+			target = nullptr;
+			float minDistSq = FLT_MAX;
+
+			for_each(detectComponents.begin(), detectComponents.end(),
+				[this, &minDistSq](CollisionComponent* comp)
+				{
+					if (comp && comp->GetOwner())
+					{
+						float distSq = (comp->GetOwner()->GetPosition() - position).LengthSquared();
+						if (distSq < minDistSq)
+						{
+							minDistSq = distSq;
+							target = comp->GetOwner();
+						}
+					}
+				});
+			bHasDetected = true;
+		}
+
+		if (chargingTimer >= maxChargeTime)
+			UpdateActionState(EPlayerActionState::None);
+	}
 
 	UpdateAnimation();
 }
@@ -118,13 +210,48 @@ void Player::Destroy()
 	Super::Destroy();
 }
 
+void Player::OnCharacterBeginOverlap(CollisionComponent* other, HitResult info)
+{
+	if (actionState == EPlayerActionState::TakeDamage) return;
+	if (bDamaging) return;
+
+	Super::OnCharacterBeginOverlap(other, info);
+
+	if (actionState == EPlayerActionState::GrappleFire ||
+		actionState == EPlayerActionState::GrappleReelIn ||
+		actionState == EPlayerActionState::GrappleSwing)
+	{
+		grapplingComponent->OffGrappling();
+		physicsComponent->EndGrappling();
+	}
+
+	CameraManager::GetInstance()->StartCameraShake(0.5f, 5.f);
+	physicsComponent->KnockBack(info.collisionNormal);
+	
+	UpdateActionState(EPlayerActionState::TakeDamage);
+
+	bDamaging = true; // 얘는 한 0.3초?
+	collisionComponent->SetCollisionChannel(ECollisionChannel::CharacterInvincible); // 얘는 한 1초
+	
+	SetDelayedFunction(&Player::OnDelayedControlRecovery, &Player::OnDelayedCollisionRecovery, 0.3f);
+}
+
+void Player::SetDelayedFunction(void(Player::* func1)(), void(Player::* func2)(), float delay1, float delay2)
+{
+	delayedFunctionPtr1 = func1;
+	delayedFunctionPtr2 = func2;
+	delayTimer1 = delay1;
+	delayTimer2 = delay2;
+	bHasDelayedFunction = true;
+}
+
 void Player::NoneInput()
 {
 	if (!physicsComponent) return;
+	if (bDamaging) return;
 	if (physicsComponent->GetPhysicsState() == EPhysicsState::Grappling || physicsComponent->IsJustRelaeasedGrapple())
 		return;
 
-	direction = Vector(0, 0);
 	physicsComponent->Idle();
 
 	if (movementState == EPlayerMovementState::Jump) return;
@@ -136,24 +263,30 @@ void Player::NoneInput()
 void Player::OnPressA()
 {
 	if (!physicsComponent) return;
-	if (actionState == EPlayerActionState::WallGrab) // 벽타기는 좌우이동 없음
+	if (bDamaging) return;
+	if (actionState == EPlayerActionState::WallGrab ||
+		actionState == EPlayerActionState::DashAttack) // 벽타기는 좌우이동 없음
 		return;
 
 	direction = Vector(-1, 0);
+	lastDirection = direction;
 
 	physicsComponent->Move();
 
-	if(actionState != EPlayerActionState::Jump)
+	if (actionState != EPlayerActionState::Jump)
 		UpdateMovementState(EPlayerMovementState::Run);
 }
 
 void Player::OnPressD()
 {
 	if (!physicsComponent) return;
-	if (actionState == EPlayerActionState::WallGrab)
+	if (bDamaging) return;
+	if (actionState == EPlayerActionState::WallGrab ||
+		actionState == EPlayerActionState::DashAttack)
 		return;
 
 	direction = Vector(1, 0);
+	lastDirection = direction;
 
 	physicsComponent->Move();
 
@@ -164,24 +297,27 @@ void Player::OnPressD()
 void Player::OnPressW()
 {
 	if (!physicsComponent) return;
+	if (bDamaging) return;
 	if (actionState == EPlayerActionState::Ceiling) // 천장이동은 상하이동 없음
 		return;
 
-	direction = Vector(0, -1);
+	direction.y = -1;
+	lastDirection = direction;
 
 	physicsComponent->Move();
 
-	if (actionState != EPlayerActionState::WallGrab)
-		UpdateMovementState(EPlayerMovementState::Run);
+	UpdateMovementState(EPlayerMovementState::Run);
 }
 
 void Player::OnPressS()
 {
 	if (!physicsComponent) return;
+	if (bDamaging) return;
 	if (actionState == EPlayerActionState::Ceiling) // 천장이동은 상하이동 없음
 		return;
 
-	direction = Vector(0, 1);
+	direction.y = 1;
+	lastDirection = direction;
 
 	physicsComponent->Move();
 	UpdateMovementState(EPlayerMovementState::Run);
@@ -190,6 +326,7 @@ void Player::OnPressS()
 void Player::OnSpaceBarDown()
 {
 	if (!physicsComponent) return;
+	if (bDamaging) return;
 
 	// 사슬걸고 있을때는 사슬감기
 	// 아니면 점프
@@ -218,6 +355,7 @@ void Player::OnSpaceBarDown()
 
 void Player::OnMouseDown()
 {
+	if (bDamaging) return;
 	if (!grapplingComponent) return;
 
 	Vector mousePos = InputManager::GetInstance()->GetMousePos();
@@ -228,7 +366,6 @@ void Player::OnMouseDown()
 	UpdateActionState(EPlayerActionState::GrappleFire);
 	grapplingComponent->FireGrapple(mouse_direction);
 
-	// 애니메이션
 }
 
 void Player::OnGrappling(Vector projectilePosition)
@@ -243,6 +380,10 @@ void Player::OnGrappling(Vector projectilePosition)
 
 void Player::OffGrappling()
 {
+	if (physicsComponent->GetPhysicsState() == EPhysicsState::RightWallClimbing ||
+		physicsComponent->GetPhysicsState() == EPhysicsState::LeftWallClimbing)
+		return;
+
 	if (physicsComponent->GetPhysicsState() == EPhysicsState::CeilingHang)
 		UpdateActionState(EPlayerActionState::Ceiling);
 	else if (!physicsComponent->IsOnGround()) // 공중에 있으면 Fall 상태
@@ -257,32 +398,46 @@ void Player::OffGrappling()
 	}
 }
 
-void Player::Dash(Vector position)
+void Player::Dash()
 {
-	// 애니메이션
+	if (!target) return;
 
 	UpdateActionState(EPlayerActionState::DashAttack);
 
-	physicsComponent->SetGrapplePoint(position);
-	physicsComponent->ExtendChain();
+	bAttacking = true;
+
+	physicsComponent->DashToPosition(target->GetPosition());
+}
+
+void Player::EndDash()
+{
+	Attack();
+
+	target = nullptr;
+	bHasDetected = false;
 }
 
 void Player::Attack()
 {
 	if (!target) return;
 
-	
+	target->TakeDamage();
 }
 
 void Player::OnMouseUp()
 {
-	// 그래플링 종료 인데 조건제대로 따져야할듯
+	if (bDamaging) return;
+
 	if (actionState == EPlayerActionState::DashAttack)
 	{
-		// 여기 들어오니까 부수기..
 		Attack();
-		UpdateActionState(EPlayerActionState::None);
-		UpdateMovementState(EPlayerMovementState::Idle);
+
+		bAttacking = false;
+
+		physicsComponent->AirDash();
+		UpdateActionState(EPlayerActionState::AirDash);
+
+		target = nullptr;
 	}
 	else
 	{
@@ -294,21 +449,34 @@ void Player::OnMouseUp()
 
 void Player::OnShiftDown()
 {
-	// 사슬팔이 부착되어있으면 대쉬?
+	if (bDamaging) return;
 
-	//if (actionState == EPlayerActionState::Ceiling ||
-	//	actionState == EPlayerActionState::GrappleSwing)
-	//	return;
+	if (actionState == EPlayerActionState::Ceiling ||
+		actionState == EPlayerActionState::GrappleSwing)
+		return;
 
-	//// 아니면 구르며 공격
-	//UpdateActionState(EPlayerActionState::CharageDashStart);
-	//physicsComponent->ReadyForDash();
+	UpdateActionState(EPlayerActionState::CharageDashStart);
+
+	physicsComponent->ReadyForDash();
 }
 
 void Player::OnShiftUp()
 {
-	/*UpdateActionState(EPlayerActionState::None);
-	physicsComponent->Idle();*/
+	if (bDamaging) return;
+
+	if (actionState == EPlayerActionState::ChargeReady)
+	{
+		if (!target) return;
+
+		physicsComponent->DashToPosition(target->GetPosition());
+		
+	}
+	else
+	{
+		UpdateActionState(EPlayerActionState::None);
+
+		physicsComponent->EndDash();
+	}
 }
 
 void Player::UpdateMovementState(EPlayerMovementState state)
@@ -316,11 +484,16 @@ void Player::UpdateMovementState(EPlayerMovementState state)
 	if (movementState == state)
 		return;
 
+	if (movementState == EPlayerMovementState::Fall && state == EPlayerMovementState::Run)
+		return;
+
 	movementState = state;
 }
 
 void Player::UpdateActionState(EPlayerActionState state)
 {
+	if (bAttacking || bDamaging) return;
+
 	actionState = state;
 }
 
@@ -355,18 +528,20 @@ void Player::UpdateAnimation()
 			armRenderComponent->PlayAnimation("ArmJump");
 			break;
 		}
-		else if (movementState == EPlayerMovementState::Fall)  // ✅ 추가
+		else if (movementState == EPlayerMovementState::Fall)
 		{
 			bodyRenderComponent->PlayAnimation("Fall");
 			armRenderComponent->PlayAnimation("ArmFall");
 		}
 		break;
-	case EPlayerActionState::GrappleSwing:
-		if (movementState == EPlayerMovementState::Idle)
-		{
-			bodyRenderComponent->PlayAnimation("Swing");
+	case EPlayerActionState::GrappleFire:
+			bodyRenderComponent->PlayAnimation("Shot");
 			break;
-		}
+		break;
+	case EPlayerActionState::GrappleSwing:
+			bodyRenderComponent->PlayAnimation("Swing");
+			armRenderComponent->PlayAnimation("ArmSwing");
+			break;
 		break;
 	case EPlayerActionState::Ceiling:
 		if (movementState == EPlayerMovementState::Idle)
@@ -396,7 +571,42 @@ void Player::UpdateAnimation()
 			break;
 		}
 		break;
+	case EPlayerActionState::CharageDashStart:
+	{
+		bodyRenderComponent->PlayAnimation("ChargeStart");
+		break;
 	}
+	case EPlayerActionState::ChargeReady:
+	{
+		bodyRenderComponent->PlayAnimation("Charging");
+		break;
+	}
+	case EPlayerActionState::AirDash:
+	{
+		bodyRenderComponent->PlayAnimation("AirDash");
+		break;
+	}
+	case EPlayerActionState::TakeDamage:
+	{
+		bodyRenderComponent->PlayAnimation("TakeDamage");
+		break;
+	}
+	case EPlayerActionState::DashAttack:
+		bodyRenderComponent->PlayAnimation("Dash");
+		break;
+	}
+}
+
+void Player::OnDelayedControlRecovery()
+{
+	bDamaging = false;
+
+	UpdateActionState(EPlayerActionState::None);
+}
+
+void Player::OnDelayedCollisionRecovery()
+{
+	collisionComponent->SetCollisionChannel(ECollisionChannel::Character);
 }
 
 const wchar_t* Player::GetMovementStateString(EPlayerMovementState state)
@@ -426,6 +636,8 @@ const wchar_t* Player::GetActionStateString(EPlayerActionState state)
 		return L"Jump";
 	case EPlayerActionState::CharageDashStart:
 		return L"CharageDashStart";
+	case EPlayerActionState::ChargeReady:
+		return L"ChargeReady";
 	case EPlayerActionState::GrappleFire:
 		return L"GrappleFire";
 	case EPlayerActionState::GrappleSwing:
@@ -471,7 +683,7 @@ void Player::DebugRender(HDC _hdcBack)
 	wstring positionoutput = std::format(L"Postion({:.2f}, {:.2f})", GetPosition().x, GetPosition().y);
 	::TextOut(_hdcBack, 25, 25, positionoutput.c_str(), static_cast<int32>(positionoutput.size()));
 
-	wstring output = std::format(L"Velocity({:.2f}, {:.2f})", velocity.x, velocity.y);
+	wstring output = std::format(L"Velocity({:.2f}, {:.2f}) / Direction({:.2f}, {:.2f})", velocity.x, velocity.y, direction.x, direction.y);
 	::TextOut(_hdcBack, 25, 40, output.c_str(), static_cast<int32>(output.size()));
 
 	wstring movementStr = GetMovementStateString(movementState);

@@ -1,14 +1,24 @@
 ﻿#include "pch.h"
 #include "BulletPool.h"
 #include "Bullet.h"
+#include "CollisionComponent.h"
 
 void BulletPool::CreatePool(int size)
 {
     for (int i = 0; i < size; i++)
     {
         Bullet* bullet = new Bullet();
-        bullet->Init();
         bullet->Deactivate();
+        bullet->Init();
+        CollisionComponent* collisionComp = bullet->GetComponent<CollisionComponent>();
+        if (!collisionComp) continue;
+
+        collisionComp->OnComponentBeginOverlap = [this, bullet](CollisionComponent* other, HitResult info)
+            {
+                if (other->GetOwner() == bullet->GetOwner()) return;
+
+                ReturnProjectile(bullet);
+            };
         pool.push_back(bullet);
     }
 }

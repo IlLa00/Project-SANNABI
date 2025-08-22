@@ -14,9 +14,9 @@ void SpriteAnimation::Init(const string& spriteSheetPath, int _frameCount, float
     spriteSheet = ResourceManager::GetInstance()->LoadTextureFromPath(
         textureKey,
         spriteSheetPath,
-        RGB(255, 255, 255), // 흰색을 투명화시키겠다
+        RGB(255, 255, 255), 
         _frameCount,
-        1 // 기본적으로 가로 1줄로 배열
+        1 
     );
 
     if (spriteSheet)

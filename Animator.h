@@ -1,13 +1,14 @@
 ﻿#pragma once
 
 class Actor;
+class Component;
 class TextureResource;
 class SpriteAnimation;
 
 class Animator
 {
 public:
-	void Init(Actor* _owner);
+	void Init(Actor* _owner, Component* _ownerComponent);
 	void Update();
 	void Render(HDC hdc, float scale);
 	void Destroy();
@@ -25,8 +26,15 @@ public:
 	void SetFlip(bool flip) { bflip = flip; }
 	bool IsFlip() const { return bflip; }
 
+	void SetRotationInfo(bool bUse, float angle, Vector pivot);
+
+private:
+	void CalculateRotatePoints(POINT destPoint[3], int width, int height, Vector centerPos, float angle, Vector pivot);
+
 private:
 	Actor* owner;
+	Component* ownerComponent;
+
 	map<string, SpriteAnimation*> animations;
 	SpriteAnimation* currentAnimation = nullptr;
 	string currentAnimationName;
@@ -36,5 +44,9 @@ private:
 	bool bPlaying = false;
 
 	bool bflip = false;
+
+	bool useRotation = false;
+	float rotationAngle = 0.0f;
+	Vector rotationPivot = { 0.5f,0.5f };
 };
 

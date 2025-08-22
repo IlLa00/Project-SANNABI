@@ -8,11 +8,13 @@ void Bullet::Init()
 {
 	Super::Init();
 
-	collsionComponent = new CollisionComponent;
-	collsionComponent->Init(this);
-	collsionComponent->SetCollisionSize(5, 5);
-	collsionComponent->SetCollisionChannel(ECollisionChannel::Projectile);
-	AddComponent(collsionComponent);
+	collisionComponent = new CollisionComponent;
+	collisionComponent->Init(this);
+	collisionComponent->SetActive(false);
+	collisionComponent->SetCollisionSize(5, 5);
+	collisionComponent->SetCollisionChannel(ECollisionChannel::Projectile);
+	
+	AddComponent(collisionComponent);
 }
 
 void Bullet::Update(float deltaTime)
@@ -37,6 +39,8 @@ void Bullet::Activate(Vector _position, Vector _direction, float _speed)
 {
 	bActive = true;
 
+	collisionComponent->SetActive(true);
+
 	direction = _direction;
 	speed = _speed;
 	SetPosition(_position);
@@ -48,5 +52,5 @@ void Bullet::Deactivate()
 
 	direction = Vector(0, 0);
 	speed = 0.f;
-	SetPosition(Vector(0, 0));
+	SetPosition(Vector(-100, -100));
 }

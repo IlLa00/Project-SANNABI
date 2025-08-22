@@ -18,6 +18,8 @@ void Turret::Init()
 	bodyRenderComponent->AddAnimation("Idle", "ENE_TurretBody_Idle", 9, 1.f);
 	bodyRenderComponent->AddAnimation("Aim", "ENE_TurretBody_Aim", 11, 1.f);
 	bodyRenderComponent->AddAnimation("Shoot", "ENE_TurretBody_Shoot", 18, 1.f);
+
+	bodyRenderComponent->AddAnimation("Explosion", "ENE_ExplosionGeneral_Middle", 12, 2.f);
 	AddComponent(bodyRenderComponent);
 
 	gunRenderComponent = new SpriteRenderComponent;
@@ -39,88 +41,114 @@ void Turret::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
 
-	// 상태변화.
-	if (bDetectTarget) // 감지가 되면
+	if (!bDamaged)
 	{
-		if (turretState == ETurretState::Idle)
+		// 상태변화.
+		if (bDetectTarget) // 감지가 되면
 		{
-			SetTurretState(ETurretState::Aiming);
-			elapsedTime = 0.f; 
-		}
-		else if (turretState == ETurretState::Aiming)
-		{
-			elapsedTime += deltaTime;
-			if (elapsedTime >= shootCooldown)
+			if (turretState == ETurretState::Idle)
 			{
-				SetTurretState(ETurretState::Shooting);
+				SetTurretState(ETurretState::Aiming);
 				elapsedTime = 0.f;
 			}
+			else if (turretState == ETurretState::Aiming)
+			{
+				elapsedTime += deltaTime;
+				if (elapsedTime >= shootCooldown)
+				{
+					SetTurretState(ETurretState::Shooting);
+					elapsedTime = 0.f;
+				}
+			}
+			else if (turretState == ETurretState::Shooting)
+			{
+				elapsedTime += deltaTime;
+				if (elapsedTime >= resetCooldown)
+				{
+					SetTurretState(ETurretState::Idle);
+					elapsedTime = 0.f;
+				}
+			}
 		}
-		else if (turretState == ETurretState::Shooting)
+		else
 		{
-			elapsedTime += deltaTime;
-			if (elapsedTime >= resetCooldown)
+			if (!bShooting) // 쏘고있을 때, 감지범위를 벗어나면 바로 Idle되는게 아닌 쏠건 다 쏘기 
 			{
 				SetTurretState(ETurretState::Idle);
 				elapsedTime = 0.f;
 			}
 		}
-	}
-	else 
-	{
-		if (!bShooting) // 쏘고있을 때, 감지범위를 벗어나면 바로 Idle되는게 아닌 쏠건 다 쏘기 
-		{		
-			SetTurretState(ETurretState::Idle);
-			elapsedTime = 0.f;
-		}	
-	}
 
-	switch (turretState)
-	{
-	case ETurretState::Idle:
-		UpdateIdle(deltaTime);
-		break;
-	case ETurretState::Aiming:
-		UpdateAiming(deltaTime);
-		break;
-	case ETurretState::Shooting:
-		UpdateShooting(deltaTime);
-		break;
-	}
-
-	for (auto it = currentBullets.begin(); it != currentBullets.end();)
-	{
-		Bullet* bullet = *it;
-		if (!bullet)
+		switch (turretState)
 		{
-			it = currentBullets.erase(it);
-			continue;
+		case ETurretState::Idle:
+			UpdateIdle(deltaTime);
+			break;
+		case ETurretState::Aiming:
+			UpdateAiming(deltaTime);
+			break;
+		case ETurretState::Shooting:
+			UpdateShooting(deltaTime);
+			break;
 		}
 
-		bool shouldRemove = false;
+		for (auto it = currentBullets.begin(); it != currentBullets.end();)
+		{
+			Bullet* bullet = *it;
+			if (!bullet)
+			{
+				it = currentBullets.erase(it);
+				continue;
+			}
 
-		// 화면 밖 체크
-		if (bullet->GetPosition().x < (CameraManager::GetInstance()->GetCameraPos().x - GWinSizeX / 2) - 200 ||
-			bullet->GetPosition().x >(CameraManager::GetInstance()->GetCameraPos().x + GWinSizeX / 2) + 200 ||
-			bullet->GetPosition().y < (CameraManager::GetInstance()->GetCameraPos().y - GWinSizeY / 2) - 200 ||
-			bullet->GetPosition().y >(CameraManager::GetInstance()->GetCameraPos().y + GWinSizeY / 2) + 200)
-		{
-			shouldRemove = true;
-		}
-		else if (!bullet->IsActive())
-		{
-			shouldRemove = true;
-		}
+			bool shouldRemove = false;
 
-		if (shouldRemove)
+			// 화면 밖 체크
+			if (bullet->GetPosition().x < (CameraManager::GetInstance()->GetCameraPos().x - GWinSizeX / 2) - 200 ||
+				bullet->GetPosition().x >(CameraManager::GetInstance()->GetCameraPos().x + GWinSizeX / 2) + 200 ||
+				bullet->GetPosition().y < (CameraManager::GetInstance()->GetCameraPos().y - GWinSizeY / 2) - 200 ||
+				bullet->GetPosition().y >(CameraManager::GetInstance()->GetCameraPos().y + GWinSizeY / 2) + 200)
+			{
+				shouldRemove = true;
+			}
+			else if (!bullet->IsActive())
+			{
+				shouldRemove = true;
+			}
+
+			if (shouldRemove)
+			{
+				poolInstance->ReturnProjectile(bullet);
+				it = currentBullets.erase(it);
+			}
+			else
+			{
+				bullet->Update(deltaTime);
+				++it;
+			}
+		}
+	}
+	else
+	{
+		elapsedTimeExplosion += deltaTime;
+
+		if (elapsedTimeExplosion >= explosionDuration)
 		{
-			poolInstance->ReturnProjectile(bullet);
-			it = currentBullets.erase(it); 
+			SetActive(false);
+			Destroy();
 		}
 		else
 		{
-			bullet->Update(deltaTime);
-			++it;
+			bodyRenderComponent->PlayAnimation("Explosion");
+
+			if(gunRenderComponent->IsActive())
+				gunRenderComponent->SetActive(false);
+
+			if (collisionComponent->IsActive())
+				collisionComponent->SetActive(false);
+
+			if (perceiveComponent->IsActive())
+				perceiveComponent->SetActive(false);
 		}
 	}
 }
@@ -141,6 +169,12 @@ void Turret::Render(HDC _hdcBack)
 
 void Turret::Destroy()
 {
+	for (auto& bullet : currentBullets)
+		poolInstance->ReturnProjectile(bullet);
+
+	currentBullets.clear();
+	poolInstance = nullptr;
+	
 	Super::Destroy();
 }
 
@@ -149,6 +183,7 @@ void Turret::TakeDamage()
 	Super::TakeDamage();
 
 	// 애니메이션 재생
+	bDamaged = true;
 	// 폭발
 }
 
@@ -179,9 +214,8 @@ void Turret::UpdateShooting(float deltaTime)
 		Bullet* curProjectile = poolInstance->GetProjectile(GetPosition(), gunDirection, bulletSpeed);
 		if (curProjectile)
 		{
+			curProjectile->SetOwner(this);
 			currentBullets.push_back(curProjectile);
-			curProjectile->SetOwner(owner);
-
 		}
 		bulletElapsedTime = 0.f;
 	}
@@ -189,11 +223,8 @@ void Turret::UpdateShooting(float deltaTime)
 
 void Turret::OnCharacterBeginOverlap(CollisionComponent* other, HitResult info)
 {
-	// 애니메이션 재생?
-	// 을 컴포넌트로 사용한다면, 애니메이션 재생이 끝나면 죽기처리.
-	// 애니메이션 재생 도중엔 콜리전 끄기? 플레이어가 공격 다시 못하게..
-	
 	Super::OnCharacterBeginOverlap(other, info);
+
 }
 
 void Turret::OnCharacterEndOverlap(CollisionComponent* other, HitResult info)

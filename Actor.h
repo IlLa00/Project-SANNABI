@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include "CollisionManager.h"
+
+class CollisionComponent;
 class Component;
 
 class Actor
@@ -11,6 +14,8 @@ public:
 	virtual void Destroy();
 
 	virtual void TakeDamage();
+
+	virtual void OnCharacterBeginOverlap(CollisionComponent* other, HitResult info);
 
 	void AddComponent(Component* component);
 
@@ -40,23 +45,44 @@ public:
 	Vector GetAcceleration() { return acceleration; }
 	
 	float GetScale() { return scale; }
-	Vector GetDirection() { return direction; }
+	
+	void SetDirection(Vector newDirection)
+	{
+		direction = newDirection;
+		lastDirection = direction;
+	}
+
+	Vector GetDirection() 
+	{
+		if (direction.x != 0 || direction.y != 0)
+			return direction;
+		else
+			return lastDirection;
+	}
 	float GetSpeed() { return speed; }
 
 	Actor* GetOwner() { return owner; }
 	void SetOwner(Actor* newOwner) { owner = newOwner; }
+
+	bool IsActive() { return bActive; }
+	void SetActive(bool newActive) { bActive = newActive; }
 
 protected:
 	Vector position;
 	Vector velocity;
 	Vector acceleration;
 
-	float speed = 300.f;
+	float speed = 600.f;
+
 	Vector direction = Vector(1,0);
+	Vector lastDirection = Vector(1, 0);
+
 	float scale = 0.25f;
 
 	Actor* owner = nullptr;
 
 	unordered_set<Component*> components;
+
+	bool bActive = true;
 };
 

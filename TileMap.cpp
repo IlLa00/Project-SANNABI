@@ -2,75 +2,168 @@
 #include "TileMap.h"
 #include "CameraManager.h"
 
-void TileMap::LoadFromFile(const wstring& filepath) 
+void TileMap::LoadFromFile(const wstring& filepath)
 {
     wifstream file(filepath);
-    if (!file.is_open()) 
+    if (!file.is_open())
     {
         MessageBox(NULL, L"타일맵 파일을 열 수 없습니다", L"Error", MB_OK);
         return;
     }
 
     collisionRects.clear();
+    _buildingMap.clear();
+    _enemySpawnMap.clear();
+    _platformSpawnMap.clear();
 
     wchar_t comma;
     file >> _gridWidth >> comma >> _gridHeight >> comma
         >> _tileMapWidth >> comma >> _tileMapHeight;
 
-    _layers.resize(3); 
-    for (auto& layer : _layers) 
-        layer.tiles.resize(_gridWidth * _gridHeight, -1);
+    _buildingMap.assign(_gridHeight, vector<wstring>(_gridWidth, L""));
+    _enemySpawnMap.assign(_gridHeight, vector<bool>(_gridWidth, false));
+    _platformSpawnMap.assign(_gridHeight, vector<bool>(_gridWidth, false));
 
+    // 레이어 벡터 초기화
+    _layers.resize(3);
+    for (auto& layer : _layers)
+        layer.tiles.assign(_gridWidth * _gridHeight, -1);
+
+    // 이전에 읽고 남은 줄바꿈 문자 제거
+    file.ignore();
 
     wstring line;
-    while (std::getline(file, line)) 
+    int currentSection = 0; // 0: 레이어, 1: 충돌, 2: 건물, 3: 적군, 4: 플랫폼
+
+    while (std::getline(file, line))
     {
         if (line.empty()) continue;
 
         if (line == L"[Collision]")
         {
-            // 충돌 영역 개수 읽기
-            getline(file, line);
-            int collisionCount = _wtoi(line.c_str());
-
-            // 충돌 영역들 읽기
-            for (int i = 0; i < collisionCount; i++)
-            {
-                if (std::getline(file, line))
-                {
-                    wistringstream rectStream(line);
-                    RECT rect;
-                    wchar_t comma;
-
-                    // left,top,right,bottom 형식으로 읽기
-                    if (rectStream >> rect.left >> comma >> rect.top >> comma
-                        >> rect.right >> comma >> rect.bottom)
-                        collisionRects.push_back(rect);
-                }
-            }
-            break;
+            currentSection = 1;
+            continue;
+        }
+        else if (line == L"[Buildings]")
+        {
+            currentSection = 2;
+            continue;
+        }
+        else if (line == L"[Enemies]")
+        {
+            currentSection = 3;
+            continue;
+        }
+        else if (line == L"[Platforms]")
+        {
+            currentSection = 4;
+            continue;
         }
 
-        wistringstream iss(line);
-        int layerIndex, tileCount;
-        wchar_t colon;
-
-        if (iss >> layerIndex >> colon >> tileCount) 
+        if (currentSection == 0) // 타일 레이어 데이터 처리
         {
-            // 타일 데이터 읽기
-            for (int i = 0; i < tileCount; i++) 
-            {
-                std::getline(file, line);
-                if (!line.empty()) 
-                {
-                    wistringstream tileStream(line);
-                    int x, y, tileIndex;
+            wistringstream iss(line);
+            int layerIndex, tileCount;
+            wchar_t colon;
 
-                    if (tileStream >> x >> comma >> y >> comma >> tileIndex) 
+            if (iss >> layerIndex >> colon >> tileCount)
+            {
+                if (layerIndex >= 0 && layerIndex < _layers.size())
+                {
+                    for (int i = 0; i < tileCount; i++)
                     {
-                        if (x >= 0 && x < _gridWidth && y >= 0 && y < _gridHeight) 
-                            _layers[layerIndex].tiles[y * _gridWidth + x] = tileIndex;
+                        std::getline(file, line);
+                        if (!line.empty())
+                        {
+                            wistringstream tileStream(line);
+                            int x, y, encodedValue;  // encodedValue로 변경
+
+                            if (tileStream >> x >> comma >> y >> comma >> encodedValue)
+                            {
+                                if (x >= 0 && x < _gridWidth && y >= 0 && y < _gridHeight)
+                                {
+                                    // 인코딩된 값을 그대로 저장
+                                    _layers[layerIndex].tiles[y * _gridWidth + x] = encodedValue;
+                                }
+                            }
+                        }
                     }
+                }
+            }
+        }
+        else if (currentSection == 1) // 충돌 영역 데이터 처리 (타입 포함)
+        {
+            wistringstream iss(line);
+            int count = 0;
+            if (iss >> count)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    std::getline(file, line);
+                    wistringstream rectStream(line);
+                    RECT rect;
+                    int typeValue = 0;  // 기본값은 Normal
+
+                    // 타입 정보가 있는 형식과 없는 형식 모두 처리
+                    if (rectStream >> rect.left >> comma >> rect.top >> comma
+                        >> rect.right >> comma >> rect.bottom)
+                    {
+                        // 타입 정보가 있으면 읽기
+                        if (rectStream >> comma >> typeValue)
+                        {
+                            CollisionType type = static_cast<CollisionType>(typeValue);
+                            collisionRects.push_back(CollisionRect(rect, type));
+                        }
+                        else
+                        {
+                            // 구버전 파일 - 기본 타입으로 추가
+                            collisionRects.push_back(CollisionRect(rect, CollisionType::Normal));
+                        }
+                    }
+                }
+            }
+        }
+        else if (currentSection == 2) // 건축물 데이터 처리
+        {
+            wistringstream buildingStream(line);
+            int x, y;
+            wchar_t comma;
+            wstring path;
+
+            if (buildingStream >> x >> comma >> y >> comma)
+            {
+                getline(buildingStream, path);
+                if (x >= 0 && x < _gridWidth && y >= 0 && y < _gridHeight)
+                {
+                    _buildingMap[y][x] = path;
+                }
+            }
+        }
+        else if (currentSection == 3) // 적군 데이터 처리
+        {
+            wistringstream enemyStream(line);
+            int x, y;
+            wchar_t comma;
+
+            if (enemyStream >> x >> comma >> y)
+            {
+                if (x >= 0 && x < _gridWidth && y >= 0 && y < _gridHeight)
+                {
+                    _enemySpawnMap[y][x] = true;
+                }
+            }
+        }
+        else if (currentSection == 4) // 플랫폼 데이터 처리
+        {
+            wistringstream enemyStream(line);
+            int x, y;
+            wchar_t comma;
+
+            if (enemyStream >> x >> comma >> y)
+            {
+                if (x >= 0 && x < _gridWidth && y >= 0 && y < _gridHeight)
+                {
+                    _platformSpawnMap[y][x] = true;
                 }
             }
         }
@@ -78,8 +171,8 @@ void TileMap::LoadFromFile(const wstring& filepath)
 
     file.close();
 
-    // 타일셋 이미지 로드
     LoadTilesetImage();
+    LoadDeathTilesetImage();
 }
 
 void TileMap::LoadTilesetImage() 
@@ -103,6 +196,95 @@ void TileMap::LoadTilesetImage()
     SelectObject(_hdcTileset, _tilesetBitmap);
 }
 
+void TileMap::LoadDeathTilesetImage()
+{
+    fs::path fullPath = fs::current_path();
+    fullPath /= "Level";
+    fullPath /= L"Tileset_Death.bmp";  // Death 타일셋 파일
+
+    HDC hdc = GetDC(NULL);
+    _hdcDeathTileset = CreateCompatibleDC(hdc);
+    ReleaseDC(NULL, hdc);
+
+    _deathTilesetBitmap = (HBITMAP)LoadImageW(
+        nullptr,
+        fullPath.c_str(),
+        IMAGE_BITMAP,
+        0, 0,
+        LR_LOADFROMFILE | LR_CREATEDIBSECTION
+    );
+
+    if (_deathTilesetBitmap)
+    {
+        SelectObject(_hdcDeathTileset, _deathTilesetBitmap);
+    }
+    else
+    {
+        // Death 타일셋이 없으면 Normal 타일셋을 대체로 사용
+        _hdcDeathTileset = _hdcTileset;
+        _deathTilesetBitmap = _tilesetBitmap;
+    }
+}
+
+CollisionType TileMap::CheckCollisionAt(int x, int y) const
+{
+    // 픽셀 좌표를 받아서 해당 위치의 충돌 타입 반환
+    for (const auto& collision : collisionRects)
+    {
+        if (x >= collision.rect.left && x < collision.rect.right &&
+            y >= collision.rect.top && y < collision.rect.bottom)
+            return collision.type;
+    }
+    return CollisionType::Normal;  
+}
+
+bool TileMap::IsDeathTile(int x, int y) const
+{
+    if (x < 0 || x >= _gridWidth || y < 0 || y >= _gridHeight)
+        return false;
+
+    // 모든 레이어 검사
+    for (const auto& layer : _layers)
+    {
+        int encodedValue = layer.tiles[y * _gridWidth + x];
+        if (encodedValue >= 0)
+        {
+            TileInfo tileInfo = TileInfo::Decode(encodedValue);
+            if (tileInfo.tilesetType == 1)  // Death 타일셋
+                return true;
+        }
+    }
+
+    // 충돌 영역도 검사 (픽셀 좌표로 변환)
+    int pixelX = x * TileSize + TileSize / 2;
+    int pixelY = y * TileSize + TileSize / 2;
+
+    for (const auto& collision : collisionRects)
+    {
+        if (collision.type == CollisionType::Death &&
+            pixelX >= collision.rect.left && pixelX < collision.rect.right &&
+            pixelY >= collision.rect.top && pixelY < collision.rect.bottom)
+            return true;
+    }
+
+    return false;
+}
+
+const vector<vector<wstring>>& TileMap::GetBuildingMap() const
+{
+    return _buildingMap;
+}
+
+const vector<vector<bool>>& TileMap::GetEnemySpawnMap() const
+{
+    return _enemySpawnMap;
+}
+
+const vector<vector<bool>>& TileMap::GetPlatformSpawnMap() const
+{
+    return _platformSpawnMap;
+}
+
 void TileMap::Render(HDC hdc, Vector cameraPos) 
 {
     if (_hdcTileset == nullptr) return;
@@ -113,7 +295,6 @@ void TileMap::Render(HDC hdc, Vector cameraPos)
     int startY = max(0, cameraPos.y / TileSize);
     int endY = min(_gridHeight, (cameraPos.y + GWinSizeY) / TileSize + 1);
 
-    // 레이어별로 렌더링 (뒤에서 앞으로)
     for (int layerIndex = 0; layerIndex < _layers.size(); layerIndex++) 
         RenderLayer(hdc, layerIndex, 0, GridWidth, 0, GridHeight, cameraPos);
 }
@@ -122,29 +303,39 @@ void TileMap::RenderLayer(HDC hdc, int layerIndex, int startX, int endX, int sta
 {
     const TileLayer& layer = _layers[layerIndex];
 
-    for (int y = startY; y < endY; y++) 
+    for (int y = startY; y < endY; y++)
     {
-        for (int x = startX; x < endX; x++) 
+        for (int x = startX; x < endX; x++)
         {
-            int tileIndex = layer.tiles[y * _gridWidth + x];
+            int encodedValue = layer.tiles[y * _gridWidth + x];
 
-            if (tileIndex < 0) continue;  // 빈 타일은 스킵
+            if (encodedValue < 0) continue;  // 빈 타일은 스킵
+
+            // 인코딩된 값에서 타일 정보 추출
+            TileInfo tileInfo = TileInfo::Decode(encodedValue);
+
+            // 타일셋 선택
+            HDC sourceDC = nullptr;
+            if (tileInfo.tilesetType == 0)
+                sourceDC = _hdcTileset;  // Normal 타일셋
+            else if (tileInfo.tilesetType == 1)
+                sourceDC = _hdcDeathTileset;  // Death 타일셋
+            else
+                sourceDC = _hdcTileset;  // 기본값
+
+            if (sourceDC == nullptr) continue;
+
+            Vector worldPos = Vector(x * TileSize, y * TileSize);
 
             // 타일셋에서의 위치 계산
-            int tileX = tileIndex % _tileMapWidth;
-            int tileY = tileIndex / _tileMapWidth;
+            int tileX = tileInfo.tileIndex % _tileMapWidth;
+            int tileY = tileInfo.tileIndex / _tileMapWidth;
 
-            // 화면에 그릴 위치
-            Vector screenPos = CameraManager::GetInstance()->ConvertScreenPos(Vector(x * TileSize, y * TileSize));
-            int screenX = x * TileSize - cameraPos.x;
-            int screenY = y * TileSize - cameraPos.y;
-
-            // 투명색 처리하여 타일 그리기
             TransparentBlt(
                 hdc,
-                screenPos.x, screenPos.y,
+                (int)worldPos.x, (int)worldPos.y,
                 TileSize, TileSize,  // 대상 크기
-                _hdcTileset,
+                sourceDC,  // 선택된 타일셋 사용
                 tileX * OriginTileSize, tileY * OriginTileSize,
                 OriginTileSize, OriginTileSize,  // 원본 크기
                 RGB(255, 255, 255)  // 흰색을 투명색으로

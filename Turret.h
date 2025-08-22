@@ -58,7 +58,12 @@ private:
 	BulletPool* poolInstance = nullptr;
 	vector<Bullet*> currentBullets;
 
-	float bulletSpeed = 250.f;
+	float bulletSpeed = 600.f;
 	float bulletElapsedTime = 0.f;
+
+	bool bDamaged = false;
+
+	float explosionDuration = 2.f;
+	float elapsedTimeExplosion = 0.f;
 };
 

@@ -8,8 +8,8 @@ void GrapplingHookProjectilePool::CreatePool(int size)
     for (int i = 0; i < size; i++)
     {
         GrapplingHookProjectile* projectile = new GrapplingHookProjectile();
-        projectile->Init();
         projectile->Deactivate();
+        projectile->Init();
         pool.push_back(projectile);
     }
 }

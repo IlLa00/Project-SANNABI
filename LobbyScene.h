@@ -3,6 +3,7 @@
 #include "Scene.h"
 
 class TextureResource;
+class Button;
 
 class LobbyScene : public Scene
 {
@@ -22,6 +23,10 @@ private:
 	TextureResource* UIBG = nullptr;
 	TextureResource* logo = nullptr;
 	
+	Button* playButton;
+	Button* editorButton;
+	Button* exitButton;
+
 	float toBG2Time = 3.f;
 	float toBG3Time = 3.1f;
 

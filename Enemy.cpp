@@ -9,7 +9,7 @@ void Enemy::Init()
 
 	collisionComponent = new CollisionComponent;
 	collisionComponent->Init(this);
-	collisionComponent->SetCollisionSize(50, 75);
+	collisionComponent->SetCollisionSize(100, 100);
 	collisionComponent->SetCollisionChannel(ECollisionChannel::Character); // 정안되면 Enemy채널만들기..
 	collisionComponent->OnComponentBeginOverlap = [this](CollisionComponent* other, HitResult info)
 		{
@@ -55,6 +55,8 @@ void Enemy::Render(HDC _hdcBack)
 
 void Enemy::Destroy()
 {
+	target = nullptr;
+
 	Super::Destroy();
 }
 
