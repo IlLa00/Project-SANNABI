@@ -8,7 +8,7 @@ class SpriteAnimation;
 class Animator
 {
 public:
-	void Init(Actor* _owner, Component* _ownerComponent);
+	void Init(Actor* _owner, Component* _ownerComponent, bool IsVFX = false);
 	void Update();
 	void Render(HDC hdc, float scale);
 	void Destroy();
@@ -27,6 +27,9 @@ public:
 	bool IsFlip() const { return bflip; }
 
 	void SetRotationInfo(bool bUse, float angle, Vector pivot);
+
+	void SetVFXPosition(Vector newPostion) { VFXPostion = newPostion; }
+	Vector GetVFXPosition() { return VFXPostion; }
 
 private:
 	void CalculateRotatePoints(POINT destPoint[3], int width, int height, Vector centerPos, float angle, Vector pivot);
@@ -48,5 +51,8 @@ private:
 	bool useRotation = false;
 	float rotationAngle = 0.0f;
 	Vector rotationPivot = { 0.5f,0.5f };
+
+	Vector VFXPostion;
+	bool bVFX = false;
 };
 

@@ -28,7 +28,7 @@ void GrapplingHookProjectile::Update(float deltaTime)
 	if (!IsFlying()) return; // 날아가고 있는가?
 
 	Vector currentPos = GetPosition();
-	Vector newPos = currentPos + (direction * speed * deltaTime);
+	Vector newPos = currentPos + (direction * speed * deltaTime); // 발사중.
 	SetPosition(newPos);
 }
 

@@ -23,6 +23,9 @@ private:
 	TextureResource* UIBG = nullptr;
 	TextureResource* logo = nullptr;
 	
+
+	TextureResource* cursorTexture = nullptr;
+
 	Button* playButton;
 	Button* editorButton;
 	Button* exitButton;

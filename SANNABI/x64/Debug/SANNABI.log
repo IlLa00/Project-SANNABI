@@ -1,2 +1,3 @@
 ﻿  Player.cpp
-  SANNABI.vcxproj -> C:\KHJ\SVN\Project-SANNABI\x64\Debug\SANNABI.exe
+D:\KHJ\Project-SANNABI\Player.cpp(194,18): warning C4244: 'initializing': conversion from 'int32' to 'float', possible loss of data
+  SANNABI.vcxproj -> D:\KHJ\Project-SANNABI\x64\Debug\SANNABI.exe

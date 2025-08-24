@@ -28,14 +28,6 @@ void SpriteRenderComponent::Update(float deltaTime)
 		break;
 	}
 
-	/*if (transformMode == ETransformMode::FollowOwner)
-	{
-		if (owner->GetDirection().x >= 0)
-			animator->SetFlip(false);
-		else
-			animator->SetFlip(true);
-	}*/
-
 	if (owner->GetDirection().x >= 0)
 		animator->SetFlip(false);
 	else

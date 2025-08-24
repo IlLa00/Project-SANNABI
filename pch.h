@@ -48,3 +48,8 @@ using namespace std;
 
 // 공용 선언들 
 #include "Defines.h"
+
+#include <dsound.h>
+#pragma comment(lib, "dsound.lib")
+#pragma comment(lib, "dxguid.lib")
+

@@ -2,12 +2,11 @@
 #include "Platform.h"
 #include "CollisionComponent.h"
 #include "TextureResource.h"
+#include "GrapplingHookProjectile.h"
 
 void Platform::Init()
 {
 	Super::Init();
-
-	position = Vector(2500, 650);
 
 	texture = new TextureResource();
 	texture->Load("Platform");
@@ -31,6 +30,28 @@ void Platform::Update(float deltaTime)
 	{
 		Vector movement = Vector(0, fallingSpeed * deltaTime);
 		position = position + movement;
+		if (projectile)
+			projectile->SetPosition(projectile->GetPosition() + movement);
+	}
+	else
+	{
+		Vector movement = Vector(0, -fallingSpeed * deltaTime);
+		position = position + movement;
+	}
+
+	position.y = clamp(position.y, _limitMinY, _limitMaxY);
+
+	if (projectile)
+	{
+		if (!projectile->IsActive())
+		{
+			bFalling = false;
+			projectile = nullptr;
+			return;
+		}
+		Vector projectilePosition = projectile->GetPosition();
+		projectilePosition.y = clamp(projectilePosition.y, _limitMinY, _limitMaxY);
+		projectile->SetPosition(projectilePosition);
 	}
 }
 
@@ -41,6 +62,12 @@ void Platform::Render(HDC _hdcBack)
 	texture->Render(_hdcBack, position);
 }
 
+void Platform::SetLimitPoint(float limitMinY, float limitMaxY)
+{
+	_limitMinY = limitMinY;
+	_limitMaxY = limitMaxY;
+}
+
 void Platform::OnBeginOverlap(CollisionComponent* other, HitResult info)
 {
 	if (other && other->GetCollisionChannel() == ECollisionChannel::Projectile)
@@ -48,7 +75,11 @@ void Platform::OnBeginOverlap(CollisionComponent* other, HitResult info)
 		Vector normal = info.collisionNormal;
 
 		if (normal.x == 0 && normal.y == -1) // 지면
+		{
 			bFalling = true;
+			if (dynamic_cast<GrapplingHookProjectile*>(other->GetOwner()))
+				projectile = dynamic_cast<GrapplingHookProjectile*>(other->GetOwner());
+		}
 	}
 }
 

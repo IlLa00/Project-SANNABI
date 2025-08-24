@@ -20,6 +20,8 @@ public:
 
 	float GetMaxChainLength() { return maxChainLength; }
 
+	GrapplingHookProjectile* GetCurrentProjectile() { return curProjectile; }
+
 	void OnGrappling();
 	void OffGrappling();
 
@@ -28,7 +30,7 @@ private:
 	GrapplingHookProjectile* curProjectile = nullptr;
 
 	float maxChainLength = 800.0f;
-	float fireChainLength = 2000.f;
+	float fireChainLength = 1000.f;
 	float pullSpeed = 5000.0f;
 	float fireCooldown = 0.5f;
 

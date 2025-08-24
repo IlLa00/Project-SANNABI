@@ -56,14 +56,7 @@ void TextureResource::Load(wstring fileName)
 	);
 
 	if (_bitmap == 0)
-	{
-		::MessageBox(Engine::GetInstance()->GetHwnd(), fileName.c_str(), L"Invalid Texture Load", MB_OK);
-		// 여기에 디버깅을 위한 출력 추가
-		OutputDebugStringW(L"Failed to load: ");
-		OutputDebugStringW(fileName.c_str());
-		OutputDebugStringW(L"\n");
 		return;
-	}
 
 	_transparent = RGB(255, 255, 255);
 

@@ -10,6 +10,7 @@
 #include "CameraManager.h"
 #include "InputManager.h"
 #include "TextureResource.h"
+#include "SoundManager.h"
 
 #include <locale>
 #include <codecvt>
@@ -27,8 +28,6 @@ void GameScene::Init()
 
 	if (fs::exists(mapPath)) 
 		tileMap->LoadFromFile(mapPath.wstring());
-	else 
-		MessageBox(NULL, L"타일맵 파일을 찾을 수 없습니다", L"Warning", MB_OK);
 
 	// 최적화 기법
 	HDC hdc = GetDC(_hwnd);
@@ -107,6 +106,7 @@ void GameScene::Init()
 				Platform* platform = new Platform();
 				platform->Init();
 				platform->SetPosition(Vector(x * TileSize, y * TileSize)); // TILE_SIZE는 에디터에서 사용한 값과 동일해야 함
+				platform->SetLimitPoint((y - 10) * TileSize, y * TileSize);
 				actors[platform]++;
 				_platforms.push_back(platform);
 			}
@@ -128,6 +128,8 @@ void GameScene::Init()
 
 	cursorTexture = new TextureResource();
 	cursorTexture->Load("Cursor");
+
+	SoundManager::GetInstance()->PlayBGM("GameScene");
 }
 
 void GameScene::Update(float deltaTime)

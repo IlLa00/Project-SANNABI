@@ -24,6 +24,7 @@ void Turret::Init()
 
 	gunRenderComponent = new SpriteRenderComponent;
 	gunRenderComponent->Init(this);
+	gunRenderComponent->SetTransformMode(ETransformMode::Relative);
 	gunRenderComponent->AddAnimation("GunIdle", "ENE_TurretGun_Idle", 9, 1.f);
 	gunRenderComponent->AddAnimation("GunAim", "ENE_TurretGun_Aim", 11, 1.f);
 	gunRenderComponent->AddAnimation("GunShoot", "ENE_TurretGun_Shoot", 18, 1.f);

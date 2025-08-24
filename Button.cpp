@@ -2,6 +2,7 @@
 #include "Button.h"
 #include "TextureResource.h"
 #include "InputManager.h"
+#include "SoundManager.h"
 
 void Button::Init(Vector position, const wchar_t* text)
 {
@@ -29,7 +30,10 @@ void Button::Update()
 	if (!bActive) return;
 
 	if (IsMouseOver())
+	{
+		SoundManager::GetInstance()->PlaySound("Hover");
 		currentTexture = hoverTexture;
+	}
 	else
 		currentTexture = normalTexture;
 }

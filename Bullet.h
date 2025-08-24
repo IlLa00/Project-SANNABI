@@ -3,6 +3,7 @@
 #include "Actor.h"
 
 class CollisionComponent;
+class TextureResource;
 
 class Bullet : public Actor
 {
@@ -20,9 +21,11 @@ public:
 
 private:
 	CollisionComponent* collisionComponent = nullptr;
+	TextureResource* texture = nullptr;
 
 	Vector direction;
 	float speed;
+	float rotationAngle;
 	bool bActive = false;
 	bool bFlying = false;
 };

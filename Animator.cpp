@@ -6,13 +6,15 @@
 #include "Actor.h"
 #include "Component.h"
 
-void Animator::Init(Actor* _owner, Component* _ownerComponent)
+void Animator::Init(Actor* _owner, Component* _ownerComponent, bool IsVFX)
 {
 	if (_owner)
 	{
 		owner = _owner;
 		ownerComponent = _ownerComponent;
 	}
+
+	bVFX = IsVFX;
 }
 
 void Animator::Update()
@@ -32,7 +34,7 @@ void Animator::Update()
 
 		if (currentFrameIndex >= currentAnimation->GetFrameCount())
 		{
-			if (currentAnimation->IsLoop())
+			if (currentAnimation->IsLoop() && !bVFX)
 				currentFrameIndex = 0;
 			else
 			{
@@ -45,13 +47,35 @@ void Animator::Update()
 
 void Animator::Render(HDC hdc, float scale)
 {
-	if (!currentAnimation || !owner)
+	if (!currentAnimation)
 		return;
 	TextureResource* spriteSheet = currentAnimation->GetSpriteSheet();
 	if (!spriteSheet)
 		return;
 
 	RECT frameRect = GetCurrentFrameRect();
+
+	if (!owner && !ownerComponent) // VFX전용
+	{
+		Vector pos = VFXPostion;
+
+		int originalWidth = frameRect.right - frameRect.left;
+		int originalHeight = frameRect.bottom - frameRect.top;
+		int scaledWidth = static_cast<int>(originalWidth * scale);
+		int scaledHeight = static_cast<int>(originalHeight * scale);
+
+		int renderWidth = scaledWidth;
+		if (bflip)
+			renderWidth = -scaledWidth;
+
+		spriteSheet->Render(hdc,
+			frameRect.left, frameRect.top,
+			originalWidth, originalHeight,
+			pos, renderWidth, scaledHeight);
+
+		return;
+	}
+	
 	Vector pos = ownerComponent->GetPosition();
 
 	float rotation = ownerComponent->GetRotation();
@@ -148,7 +172,7 @@ TextureResource* Animator::GetCurrentSpriteSheet()
 
 bool Animator::IsFinished() const
 {
-	return bPlaying;
+	return !bPlaying;
 }
 
 void Animator::SetRotationInfo(bool bUse, float angle, Vector pivot)

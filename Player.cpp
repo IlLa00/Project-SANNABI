@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Player.h"
 #include "CollisionManager.h"
+#include "VFXManager.h"
 #include "SpriteRenderComponent.h"
 #include "CollisionComponent.h"
 #include "GrapplingComponent.h"
@@ -8,11 +9,12 @@
 #include "InputManager.h"
 #include "TextureResource.h"
 #include "ResourceManager.h"
+#include "GrapplingHookProjectile.h"
 
 void Player::Init()
 {
 	Super::Init();
-	
+
 	position = Vector(GWinSizeX / 2 - 300, GWinSizeY / 2 - 100);
 
 	bodyRenderComponent = new SpriteRenderComponent;
@@ -38,7 +40,7 @@ void Player::Init()
 	armRenderComponent->Init(this);
 	armRenderComponent->SetTransformMode(ETransformMode::Relative);
 	armRenderComponent->SetScale(0.5f);
-	armRenderComponent->SetRotationPivot({0.f,0.5f}); 
+	armRenderComponent->SetRotationPivot({ 0.f,0.5f });
 
 	armRenderComponent->AddAnimation("ArmIdle", "SNBArm_Idle", 8, 1.f);
 	armRenderComponent->AddAnimation("ArmRun", "SNBArm_Run", 20, 1.f);
@@ -47,7 +49,6 @@ void Player::Init()
 	armRenderComponent->AddAnimation("ArmSwing", "SNBArm_Winding", 10, 1.0f, false);
 	armRenderComponent->AddAnimation("ArmCeiling_Idle", "SNBArm_Ceiling_Idle", 12, 1.f);
 	armRenderComponent->AddAnimation("ArmCeiling_Run", "SNBArm_Ceiling_Run", 16, 1.f);
-	//armRenderComponent->AddAnimation("ArmWallClimb_Idle", "SNBArm_WallClimb_Idle", 12, 1.f);
 	armRenderComponent->AddAnimation("ArmWallClimb_Run", "SNBArm_WallClimb_Run", 10, 1.f);
 	AddComponent(armRenderComponent);
 
@@ -69,6 +70,9 @@ void Player::Init()
 
 	movementState = EPlayerMovementState::Idle;
 	actionState = EPlayerActionState::None;
+
+	chainLinkTexture = new TextureResource();
+	chainLinkTexture->Load("Chain");
 }
 
 void Player::Update(float deltaTime)
@@ -82,7 +86,7 @@ void Player::Update(float deltaTime)
 	{
 		armRenderComponent->SetUseRotation(true);
 
-		Vector grapplePoint = physicsComponent->GetGrapplePoint();
+		Vector grapplePoint = physicsComponent->GetCurrentProjectile()->GetPosition();
 		Vector direction = grapplePoint - position;
 		float armAngle = atan2(direction.y, direction.x);
 		armRenderComponent->SetRotation(armAngle);
@@ -123,7 +127,7 @@ void Player::Update(float deltaTime)
 			delayedFunctionPtr2 = nullptr;
 		}
 
-		if(!delayedFunctionPtr1 && !delayedFunctionPtr2)
+		if (!delayedFunctionPtr1 && !delayedFunctionPtr2)
 			bHasDelayedFunction = false;
 	}
 
@@ -150,6 +154,9 @@ void Player::Update(float deltaTime)
 						{
 							minDistSq = distSq;
 							target = comp->GetOwner();
+
+							VFXManager::GetInstance()->Play("ChargeAim", target->GetPosition());
+							
 						}
 					}
 				});
@@ -167,39 +174,34 @@ void Player::Render(HDC _hdcBack)
 {
 	Super::Render(_hdcBack);
 
-	if (showAimingLine) // 일단 임시
+	if (actionState == EPlayerActionState::GrappleSwing ||
+		actionState == EPlayerActionState::GrappleFire ||
+		actionState == EPlayerActionState::GrappleReelIn)
 	{
-		Vector mousePos = InputManager::GetInstance()->GetMousePos();
+		Vector startPos = position;
 
-		// 거리 계산
-		Vector screenPos = CameraManager::GetInstance()->ConvertScreenPos(position);
+		if (!grapplingComponent->GetCurrentProjectile()) return;
 
-		float distance = (mousePos - screenPos).Length();
-		const float MAX_GRAPPLE_DISTANCE = 400.0f; // 최대 그래플링 거리
+		Vector endPos = grapplingComponent->GetCurrentProjectile()->GetPosition();
 
-		// 거리에 따른 색상 변경
-		COLORREF lineColor;
-		if (distance <= MAX_GRAPPLE_DISTANCE)
-			lineColor = RGB(0, 255, 0);    // 초록색 (사용 가능)
-		else
-			lineColor = RGB(255, 0, 0);    // 빨간색 (사용 불가)
+		if (!chainLinkTexture) return;
 
-		// 펜 설정
-		HPEN oldPen = (HPEN)SelectObject(_hdcBack, CreatePen(PS_DOT, 2, lineColor));
+		Vector direction = endPos - startPos;
+		float length = direction.Length();
 
-		// 사슬 조준선 그리기 (점선)
-		MoveToEx(_hdcBack, (int)screenPos.x, (int)screenPos.y, NULL);
-		LineTo(_hdcBack, (int)mousePos.x, (int)mousePos.y);
+		direction.Normalize();
 
-		// 마우스 커서 위치에 작은 원 그리기 (조준점)
-		HBRUSH oldBrush = (HBRUSH)SelectObject(_hdcBack, CreateSolidBrush(lineColor));
-		Ellipse(_hdcBack,
-			(int)mousePos.x - 5, (int)mousePos.y - 5,
-			(int)mousePos.x + 5, (int)mousePos.y + 5);
+		float linkSize = chainLinkTexture->GetSizeY();
+		int linkCount = (int)ceil(length / linkSize);
 
-		// 리소스 정리
-		DeleteObject(SelectObject(_hdcBack, oldPen));
-		DeleteObject(SelectObject(_hdcBack, oldBrush));
+		float angle = atan2(direction.y, direction.x) * 180.0f / 3.14159f + 90.0f;
+
+		for (int i = 0; i < linkCount; ++i)
+		{
+			Vector linkPos = startPos + direction * (i * linkSize);
+
+			chainLinkTexture->Render(_hdcBack, linkPos);
+		}
 	}
 
 	DebugRender(_hdcBack);
@@ -227,12 +229,12 @@ void Player::OnCharacterBeginOverlap(CollisionComponent* other, HitResult info)
 
 	CameraManager::GetInstance()->StartCameraShake(0.5f, 5.f);
 	physicsComponent->KnockBack(info.collisionNormal);
-	
+
 	UpdateActionState(EPlayerActionState::TakeDamage);
 
 	bDamaging = true; // 얘는 한 0.3초?
 	collisionComponent->SetCollisionChannel(ECollisionChannel::CharacterInvincible); // 얘는 한 1초
-	
+
 	SetDelayedFunction(&Player::OnDelayedControlRecovery, &Player::OnDelayedCollisionRecovery, 0.3f);
 }
 
@@ -366,13 +368,15 @@ void Player::OnMouseDown()
 	UpdateActionState(EPlayerActionState::GrappleFire);
 	grapplingComponent->FireGrapple(mouse_direction);
 
+	VFXManager::GetInstance()->Play("Fire", position);
+
 }
 
-void Player::OnGrappling(Vector projectilePosition)
+void Player::OnGrappling(GrapplingHookProjectile* curprojectile)
 {
 	if (!physicsComponent) return;
 
-	physicsComponent->StartGrappling(projectilePosition);
+	physicsComponent->StartGrappling(curprojectile);
 
 	UpdateActionState(EPlayerActionState::GrappleSwing);
 	UpdateMovementState(EPlayerMovementState::Idle);
@@ -458,6 +462,8 @@ void Player::OnShiftDown()
 	UpdateActionState(EPlayerActionState::CharageDashStart);
 
 	physicsComponent->ReadyForDash();
+
+	VFXManager::GetInstance()->Play("ChargeAttack", position);
 }
 
 void Player::OnShiftUp()
@@ -468,8 +474,10 @@ void Player::OnShiftUp()
 	{
 		if (!target) return;
 
+		UpdateActionState(EPlayerActionState::DashAttack); // 나중에 바꾸기 애니메이션 재생이 다름
 		physicsComponent->DashToPosition(target->GetPosition());
-		
+
+		VFXManager::GetInstance()->Stop("ChargeAim");
 	}
 	else
 	{
@@ -535,13 +543,13 @@ void Player::UpdateAnimation()
 		}
 		break;
 	case EPlayerActionState::GrappleFire:
-			bodyRenderComponent->PlayAnimation("Shot");
-			break;
+		bodyRenderComponent->PlayAnimation("Shot");
+		break;
 		break;
 	case EPlayerActionState::GrappleSwing:
-			bodyRenderComponent->PlayAnimation("Swing");
-			armRenderComponent->PlayAnimation("ArmSwing");
-			break;
+		bodyRenderComponent->PlayAnimation("Swing");
+		armRenderComponent->PlayAnimation("ArmSwing");
+		break;
 		break;
 	case EPlayerActionState::Ceiling:
 		if (movementState == EPlayerMovementState::Idle)

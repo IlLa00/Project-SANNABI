@@ -6,6 +6,7 @@
 #include "CollisionComponent.h"
 #include "GrapplingComponent.h"
 #include "SpriteRenderComponent.h"
+#include "GrapplingHookProjectile.h"
 
 void PhysicsComponent::Init(Actor* _owner)
 {
@@ -184,21 +185,29 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 
 	player->GetArmRenderComponent()->SetPosition(player->GetPosition() + Vector(0, -20));
 
-	Vector currentPos = owner->GetPosition();
- 	Vector toHookCurrent = currentPos - grapplePoint;
-	float currentDistance = toHookCurrent.Length();
+	Vector currentProjectilePos = curPrjoectile->GetPosition();
+	Vector projectileMovement = currentProjectilePos - lastProjectilePosition;
 
+	Vector currentPos = owner->GetPosition() + projectileMovement;
+	owner->SetPosition(currentPos);
+
+	lastProjectilePosition = currentProjectilePos;
+
+	Vector toHookCurrent = currentPos - currentProjectilePos;
+	float currentDistance = toHookCurrent.Length();
 	GrapplingComponent* grappleComponent = owner->GetComponent<GrapplingComponent>();
+	
 	if (!grappleComponent) return;
 
 	float maxChainLength = grappleComponent->GetMaxChainLength();
+	
 	if (currentDistance > maxChainLength)
 	{
 		grappleLength = maxChainLength;
 
 		// 당기는 힘 계산
 		float excessDistance = currentDistance - maxChainLength;
-		Vector pullDirection = (grapplePoint - currentPos).Normalized();
+		Vector pullDirection = (curPrjoectile->GetPosition() - currentPos).Normalized();
 
 		// 거리에 비례한 당기는 힘 (스프링 처럼)
 		float pullStrength = 800.0f; // 조절 가능한 당기는 힘
@@ -261,8 +270,8 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 
 	// 새 위치 계산 (원형 운동)
 	Vector newPos;
-	newPos.x = grapplePoint.x + grappleLength * cosf(currentAngle);
-	newPos.y = grapplePoint.y + grappleLength * sinf(currentAngle);
+	newPos.x = curPrjoectile->GetPosition().x + grappleLength * cosf(currentAngle);
+	newPos.y = curPrjoectile->GetPosition().y + grappleLength * sinf(currentAngle);
 
 	bool willCollide = false;
 
@@ -278,8 +287,8 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 		currentAngle += angularVelocity * deltaTime;
 
 		Vector newPos;
-		newPos.x = grapplePoint.x + grappleLength * cosf(currentAngle);
-		newPos.y = grapplePoint.y + grappleLength * sinf(currentAngle);
+		newPos.x = curPrjoectile->GetPosition().x + grappleLength * cosf(currentAngle);
+		newPos.y = curPrjoectile->GetPosition().y + grappleLength * sinf(currentAngle);
 
 		owner->SetPosition(newPos);
 	}
@@ -303,7 +312,7 @@ void PhysicsComponent::UpdateExtendChainPhysics(float deltaTime)
 	player->GetArmRenderComponent()->SetPosition(player->GetPosition() + Vector(0, -20));
 
 	Vector currentPos = owner->GetPosition();
-	Vector toGrapplePoint = grapplePoint - currentPos;
+	Vector toGrapplePoint = curPrjoectile->GetPosition() - currentPos;
 	float distanceToGrapple = toGrapplePoint.Length();
 
 	CollisionComponent* collisionComp = owner->GetComponent<CollisionComponent>();
@@ -322,7 +331,7 @@ void PhysicsComponent::UpdateExtendChainPhysics(float deltaTime)
 		owner->SetVelocity(Vector(0, 0));
 
 		// 정확한 위치에 배치
-		Vector finalPos = grapplePoint - toGrapplePoint * minDistance;
+		Vector finalPos = curPrjoectile->GetPosition() - toGrapplePoint * minDistance;
 		owner->SetPosition(finalPos);
 		return;
 	}
@@ -548,7 +557,7 @@ void PhysicsComponent::ExtendChain()
 	SetPhysicsState(EPhysicsState::ExtendingChain);
 
 	Vector currentPos = owner->GetPosition();
-	Vector toGrapplePoint = grapplePoint - currentPos;
+	Vector toGrapplePoint = curPrjoectile->GetPosition() - currentPos;
 	float distanceToGrapple = toGrapplePoint.Length();
 
 	// 체인 확장 모드 시작
@@ -574,6 +583,8 @@ void PhysicsComponent::DashToPosition(Vector position)
 	dashTargetPostion = position;
 	dashCurrentTime = 0.0f;
 	bIsDash = true;
+
+	if (bRolling) bRolling = !bRolling;
 }
 
 void PhysicsComponent::EndDash()
@@ -736,10 +747,11 @@ void PhysicsComponent::OnGroundEndOverlap(CollisionComponent* other, HitResult i
 	}
 }
 
-void PhysicsComponent::StartGrappling(Vector projectilePosition)
+void PhysicsComponent::StartGrappling(GrapplingHookProjectile* projectile)
 {
-	grapplePoint = projectilePosition;
-	grappleLength = (owner->GetPosition() - projectilePosition).Length();
+	curPrjoectile = projectile;
+	lastProjectilePosition = curPrjoectile->GetPosition();
+	grappleLength = (owner->GetPosition() - curPrjoectile->GetPosition()).Length();
 	physicsState = EPhysicsState::Grappling;
 
 	bJustReleasedGrapple = false;
@@ -747,7 +759,7 @@ void PhysicsComponent::StartGrappling(Vector projectilePosition)
 
 	Vector velocity = owner->GetVelocity();
 
-	Vector fromGrappleToPlayer = owner->GetPosition() - projectilePosition;
+	Vector fromGrappleToPlayer = owner->GetPosition() - curPrjoectile->GetPosition();
 	currentAngle = atan2f(fromGrappleToPlayer.y, fromGrappleToPlayer.x);
 
 	Vector tangent(-sin(currentAngle), cos(currentAngle));
@@ -788,6 +800,9 @@ void PhysicsComponent::EndGrappling()
 		player->UpdateMovementState(EPlayerMovementState::Fall);
 		player->UpdateActionState(EPlayerActionState::None);
 	}
+
+	curPrjoectile = nullptr;
+	lastProjectilePosition = Vector(0,0);
 
 	angularVelocity = 0.0f;
 	grappleLength = 0.0f;

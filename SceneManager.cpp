@@ -3,6 +3,7 @@
 #include "GameScene.h"
 #include "LobbyScene.h"
 #include "EditorScene.h"
+#include "SoundManager.h"
 
 void SceneManager::Init(HWND hwnd, HWND subWnd, HWND subWnd2)
 {
@@ -52,6 +53,8 @@ void SceneManager::ChangeScene(string sceneName)
 
 	if (it != Scenes.end())
 	{
+		SoundManager::GetInstance()->StopAllSounds();
+
 		if (currentScene)
 			currentScene->Destroy();
 

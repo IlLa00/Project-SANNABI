@@ -5,6 +5,8 @@
 #include "TextureResource.h"
 #include "TimerManager.h"
 #include "SceneManager.h"
+#include "SoundManager.h"
+#include "InputManager.h"
 
 void LobbyScene::Init()
 {
@@ -34,6 +36,12 @@ void LobbyScene::Init()
     exitButton = new Button();
     exitButton->Init(Vector(1675, 900), L"게임 종료");
 
+    SoundManager::GetInstance()->PlayBGM("LobbyScene");
+
+    ShowCursor(false);
+
+    cursorTexture = new TextureResource();
+    cursorTexture->Load("mouse cursor");
 }
 
 void LobbyScene::Update(float deltaTime)
@@ -73,11 +81,22 @@ void LobbyScene::Update(float deltaTime)
     exitButton->Update();
 
     if (playButton->IsClicked())
+    {
+        SoundManager::GetInstance()->PlaySound("Click");
         SceneManager::GetInstance()->ChangeScene("GameScene");
+    }
     else if (editorButton->IsClicked())
+    {
+        SoundManager::GetInstance()->PlaySound("Click");
         SceneManager::GetInstance()->ChangeScene("EditorScene");
+    }
     else if (exitButton->IsClicked())
+    {
+        SoundManager::GetInstance()->PlaySound("Click");
         ::PostQuitMessage(0);
+    }
+
+   
 }
 
 void LobbyScene::Render(HDC _hdcBack)
@@ -92,6 +111,8 @@ void LobbyScene::Render(HDC _hdcBack)
         playButton->Render(_hdcBack);
         editorButton->Render(_hdcBack);
         exitButton->Render(_hdcBack);
+
+        cursorTexture->Render(_hdcBack, InputManager::GetInstance()->GetMousePos());
     }
 }
 

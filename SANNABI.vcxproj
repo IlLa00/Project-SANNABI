@@ -155,6 +155,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="SpriteAnimation.h" />
     <ClInclude Include="TextureResource.h" />
     <ClInclude Include="TileCollisionAdapter.h" />
@@ -162,7 +163,8 @@
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="TimerManager.h" />
     <ClInclude Include="Turret.h" />
-    <ClInclude Include="UIManager.h" />
+    <ClInclude Include="VFX.h" />
+    <ClInclude Include="VFXManager.h" />
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="SpriteRenderComponent.h" />
     <ClInclude Include="Resource.h" />
@@ -200,6 +202,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Singleton.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="SpriteAnimation.cpp" />
     <ClCompile Include="TextureResource.cpp" />
     <ClCompile Include="TileCollisionAdapter.cpp" />
@@ -207,7 +210,8 @@
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="TimerManager.cpp" />
     <ClCompile Include="Turret.cpp" />
-    <ClCompile Include="UIManager.cpp" />
+    <ClCompile Include="VFX.cpp" />
+    <ClCompile Include="VFXManager.cpp" />
     <ClCompile Include="PhysicsComponent.cpp" />
     <ClCompile Include="SpriteRenderComponent.cpp" />
     <ClCompile Include="SANNABI.cpp" />

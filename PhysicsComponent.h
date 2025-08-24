@@ -4,6 +4,7 @@
 #include "CollisionManager.h"
 
 class CollisionComponent;
+class GrapplingHookProjectile;
 
 enum class EPhysicsState
 {
@@ -55,14 +56,16 @@ public:
 	void OnGroundBeginOverlap(CollisionComponent* other, HitResult info);
 	void OnGroundEndOverlap(CollisionComponent* other, HitResult info);
 
-	void StartGrappling(Vector projectilePosition);
+	void StartGrappling(GrapplingHookProjectile* projectile);
 	void EndGrappling();
 
 	void SetPhysicsState(EPhysicsState newState);
 	EPhysicsState GetPhysicsState() { return physicsState;}
 
-	void SetGrapplePoint(Vector newPoint) { grapplePoint = newPoint; }
-	Vector GetGrapplePoint() { return grapplePoint; }
+	/*void SetGrapplePoint(Vector newPoint) { grapplePoint = newPoint; }
+	Vector GetGrapplePoint() { return grapplePoint; }*/
+
+	GrapplingHookProjectile* GetCurrentProjectile() { return curPrjoectile;}
 
 	float GetDashCurve(float t);
 	bool IsDashing() const { return bIsDash; }
@@ -84,7 +87,8 @@ private:
 	bool bJumping = false;
 	bool bFalling = false;
 
-	Vector grapplePoint;
+	GrapplingHookProjectile* curPrjoectile = nullptr;
+	Vector lastProjectilePosition;
 	float grappleLength = 10.0f;
 	float angularVelocity = 0.0f; // 각속도
 

@@ -19,7 +19,7 @@ void GrapplingComponent::Init(Actor* _owner)
 void GrapplingComponent::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
-
+	
 	if (!curProjectile) return;
 
 	curProjectile->Update(deltaTime);
@@ -98,7 +98,7 @@ void GrapplingComponent::OnGrappling()
 {
 	Player* player = dynamic_cast<Player*>(owner);
 	if (player)
-		player->OnGrappling(curProjectile->GetPosition());
+		player->OnGrappling(curProjectile);
 }
 
 void GrapplingComponent::OffGrappling()

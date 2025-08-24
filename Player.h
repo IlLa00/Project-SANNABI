@@ -40,6 +40,7 @@ enum class EPlayerActionState
 
 class SpriteRenderComponent;
 class GrapplingComponent;
+class GrapplingHookProjectile;
 class CollisionComponent;
 class PhysicsComponent;
 class TextureResource;
@@ -69,7 +70,7 @@ public:
 	void OnShiftDown();
 	void OnShiftUp();
 
-	void OnGrappling(Vector projectilePosition);
+	void OnGrappling(GrapplingHookProjectile* curprojectile);
 	void OffGrappling();
 
 	void Dash();
@@ -106,7 +107,8 @@ private:
 private:
 	SpriteRenderComponent* bodyRenderComponent = nullptr;
 	SpriteRenderComponent* armRenderComponent = nullptr;
-	
+	TextureResource* chainLinkTexture = nullptr;
+
 	GrapplingComponent* grapplingComponent = nullptr;
 	CollisionComponent* collisionComponent = nullptr;
 	PhysicsComponent* physicsComponent = nullptr;  

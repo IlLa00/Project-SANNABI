@@ -37,9 +37,6 @@
     <Filter Include="Component\Grappling">
       <UniqueIdentifier>{454bec5a-919a-4fb0-a006-9e7476515112}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Manager\UI">
-      <UniqueIdentifier>{cb59f87e-0520-412e-8034-edda6efd506f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Actor\Player">
       <UniqueIdentifier>{5afb311b-d792-45bb-b667-6fd328ca8a3e}</UniqueIdentifier>
     </Filter>
@@ -103,6 +100,18 @@
     <Filter Include="Actor\Platform">
       <UniqueIdentifier>{49dad835-e82b-4ce5-bf99-81574fa91308}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Manager\Sound">
+      <UniqueIdentifier>{a7d431f9-9de1-409e-9bd7-12982ba4014c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VFX">
+      <UniqueIdentifier>{7754dd9b-f1ef-4fda-a5b9-5f0f78b8c098}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\VFX">
+      <UniqueIdentifier>{cb59f87e-0520-412e-8034-edda6efd506f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{bfb258a8-884e-4e9c-b5ac-30de891b5d71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -138,8 +147,8 @@
     <ClInclude Include="GrapplingComponent.h">
       <Filter>Component\Grappling</Filter>
     </ClInclude>
-    <ClInclude Include="UIManager.h">
-      <Filter>Manager\UI</Filter>
+    <ClInclude Include="VFXManager.h">
+      <Filter>Manager\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Actor\Player</Filter>
@@ -225,11 +234,17 @@
     <ClInclude Include="BuildingEditor.h">
       <Filter>Scene\EditorScene</Filter>
     </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Manager\UI</Filter>
-    </ClInclude>
     <ClInclude Include="Platform.h">
       <Filter>Actor\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>Manager\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="VFX.h">
+      <Filter>VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -257,8 +272,8 @@
     <ClCompile Include="GrapplingComponent.cpp">
       <Filter>Component\Grappling</Filter>
     </ClCompile>
-    <ClCompile Include="UIManager.cpp">
-      <Filter>Manager\UI</Filter>
+    <ClCompile Include="VFXManager.cpp">
+      <Filter>Manager\VFX</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Actor\Player</Filter>
@@ -344,11 +359,17 @@
     <ClCompile Include="BuildingEditor.cpp">
       <Filter>Scene\EditorScene</Filter>
     </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>Manager\UI</Filter>
-    </ClCompile>
     <ClCompile Include="Platform.cpp">
       <Filter>Actor\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Manager\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="VFX.cpp">
+      <Filter>VFX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
