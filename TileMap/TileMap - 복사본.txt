@@ -1366,38 +1366,38 @@
 1092,1872,2080,1924,1
 1092,1716,1768,1872,1
 2496,0,2704,1976,0
-0,0,104,3172,0
 1040,2496,2340,2652,1
 2340,2496,2704,2652,0
 104,2496,1040,2652,0
 104,2652,2704,3172,0
 3328,1196,3432,3172,0
 2704,3068,3328,3172,1
+0,52,104,3172,0
 [Buildings]
-2,1,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (45)_batch.bmp
-9,1,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chaper4_BG_Far01_batch.bmp
-31,1,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chaper4_BG_Far01_batch.bmp
-9,3,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chaper4_BG_Mid02_batch.bmp
-43,6,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (42)_batch.bmp
-30,13,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (46)_batch.bmp
-45,16,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (44)_batch.bmp
-9,18,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chaper4_BG_Mid02_batch.bmp
-2,22,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (35)_batch.bmp
-11,22,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (44)_batch.bmp
-24,22,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (31)_batch.bmp
-35,27,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_BackBuilding (7)_batch.bmp
-2,31,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (39)_batch.bmp
-9,33,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chaper4_BG_Mid02_batch.bmp
-34,38,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (43)_batch.bmp
-35,38,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (43)_batch.bmp
-36,38,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (43)_batch.bmp
-37,38,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (43)_batch.bmp
-38,38,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (43)_batch.bmp
-39,38,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (43)_batch.bmp
-40,38,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (43)_batch.bmp
-41,38,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (43)_batch.bmp
-35,39,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_Props (34)_batch.bmp
-45,41,C:\KHJ\SVN\Project-SANNABI\Level\Spr_Chap4_BackBuilding (3)_batch.bmp
+2,1,..\Level\Spr_Chap4_Props (45)_batch.bmp
+9,1,..\Level\Spr_Chaper4_BG_Far01_batch.bmp
+31,1,..\Level\Spr_Chaper4_BG_Far01_batch.bmp
+9,3,..\Level\Spr_Chaper4_BG_Mid02_batch.bmp
+43,6,..\Level\Spr_Chap4_Props (42)_batch.bmp
+30,13,..\Level\Spr_Chap4_Props (46)_batch.bmp
+45,16,..\Level\Spr_Chap4_Props (44)_batch.bmp
+9,18,..\Level\Spr_Chaper4_BG_Mid02_batch.bmp
+2,22,..\Level\Spr_Chap4_Props (35)_batch.bmp
+11,22,..\Level\Spr_Chap4_Props (44)_batch.bmp
+24,22,..\Level\Spr_Chap4_Props (31)_batch.bmp
+35,27,..\Level\Spr_Chap4_BackBuilding (7)_batch.bmp
+2,31,..\Level\Spr_Chap4_Props (39)_batch.bmp
+9,33,..\Level\Spr_Chaper4_BG_Mid02_batch.bmp
+34,38,..\Level\Spr_Chap4_Props (43)_batch.bmp
+35,38,..\Level\Spr_Chap4_Props (43)_batch.bmp
+36,38,..\Level\Spr_Chap4_Props (43)_batch.bmp
+37,38,..\Level\Spr_Chap4_Props (43)_batch.bmp
+38,38,..\Level\Spr_Chap4_Props (43)_batch.bmp
+39,38,..\Level\Spr_Chap4_Props (43)_batch.bmp
+40,38,..\Level\Spr_Chap4_Props (43)_batch.bmp
+41,38,..\Level\Spr_Chap4_Props (43)_batch.bmp
+35,39,..\Level\Spr_Chap4_Props (34)_batch.bmp
+45,41,..\Level\Spr_Chap4_BackBuilding (3)_batch.bmp
 [Enemies]
 [Platforms]
 58,47

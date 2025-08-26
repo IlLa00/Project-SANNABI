@@ -24,7 +24,7 @@ void GameScene::Init()
 	mapPath /= L"TileMap.tilemap";  
 
 	_BG = new TextureResource();
-	_BG->Load(L"C:/KHJ/SVN/Project-SANNABI/Level/Spr_Chaper4_BG_Sky_batch_batch.bmp"); // 'path'는 이미 wstring이므로 그대로 전달
+	_BG->Load(L"./Level/Spr_Chaper4_BG_Sky_batch_batch.bmp");
 
 	if (fs::exists(mapPath)) 
 		tileMap->LoadFromFile(mapPath.wstring());

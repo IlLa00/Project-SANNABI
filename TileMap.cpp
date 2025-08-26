@@ -24,18 +24,16 @@ void TileMap::LoadFromFile(const wstring& filepath)
     _enemySpawnMap.assign(_gridHeight, vector<bool>(_gridWidth, false));
     _platformSpawnMap.assign(_gridHeight, vector<bool>(_gridWidth, false));
 
-    // 레이어 벡터 초기화
     _layers.resize(3);
     for (auto& layer : _layers)
         layer.tiles.assign(_gridWidth * _gridHeight, -1);
 
-    // 이전에 읽고 남은 줄바꿈 문자 제거
     file.ignore();
 
     wstring line;
-    int currentSection = 0; // 0: 레이어, 1: 충돌, 2: 건물, 3: 적군, 4: 플랫폼
+    int currentSection = 0; 
 
-    while (std::getline(file, line))
+    while (getline(file, line))
     {
         if (line.empty()) continue;
 
@@ -76,7 +74,7 @@ void TileMap::LoadFromFile(const wstring& filepath)
                         if (!line.empty())
                         {
                             wistringstream tileStream(line);
-                            int x, y, encodedValue;  // encodedValue로 변경
+                            int x, y, encodedValue;
 
                             if (tileStream >> x >> comma >> y >> comma >> encodedValue)
                             {
@@ -102,7 +100,7 @@ void TileMap::LoadFromFile(const wstring& filepath)
                     getline(file, line);
                     wistringstream rectStream(line);
                     RECT rect;
-                    int typeValue = 0;  // 기본값은 Normal
+                    int typeValue = 0;
 
                     // 타입 정보가 있는 형식과 없는 형식 모두 처리
                     if (rectStream >> rect.left >> comma >> rect.top >> comma
@@ -135,7 +133,11 @@ void TileMap::LoadFromFile(const wstring& filepath)
                 getline(buildingStream, path);
                 if (x >= 0 && x < _gridWidth && y >= 0 && y < _gridHeight)
                 {
-                    _buildingMap[y][x] = path;
+                    // 읽어온 상대 경로를 절대 경로로 변환하여 저장
+                    filesystem::path tilemapPath(filepath);
+                    filesystem::path parentPath = tilemapPath.parent_path();
+                    filesystem::path absolutePath = filesystem::absolute(parentPath / path);
+                    _buildingMap[y][x] = absolutePath.wstring();
                 }
             }
         }

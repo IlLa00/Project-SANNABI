@@ -1,38 +1,8 @@
-﻿  EditorScene.cpp
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(179,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(180,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(199,14): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(200,14): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(210,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(211,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(262,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(263,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(292,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(293,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(309,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(310,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(351,50): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(351,30): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(352,70): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(352,28): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(357,49): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(357,17): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(358,69): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(358,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(403,20): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(402,20): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(435,18): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(436,18): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(467,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(468,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(496,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(497,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(537,41): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(538,39): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(539,43): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(540,45): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(565,12): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(566,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(567,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\EditorScene.cpp(568,14): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+﻿  TileMap.cpp
+C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(295,16): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(296,14): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(297,16): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(298,14): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(330,54): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(330,40): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   SANNABI.vcxproj -> C:\KHJ\SVN\Project-SANNABI\x64\Debug\SANNABI.exe
