@@ -35,6 +35,8 @@ public:
 	bool GetUseRotation() const { return bUseRotation; }
 	Vector GetRotationPivot() const { return rotationPivot; }
 
+	void SetVisibility(bool newState) { bVisibility = newState; }
+
 private:
 	Animator* animator;
 	float scale;
@@ -44,5 +46,7 @@ private:
 
 	bool bUseRotation = false;
 	Vector rotationPivot = { 0.5f,0.5f };
+
+	bool bVisibility = true;
 };
 

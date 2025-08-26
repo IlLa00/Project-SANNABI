@@ -186,8 +186,8 @@ enum class ECollisionChannel
 const int TileSize = 52;
 const int OriginTileSize = 52;	// 원본 타일 사이즈
 
-const int GridWidth = 60;
-const int GridHeight = 40;
+const int GridWidth = 120;
+const int GridHeight = 80;
 
 const int TileMapWidth = 4;
 const int TileMapHeight = 4;

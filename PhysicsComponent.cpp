@@ -194,7 +194,8 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 	lastProjectilePosition = currentProjectilePos;
 
 	Vector toHookCurrent = currentPos - currentProjectilePos;
-	float currentDistance = toHookCurrent.Length();
+	float currentDistance = toHookCurrent.Length(); // 0일때 예외처리
+
 	GrapplingComponent* grappleComponent = owner->GetComponent<GrapplingComponent>();
 	
 	if (!grappleComponent) return;
@@ -618,8 +619,8 @@ void PhysicsComponent::KnockBack(Vector collisionNormal)
 
 	Vector knockbackDirection = Vector(collisionNormal.x, -collisionNormal.y);
 
-	float knockbackForce = 200.0f;     
-	float upwardForce = 150.0f;       
+	float knockbackForce = 300.0f;     
+	float upwardForce = 250.0f;       
 
 	Vector velocity = owner->GetVelocity();
 
@@ -645,10 +646,14 @@ void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult
 {
 	if (other && (other->GetCollisionChannel() == ECollisionChannel::WorldStatic || other->GetCollisionChannel() == ECollisionChannel::WorldDynamic))
 	{
-		Vector normal = info.collisionNormal;
 		Player* player = dynamic_cast<Player*>(owner);
 		if (!player) return;
 
+ 		if (physicsState == EPhysicsState::Grappling ||
+			physicsState == EPhysicsState::ExtendingChain)
+			player->OffGrappling();
+
+		Vector normal = info.collisionNormal;
 		if (normal.x == 0 && normal.y == -1) // 지면
 		{
 			SetPhysicsState(EPhysicsState::Normal);
@@ -794,18 +799,18 @@ void PhysicsComponent::EndGrappling()
 	bJustReleasedGrapple = true;
 	grappleReleaseTimer = 0.0f;
 
+	curPrjoectile = nullptr;
+	lastProjectilePosition = Vector(0, 0);
+
+	angularVelocity = 0.0f;
+	grappleLength = 0.0f;
+
 	Player* player = dynamic_cast<Player*>(owner);
 	if (player && !bOnGround && player->GetActionState() != EPlayerActionState::TakeDamage)
 	{
 		player->UpdateMovementState(EPlayerMovementState::Fall);
 		player->UpdateActionState(EPlayerActionState::None);
 	}
-
-	curPrjoectile = nullptr;
-	lastProjectilePosition = Vector(0,0);
-
-	angularVelocity = 0.0f;
-	grappleLength = 0.0f;
 }
 
 void PhysicsComponent::SetPhysicsState(EPhysicsState newState)
@@ -817,7 +822,7 @@ float PhysicsComponent::GetDashCurve(float t)
 {
 	if (t <= 0.0f) return 0.0f;
 	if (t >= 1.0f) return 1.0f;
-
+	
 	// 여러 커브 옵션 중 선택
 
 	// 옵션 1: 시작 느림 → 중간 빠름 → 끝 느림 (S-curve)

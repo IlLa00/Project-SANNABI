@@ -35,10 +35,10 @@ public:
 
 	unordered_set<Component*> GetComponents() { return components; }
 
-	void SetPosition(Vector newPosition) { position = newPosition; }
+	void SetPosition(Vector newPosition);
 	Vector GetPosition() { return position; }
 
-	void SetVelocity(Vector newVelocity) { velocity = newVelocity; }
+	void SetVelocity(Vector newVelocity);
 	Vector GetVelocity() { return velocity; }
 
 	void SetAcceleration(Vector newAcceleration) { acceleration = newAcceleration; }

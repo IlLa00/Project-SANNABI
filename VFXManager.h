@@ -21,7 +21,7 @@ public:
 
     void RegisterVFX(const string& key, const string& spriteSheetPath, int frameCount, float duration, bool loop);
 
-    void Play(const string& key, Vector position);
+    void Play(const string& key, Vector position, Vector direction = Vector(0,0));
     void Stop(const string& key);
 
 private:

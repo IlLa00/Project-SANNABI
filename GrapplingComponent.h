@@ -34,6 +34,8 @@ private:
 	float pullSpeed = 5000.0f;
 	float fireCooldown = 0.5f;
 
+	Vector startGrapplePostion;
+
 	bool bFiring = false;
 	bool bAttached = false;
 	Vector attachedPoint;

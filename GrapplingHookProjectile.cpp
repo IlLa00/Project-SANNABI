@@ -68,5 +68,4 @@ void GrapplingHookProjectile::Deactivate()
 	position = Vector(-100, -100);
 
 	SetFlying(false);
-
 }

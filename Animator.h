@@ -2,13 +2,15 @@
 
 class Actor;
 class Component;
+class VFX;
 class TextureResource;
 class SpriteAnimation;
 
 class Animator
 {
 public:
-	void Init(Actor* _owner, Component* _ownerComponent, bool IsVFX = false);
+	void Init(Actor* _owner, Component* _ownerComponent);
+	void Init(VFX* ownerVFX);
 	void Update();
 	void Render(HDC hdc, float scale);
 	void Destroy();
@@ -37,6 +39,7 @@ private:
 private:
 	Actor* owner;
 	Component* ownerComponent;
+	VFX* _ownerVFX;
 
 	map<string, SpriteAnimation*> animations;
 	SpriteAnimation* currentAnimation = nullptr;

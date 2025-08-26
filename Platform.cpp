@@ -35,7 +35,7 @@ void Platform::Update(float deltaTime)
 	}
 	else
 	{
-		Vector movement = Vector(0, -fallingSpeed * deltaTime);
+		Vector movement = Vector(0,  (- fallingSpeed / 2) * deltaTime);
 		position = position + movement;
 	}
 

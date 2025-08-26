@@ -41,7 +41,7 @@ void SpriteRenderComponent::Render(HDC _hdcBack)
 {
 	Super::Render(_hdcBack);
 
-	if (animator)
+	if (animator && bVisibility)
 	{
 		animator->SetRotationInfo(bUseRotation, rotation, rotationPivot);
 		animator->Render(_hdcBack, scale);

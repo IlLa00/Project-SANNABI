@@ -52,13 +52,13 @@ void VFXManager::RegisterVFX(const string& key, const string& spriteSheetPath, i
     }
 }
 
-void VFXManager::Play(const string& key, Vector position)
+void VFXManager::Play(const string& key, Vector position, Vector direction)
 {
     VFX* vfxToPlay = FindAvailableVFX(key);
 
     if (vfxToPlay)
     {
-        vfxToPlay->Play(position);
+        vfxToPlay->Play(position, atan2(direction.y, direction.x));
 
         // 활성화 목록에 추가 (중복 방지를 위해 확인 필요)
         if (find(activeVFXs.begin(), activeVFXs.end(), vfxToPlay) == activeVFXs.end())

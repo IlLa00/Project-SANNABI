@@ -159,12 +159,12 @@ void EditorScene::Render(HDC _hdcBack)
 			modestr = L"Enemy";
 
 		wstring str = format(L"Layer:{0}, State:{1}", _selectedLayer, modestr);
-		::TextOut(_hdcBack, 5, 10, str.c_str(), static_cast<int>(str.size()));
+		::TextOut(_hdcBack, 5, 30, str.c_str(), static_cast<int>(str.size()));
 	}
 
 	{
 		wstring str = format(L"x:{0}, y:{1}", x, y);
-		::TextOut(_hdcBack, 5, 30, str.c_str(), static_cast<int>(str.size()));
+		::TextOut(_hdcBack, 5, 60, str.c_str(), static_cast<int>(str.size()));
 	}
 }
 
@@ -410,27 +410,6 @@ void EditorScene::DrawTileOnGrid(HDC hdc, int layer, int gridX, int gridY)
 		OriginTileSize,
 		_transparent
 	);
-
-	// Death 타일에 추가 표시 (선택적)
-	if (tileInfo.tilesetType == 1)
-	{
-		// Death 타일에 빨간 테두리 표시 (디버깅용)
-		/*
-		HPEN redPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-		HPEN oldPen = (HPEN)SelectObject(hdc, redPen);
-		HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(NULL_BRUSH));
-
-		Rectangle(hdc,
-			gridX * TileSize - cameraPosition.x,
-			gridY * TileSize - cameraPosition.y,
-			(gridX + 1) * TileSize - cameraPosition.x,
-			(gridY + 1) * TileSize - cameraPosition.y);
-
-		SelectObject(hdc, oldPen);
-		SelectObject(hdc, oldBrush);
-		DeleteObject(redPen);
-		*/
-	}
 }
 
 void EditorScene::DrawBuildings(HDC hdc)
@@ -614,19 +593,18 @@ void EditorScene::SaveTileMap()
 	{
 		// 파일 이름이 선택되었으면 저장
 		wstring wFileName = szFileName;
-		wstring fileName(wFileName.begin(), wFileName.end());
 
-		wofstream file(fileName);
+		wofstream file(wFileName);
 		if (file.is_open())
 		{
 			// 그리드 크기 저장
-			file << GridWidth << "," << GridHeight << "," << TileMapWidth << "," << TileMapHeight << endl;
+			file << GridWidth << "," << GridHeight << "," << TileMapWidth << "," << TileMapHeight << std::endl;
 
 			// 타일 데이터 저장
 			for (int i = 0; i < _layerCount; i++)
 			{
 				int size = _layer[i].GetValidCount();
-				file << i << ":" << size << std::endl;
+				file << i << ":" << size << endl;
 
 				for (int y = 0; y < GridHeight; y++)
 				{
@@ -645,43 +623,61 @@ void EditorScene::SaveTileMap()
 			{
 				file << collision.rect.left << "," << collision.rect.top << ","
 					<< collision.rect.right << "," << collision.rect.bottom << ","
-					<< static_cast<int>(collision.type) << endl;
+					<< static_cast<int>(collision.type) << std::endl;
 			}
 
 			file << L"[Buildings]" << endl;
+
+			// 현재 실행 파일의 경로를 기준으로 상대 경로를 계산
+			filesystem::path currentPath = filesystem::current_path();
+
 			for (int y = 0; y < GridHeight; y++)
 			{
 				for (int x = 0; x < GridWidth; x++)
 				{
 					const wstring& buildingPath = _buildingMap[y][x];
 					if (!buildingPath.empty())
-						file << x << "," << y << "," << buildingPath << endl;
+					{
+						// 절대 경로를 상대 경로로 변환
+						filesystem::path absolutePath(buildingPath);
+						filesystem::path relativePath;
+
+						// 경로가 이미 상대 경로인지 확인
+						if (absolutePath.is_absolute()) {
+							relativePath = std::filesystem::relative(absolutePath, currentPath);
+						}
+						else {
+							relativePath = absolutePath;
+						}
+
+						file << x << "," << y << "," << relativePath.wstring() << std::endl;
+					}
 				}
 			}
 
-			file << L"[Enemies]" << endl;
+			file << L"[Enemies]" << std::endl;
 			for (int y = 0; y < GridHeight; ++y)
 			{
 				for (int x = 0; x < GridWidth; ++x)
 				{
 					if (_enemySpawnMap[y][x])
-						file << x << "," << y << endl;
+						file << x << "," << y << std::endl;
 				}
 			}
-			file << L"[Platforms]" << endl;
+			file << L"[Platforms]" << std::endl;
 			for (int y = 0; y < GridHeight; ++y)
 			{
 				for (int x = 0; x < GridWidth; ++x)
 				{
 					if (_platformSpawnMap[y][x])
-						file << x << "," << y << endl;
+						file << x << "," << y << std::endl;
 				}
 			}
 
 			file.close();
 			MessageBox(mainWnd, L"타일맵이 저장되었습니다.", L"저장 완료", MB_OK | MB_ICONINFORMATION);
 		}
-		else 
+		else
 			MessageBox(mainWnd, L"파일을 저장할 수 없습니다.", L"오류", MB_OK | MB_ICONERROR);
 
 	}

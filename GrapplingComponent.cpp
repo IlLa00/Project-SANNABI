@@ -21,17 +21,21 @@ void GrapplingComponent::Update(float deltaTime)
 	Super::Update(deltaTime);
 	
 	if (!curProjectile) return;
+	if (!bFiring) return;
 
 	curProjectile->Update(deltaTime);
 
 	Vector projectilePos = curProjectile->GetPosition();
 
-	if (!bFiring) return;
-
 	// 사슬팔의 최대길이보다 길면 돌려주기
-	Vector player_to_projectile = projectilePos - owner->GetPosition();
+	Vector player_to_projectile = projectilePos - startGrapplePostion;
+
 	if (player_to_projectile.Length() > fireChainLength)
-		OffGrappling();
+	{
+		Player* player = dynamic_cast<Player*>(owner);
+		if (player)
+			player->OffGrappling();
+	}
 }
 
 void GrapplingComponent::Render(HDC _hdcBack)
@@ -52,6 +56,7 @@ void GrapplingComponent::FireGrapple(Vector direction)
 	if (poolInstance && !curProjectile) // 발사!
 	{
 		curProjectile = poolInstance->GetProjectile(owner->GetPosition(), direction, pullSpeed);
+		startGrapplePostion = owner->GetPosition();
 		if (curProjectile)
 		{
 			bFiring = true;
@@ -69,15 +74,14 @@ void GrapplingComponent::FireGrapple(Vector direction)
 							return;
 						
 						curProjectile->SetFlying(false);
+						bFiring = false;
 
 						// 여기서 지면 천장 벽 등등일지.. 캐릭터일지!
-						if(other->GetCollisionChannel() == ECollisionChannel::WorldStatic ||
+						if (other->GetCollisionChannel() == ECollisionChannel::WorldStatic ||
 							other->GetCollisionChannel() == ECollisionChannel::WorldDynamic)
 							OnGrappling();
 						else if (other->GetCollisionChannel() == ECollisionChannel::Character)
 						{
-							bFiring = false;
-
 							Player* player = dynamic_cast<Player*>(owner);
 							if (player)
 							{
@@ -108,5 +112,6 @@ void GrapplingComponent::OffGrappling()
 	GrapplingHookProjectilePool::GetInstance()->ReturnProjectile(curProjectile);
 	curProjectile = nullptr; // 주의!
 	bFiring = false;
+	startGrapplePostion = Vector(0, 0);
 }
 

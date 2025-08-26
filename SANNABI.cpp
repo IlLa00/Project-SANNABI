@@ -314,7 +314,13 @@ LRESULT CALLBACK Sub2WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
             ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
             if (GetOpenFileName(&ofn) == TRUE)
-                engine->GetBuildingEditor()->SetSelectedBitmapPath(szFile);
+            {
+               filesystem::path currentPath = filesystem::current_path();
+               filesystem::path selectedPath(szFile);
+               filesystem::path relativePath = filesystem::relative(selectedPath, currentPath);
+
+               engine->GetBuildingEditor()->SetSelectedBitmapPath(relativePath.wstring());
+            }
 
             break;
         }

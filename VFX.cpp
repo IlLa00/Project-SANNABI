@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "VFX.h"
 #include "VFXManager.h"
 #include "Animator.h"
@@ -6,7 +6,7 @@
 void VFX::Init(const string& key, const string& spriteSheetPath, int frameCount, float duration, bool loop)
 {
     animator = new Animator();
-    animator->Init(nullptr, nullptr, true);
+    animator->Init(this);
 
     _key = key;
     _loop = loop;
@@ -34,11 +34,12 @@ void VFX::Render(HDC hdc)
     animator->Render(hdc, 1.f);
 }
 
-void VFX::Play(Vector position)
+void VFX::Play(Vector position, float rotation)
 {
     isActive = true;
+    _position = position;
+    _rotation = rotation;
 
-    animator->SetVFXPosition(position);
     animator->PlayAnimation(_key, true);
 }
 

@@ -1,20 +1,25 @@
 ﻿#include "pch.h"
 #include "Animator.h"
 #include "TimerManager.h"
+#include "VFX.h"
 #include "SpriteAnimation.h"
 #include "TextureResource.h"
 #include "Actor.h"
 #include "Component.h"
 
-void Animator::Init(Actor* _owner, Component* _ownerComponent, bool IsVFX)
+void Animator::Init(Actor* _owner, Component* _ownerComponent)
 {
 	if (_owner)
 	{
 		owner = _owner;
 		ownerComponent = _ownerComponent;
 	}
+}
 
-	bVFX = IsVFX;
+void Animator::Init(VFX* ownerVFX)
+{
+	if (ownerVFX)
+		_ownerVFX = ownerVFX;
 }
 
 void Animator::Update()
@@ -34,7 +39,7 @@ void Animator::Update()
 
 		if (currentFrameIndex >= currentAnimation->GetFrameCount())
 		{
-			if (currentAnimation->IsLoop() && !bVFX)
+			if (currentAnimation->IsLoop() && !_ownerVFX)
 				currentFrameIndex = 0;
 			else
 			{
@@ -49,30 +54,42 @@ void Animator::Render(HDC hdc, float scale)
 {
 	if (!currentAnimation)
 		return;
+
 	TextureResource* spriteSheet = currentAnimation->GetSpriteSheet();
 	if (!spriteSheet)
 		return;
 
 	RECT frameRect = GetCurrentFrameRect();
 
-	if (!owner && !ownerComponent) // VFX전용
+	if (!owner && !ownerComponent && _ownerVFX) // VFX전용
 	{
-		Vector pos = VFXPostion;
+		Vector pos = _ownerVFX->GetPosition();
+		float rotation = _ownerVFX->GetRotation();
 
 		int originalWidth = frameRect.right - frameRect.left;
 		int originalHeight = frameRect.bottom - frameRect.top;
 		int scaledWidth = static_cast<int>(originalWidth * scale);
 		int scaledHeight = static_cast<int>(originalHeight * scale);
 
-		int renderWidth = scaledWidth;
-		if (bflip)
-			renderWidth = -scaledWidth;
-
-		spriteSheet->Render(hdc,
-			frameRect.left, frameRect.top,
-			originalWidth, originalHeight,
-			pos, renderWidth, scaledHeight);
-
+		if (rotation != 0.0f)  
+		{
+			spriteSheet->RenderRotated(hdc,
+				frameRect.left, frameRect.top,
+				originalWidth, originalHeight,
+				pos, scaledWidth, scaledHeight,
+				rotation,  
+				rotationPivot, bflip);
+		}
+		else
+		{
+			int renderWidth = scaledWidth;
+			if (bflip)
+				renderWidth = -scaledWidth;
+			spriteSheet->Render(hdc,
+				frameRect.left, frameRect.top,
+				originalWidth, originalHeight,
+				pos, renderWidth, scaledHeight);
+		}
 		return;
 	}
 	

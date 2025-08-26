@@ -7,6 +7,24 @@ void Actor::Init()
 	
 }
 
+void Actor::SetPosition(Vector newPosition)
+{
+	if (newPosition.x < 0 || newPosition.y < 0)
+	{
+		int i = 0;
+	}
+	position = newPosition;
+}
+
+void Actor::SetVelocity(Vector newVelocity)
+{
+	if (newVelocity.y < -10000)
+	{
+		int i = 0;
+	}
+	velocity = newVelocity;
+}
+
 void Actor::Update(float deltaTime)
 {
 	if (!bActive) return;

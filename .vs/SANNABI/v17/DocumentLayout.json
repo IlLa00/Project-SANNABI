@@ -3,48 +3,20 @@
   "WorkspaceRootPath": "C:\\KHJ\\SVN\\Project-SANNABI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\Player.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:Player.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\GameScene.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:GameScene.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\SceneManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:SceneManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\CameraManager.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:CameraManager.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\CameraManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:CameraManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\Platform.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:Platform.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\EditorScene.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:EditorScene.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\GameScene.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:GameScene.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\Defines.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:Defines.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\TileMap.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:TileMap.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\SANNABI.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:SANNABI.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\TileMap.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:TileMap.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\EditorScene.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:EditorScene.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\SceneManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:SceneManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -54,149 +26,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 400,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Player.cpp",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\Player.cpp",
-              "RelativeDocumentMoniker": "Player.cpp",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\Player.cpp",
-              "RelativeToolTip": "Player.cpp",
-              "ViewState": "AgIAAMsAAAAAAAAAAAAqwOUAAAABAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "Defines.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\Defines.cpp",
+              "RelativeDocumentMoniker": "Defines.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\Defines.cpp",
+              "RelativeToolTip": "Defines.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-22T10:51:51.65Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "CameraManager.cpp",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\CameraManager.cpp",
-              "RelativeDocumentMoniker": "CameraManager.cpp",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\CameraManager.cpp",
-              "RelativeToolTip": "CameraManager.cpp",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAqwCMAAAAaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-22T10:47:27.794Z",
+              "WhenOpened": "2025-08-26T04:35:50.127Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "CameraManager.h",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\CameraManager.h",
-              "RelativeDocumentMoniker": "CameraManager.h",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\CameraManager.h",
-              "RelativeToolTip": "CameraManager.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-08-22T10:47:27.366Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Platform.h",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\Platform.h",
-              "RelativeDocumentMoniker": "Platform.h",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\Platform.h",
-              "RelativeToolTip": "Platform.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAkAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-08-22T10:45:57.746Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "TileMap.cpp",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\TileMap.cpp",
-              "RelativeDocumentMoniker": "TileMap.cpp",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\TileMap.cpp",
-              "RelativeToolTip": "TileMap.cpp",
-              "ViewState": "AgIAAAMBAAAAAAAAAAAqwBUBAAA1AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-22T10:41:22.09Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "TileMap.h",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\TileMap.h",
-              "RelativeDocumentMoniker": "TileMap.h",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\TileMap.h",
-              "RelativeToolTip": "TileMap.h",
-              "ViewState": "AgIAAC0AAAAAAAAAAAAAAEwAAAAqAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-08-22T10:40:47.961Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "GameScene.h",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\GameScene.h",
-              "RelativeDocumentMoniker": "GameScene.h",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\GameScene.h",
-              "RelativeToolTip": "GameScene.h",
-              "ViewState": "AgIAABgAAAAAAAAAAAAAAC0AAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-08-22T10:40:10.943Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "GameScene.cpp",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\GameScene.cpp",
-              "RelativeDocumentMoniker": "GameScene.cpp",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\GameScene.cpp",
-              "RelativeToolTip": "GameScene.cpp",
-              "ViewState": "AgIAAE4AAAAAAAAAAAAiwGUAAAACAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-22T10:39:46.22Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
               "Title": "SceneManager.cpp",
               "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\SceneManager.cpp",
               "RelativeDocumentMoniker": "SceneManager.cpp",
               "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\SceneManager.cpp",
               "RelativeToolTip": "SceneManager.cpp",
-              "ViewState": "AgIAACoAAAAAAAAAAAAAADkAAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-22T10:34:57.805Z",
+              "WhenOpened": "2025-08-26T04:28:10.302Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 2,
+              "Title": "SANNABI.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\SANNABI.cpp",
+              "RelativeDocumentMoniker": "SANNABI.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\SANNABI.cpp",
+              "RelativeToolTip": "SANNABI.cpp",
+              "ViewState": "AgIAACMBAAAAAAAAAAAAADwBAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-08-26T04:27:33.911Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "EditorScene.cpp",
               "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\EditorScene.cpp",
               "RelativeDocumentMoniker": "EditorScene.cpp",
               "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\EditorScene.cpp",
               "RelativeToolTip": "EditorScene.cpp",
-              "ViewState": "AgIAANICAAAAAAAAAAAqwOYCAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAK0CAAAAAAAAAAAkwLsCAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-22T10:27:10.877Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "EditorScene.h",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\EditorScene.h",
-              "RelativeDocumentMoniker": "EditorScene.h",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\EditorScene.h",
-              "RelativeToolTip": "EditorScene.h",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAqwCwAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-08-22T10:25:58.398Z",
+              "WhenOpened": "2025-08-26T04:26:31.157Z",
               "EditorCaption": ""
             }
           ]

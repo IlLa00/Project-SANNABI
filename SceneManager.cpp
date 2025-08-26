@@ -20,7 +20,7 @@ void SceneManager::Init(HWND hwnd, HWND subWnd, HWND subWnd2)
 	editorScene->SetSub2Win(subWnd2);
 	Scenes.insert({ "EditorScene",editorScene });
 	
-	currentScene = gameScene;
+	currentScene = editorScene;
 
 	currentScene->Init();
 }

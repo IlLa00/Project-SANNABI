@@ -72,7 +72,7 @@ void TileMap::LoadFromFile(const wstring& filepath)
                 {
                     for (int i = 0; i < tileCount; i++)
                     {
-                        std::getline(file, line);
+                        getline(file, line);
                         if (!line.empty())
                         {
                             wistringstream tileStream(line);
@@ -99,7 +99,7 @@ void TileMap::LoadFromFile(const wstring& filepath)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    std::getline(file, line);
+                    getline(file, line);
                     wistringstream rectStream(line);
                     RECT rect;
                     int typeValue = 0;  // 기본값은 Normal
