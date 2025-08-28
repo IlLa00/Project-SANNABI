@@ -1,7 +1,10 @@
 # Project SANNABI    
-컴포넌트 기반 아키텍처를 활용해 개발한 산나비 모작 포트폴리오 입니다.     
-C++ / WinAPI / VS 2022 / 제작기간 : 25.07.30 ~ 25.08.27 (1달)    
-Notion : https://www.notion.so/Project-SANABI-234894b38b1080baa682d16e91d4a5b1?source=copy_link    
+컴포넌트 기반 아키텍처를 활용해 개발한 산나비 모작 WinAPI포트폴리오 입니다.     
+사용언어 : C++      
+사용 툴 : VS 2022    
+형상 관리 : GitHub Desktop     
+제작 기간 : 25.07.30 ~ 25.08.27 (1달)       
+제작 일지 : https://www.notion.so/Project-SANABI-234894b38b1080baa682d16e91d4a5b1?source=copy_link    
 # 영상
 https://github.com/user-attachments/assets/f8c4c865-938c-41e9-b4fe-372d6d66b446
 # 들어가기 앞서,
