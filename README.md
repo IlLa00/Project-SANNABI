@@ -21,6 +21,9 @@ https://github.com/user-attachments/assets/f8c4c865-938c-41e9-b4fe-372d6d66b446
 - PhysicsComponent는 기본적인 이동부터 점프나 대쉬, 피격 등 모든 물리적 상호작용을 담당합니다.
 - PhysicsComponent는 EPhysicsState에 따라 고유의 물리 업데이트 로직을 적용합니다, 이는 복잡한 움직임 패턴을 효과적으로 관리하고, 상태 전환에 따른 버그 발생을 줄이는데 핵심입니다.
 - 사슬팔 부착 시, **접선 벡터와 각속도, 각가속도의 개념**을 도입한 **진자 운동 시뮬레이션**을 실행합니다.
+![1-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/6a7fb0a1-f707-471f-8323-f83e7286391c)
+![2-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/96a59514-bb06-4be6-9377-e79d22348e0e)
+
 <details>
   <summary>PhysicsComponent::UpdateGrapplePhysics() 코드</summary>
     
