@@ -3,8 +3,7 @@
 C++ / WinAPI / VS 2022 / 제작기간 : 25.07.30 ~ 25.08.27 (1달)    
 Notion : https://www.notion.so/Project-SANABI-234894b38b1080baa682d16e91d4a5b1?source=copy_link    
 # 영상
-<img src="https://github.com/user-attachments/assets/588a8848-e051-47d9-af6a-f699f2497d7f" alt="게임 플레이 GIF" width="80%"> 
-
+https://github.com/user-attachments/assets/f8c4c865-938c-41e9-b4fe-372d6d66b446
 # 들어가기 앞서,
 산나비라는 게임은 Unity Engine으로 만든 2D 플랫포머 로프액션 어드벤처 장르의 게임입니다, 원작의 스타일리쉬한 조작감을 살리는 것과 구조 설계에 최대한 집중했습니다.
 # 기술 설명    
