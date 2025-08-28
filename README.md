@@ -3,6 +3,7 @@
 C++ / WinAPI / VS 2022 / 제작기간 : 25.07.30 ~ 25.08.27 (1달)    
 Notion : https://www.notion.so/Project-SANABI-234894b38b1080baa682d16e91d4a5b1?source=copy_link    
 # 영상
+![SANNABI (1)](https://github.com/user-attachments/assets/588a8848-e051-47d9-af6a-f699f2497d7f)
 
 # 들어가기 앞서,
     
