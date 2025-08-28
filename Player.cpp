@@ -78,7 +78,7 @@ void Player::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
 
-	CameraManager::GetInstance()->Update(position, Vector(5000, 5000), deltaTime);
+	CameraManager::GetInstance()->Update(position, Vector(mapSizeX, mapSizeY), deltaTime);
 
 	if (actionState == EPlayerActionState::GrappleSwing ||
 		actionState == EPlayerActionState::GrappleReelIn)
@@ -138,7 +138,7 @@ void Player::Update(float deltaTime)
 		if (chargingTimer >= chargeTime && !bHasDetected) // 1초가 지나면
 		{
 			UpdateActionState(EPlayerActionState::ChargeReady);
-			detectComponents = CollisionManager::GetInstance()->DetectEnemiesInRange(position, 500.f, collisionComponent);
+			detectComponents = CollisionManager::GetInstance()->DetectEnemiesInRange(position, 1000.f, collisionComponent);
 
 			target = nullptr;
 			float minDistSq = FLT_MAX;
@@ -208,6 +208,10 @@ void Player::Render(HDC _hdcBack)
 
 void Player::Destroy()
 {
+	SAFE_DELETE(chainLinkTexture);
+	
+	detectComponents.clear();
+
 	Super::Destroy();
 }
 
@@ -218,13 +222,20 @@ void Player::OnCharacterBeginOverlap(CollisionComponent* other, HitResult info)
 
 	Super::OnCharacterBeginOverlap(other, info);
 
+	if (other->GetCollisionChannel() == ECollisionChannel::Character &&
+		actionState == EPlayerActionState::DashAttack)
+	{
+		Attack();
+		
+		return;
+	}
 	if (actionState == EPlayerActionState::GrappleFire ||
 		actionState == EPlayerActionState::GrappleReelIn ||
 		actionState == EPlayerActionState::GrappleSwing)
 		OffGrappling();
-
-	CameraManager::GetInstance()->StartCameraShake(0.5f, 5.f);
-	physicsComponent->KnockBack(info.collisionNormal);
+	
+	if(other->GetCollisionChannel() != ECollisionChannel::Character)
+		physicsComponent->KnockBack(info.collisionNormal);
 
 	UpdateActionState(EPlayerActionState::TakeDamage);
 
@@ -232,6 +243,8 @@ void Player::OnCharacterBeginOverlap(CollisionComponent* other, HitResult info)
 	collisionComponent->SetCollisionChannel(ECollisionChannel::CharacterInvincible); // 얘는 한 1초
 
 	SetDelayedFunction(&Player::OnDelayedControlRecovery, &Player::OnDelayedCollisionRecovery, 0.5f, 1.f);
+
+	CameraManager::GetInstance()->StartCameraShake(0.5f, 5.f);
 }
 
 void Player::SetDelayedFunction(void(Player::* func1)(), void(Player::* func2)(), float delay1, float delay2)
@@ -367,7 +380,6 @@ void Player::OnMouseDown()
 	mouse_direction.Normalize();
 
 	UpdateActionState(EPlayerActionState::GrappleFire);
-
 	grapplingComponent->FireGrapple(mouse_direction);
 
 	VFXManager::GetInstance()->Play("Fire", position, mouse_direction);
@@ -430,6 +442,21 @@ void Player::Attack()
 	if (!target) return;
 
 	target->TakeDamage();
+
+	bAttacking = false;
+
+	physicsComponent->AirDash();
+	UpdateActionState(EPlayerActionState::AirDash);
+
+	target = nullptr;
+
+	if (detectComponents.size() > 0)
+		detectComponents.clear();
+
+	if (chargingTimer > 0.f)
+		chargingTimer = 0.f;
+
+	CameraManager::GetInstance()->StartCameraShake(0.5f, 5.f);
 }
 
 void Player::OnMouseUp()
@@ -437,16 +464,7 @@ void Player::OnMouseUp()
 	if (bDamaging) return;
 
 	if (actionState == EPlayerActionState::DashAttack)
-	{
 		Attack();
-
-		bAttacking = false;
-
-		physicsComponent->AirDash();
-		UpdateActionState(EPlayerActionState::AirDash);
-
-		target = nullptr;
-	}
 	else if (actionState == EPlayerActionState::GrappleSwing
 		|| actionState == EPlayerActionState::GrappleReelIn)
 		OffGrappling();
@@ -720,7 +738,6 @@ void Player::DebugRender(HDC _hdcBack)
 		wstring output = std::format(L"Velocity({:.2f}, {:.2f}) / Direction({:.2f}, {:.2f})", velocity.x, velocity.y, direction.x, direction.y);
 		::TextOut(_hdcBack, 25, 40, output.c_str(), static_cast<int32>(output.size()));
 	}
-	
 
 	wstring movementStr = GetMovementStateString(movementState);
 	wstring actionStr = GetActionStateString(actionState);
@@ -751,6 +768,5 @@ void Player::DebugRender(HDC _hdcBack)
 		wstring output = std::format(L"ca.x({:.2f},ca.y({:.2f}", camerapos.x, camerapos.y);
 		// 3. TextOut은 그대로 사용
 		::TextOut(_hdcBack, 25, 150, output.c_str(), static_cast<int32>(output.size()));
-		
 	}
 }

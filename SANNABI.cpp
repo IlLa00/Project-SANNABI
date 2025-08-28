@@ -175,12 +175,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    RECT windowRect = { 0, 0, GWinSizeX, GWinSizeY };
-   ::AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, true);
+   ::AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, false);
 
    // 실제로 윈도우창을 생성한다.
    // PC에 여러개의 윈도우창이 떠있을수 있는데 각 윈도우창을 구분하는 핸들
    gHwnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-       CW_USEDEFAULT, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, hInstance, nullptr);
+       0, 20, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, hInstance, nullptr);
 
    if (!gHwnd)
    {

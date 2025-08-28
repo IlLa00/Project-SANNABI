@@ -53,6 +53,13 @@ void Bullet::Render(HDC _hdcBack)
 	);
 }
 
+void Bullet::Destroy()
+{
+	Super::Destroy();
+
+	SAFE_DELETE(texture);
+}
+
 void Bullet::Activate(Vector _position, Vector _direction, float _speed)
 {
 	bActive = true;

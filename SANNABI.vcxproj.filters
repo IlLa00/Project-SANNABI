@@ -112,6 +112,9 @@
     <Filter Include="UI">
       <UniqueIdentifier>{bfb258a8-884e-4e9c-b5ac-30de891b5d71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Actor\Mari">
+      <UniqueIdentifier>{3105b65d-0224-4a20-bb53-a8c19c62019b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -246,6 +249,9 @@
     <ClInclude Include="Button.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="Mari.h">
+      <Filter>Actor\Mari</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SANNABI.cpp">
@@ -370,6 +376,9 @@
     </ClCompile>
     <ClCompile Include="VFX.cpp">
       <Filter>VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Mari.cpp">
+      <Filter>Actor\Mari</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

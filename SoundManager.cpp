@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "SoundManager.h"
 #include <algorithm>
 
@@ -58,7 +58,7 @@ void SoundManager::Destroy()
 bool SoundManager::LoadSound(const string& key, const string& path, SoundType type)
 {
     if (soundBuffers.find(key) != soundBuffers.end())
-        return true; 
+        return true;
 
     IDirectSoundBuffer8* buffer = nullptr;
     if (LoadWaveFile(path, &buffer))
@@ -67,7 +67,6 @@ bool SoundManager::LoadSound(const string& key, const string& path, SoundType ty
         soundTypes[key] = type;
         return true;
     }
-
     return false;
 }
 
@@ -80,7 +79,7 @@ void SoundManager::PlaySound(const string& key, bool isLooping)
         DWORD dwFlags = isLooping ? DSBPLAY_LOOPING : 0;
         it->second->Play(0, 0, dwFlags);
 
-        // BGM Æ®·¡Å·
+        // BGM íŠ¸ëž˜í‚¹
         auto typeIt = soundTypes.find(key);
         if (typeIt != soundTypes.end() && typeIt->second == SoundType::BGM)
         {
@@ -97,7 +96,7 @@ void SoundManager::StopSound(const string& key)
     {
         it->second->Stop();
 
-        // BGM Æ®·¡Å· ¾÷µ¥ÀÌÆ®
+        // BGM íŠ¸ëž˜í‚¹ ì—…ë°ì´íŠ¸
         if (currentBGM == key)
         {
             currentBGM = "";
@@ -207,7 +206,7 @@ bool SoundManager::LoadWaveFile(const string& path, IDirectSoundBuffer8** ppBuff
 
 bool SoundManager::ReadWAVHeader(FILE* file, WAVHeader& header)
 {
-    // RIFF Çì´õ ÀÐ±â
+    // RIFF í—¤ë” ì½ê¸°
     fread(header.riff, 1, 4, file);
     if (strncmp(header.riff, "RIFF", 4) != 0)
         return false;
@@ -218,7 +217,7 @@ bool SoundManager::ReadWAVHeader(FILE* file, WAVHeader& header)
     if (strncmp(header.wave, "WAVE", 4) != 0)
         return false;
 
-    // fmt Ã»Å© Ã£±â
+    // fmt ì²­í¬ ì°¾ê¸°
     char chunkID[4];
     DWORD chunkSize;
 
@@ -253,7 +252,7 @@ bool SoundManager::ReadWAVHeader(FILE* file, WAVHeader& header)
         }
     }
 
-    // data Ã»Å© Ã£±â
+    // data ì²­í¬ ì°¾ê¸°
     while (true)
     {
         if (fread(chunkID, 1, 4, file) != 4)
@@ -273,8 +272,8 @@ bool SoundManager::ReadWAVHeader(FILE* file, WAVHeader& header)
         }
     }
 
-    // À¯È¿¼º °Ë»ç
-    if (header.audioFormat != 1) // PCMÀÌ ¾Æ´Ô
+    // ìœ íš¨ì„± ê²€ì‚¬
+    if (header.audioFormat != 1) // PCMì´ ì•„ë‹˜
         return false;
 
     if (header.numChannels == 0 || header.numChannels > 2)

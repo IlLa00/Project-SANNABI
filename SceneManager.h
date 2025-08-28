@@ -20,6 +20,7 @@ public:
 	void Render(HDC _hdcBack);
 	void Destroy();
 
+
 	Scene* GetCurrentScene() { return currentScene; }
 	EditorScene* GetEditorScene() { return editorScene; }
 

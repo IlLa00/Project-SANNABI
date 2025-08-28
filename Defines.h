@@ -4,6 +4,9 @@
 constexpr int GWinSizeX = 1920;
 constexpr int GWinSizeY = 1080;
 
+constexpr int mapSizeX = 5300;
+constexpr int mapSizeY = 3150;
+
 // 엔씨에 있을때 사용하던 방식 & 언리얼도 이렇게 씁니다.
 using int8 = char;					// 정수 저장하는데 1bit 짜리
 using int16 = short;

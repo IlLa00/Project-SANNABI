@@ -39,12 +39,20 @@ void Animator::Update()
 
 		if (currentFrameIndex >= currentAnimation->GetFrameCount())
 		{
-			if (currentAnimation->IsLoop() && !_ownerVFX)
-				currentFrameIndex = 0;
-			else
+			if (_ownerVFX && !owner && !ownerComponent)
 			{
 				currentFrameIndex = currentAnimation->GetFrameCount() - 1;
 				bPlaying = false; // 애니메이션 종료
+			}
+			else if (owner && ownerComponent)
+			{
+				if (currentAnimation->IsLoop())
+					currentFrameIndex = 0;
+				else
+				{
+					currentFrameIndex = currentAnimation->GetFrameCount() - 1;
+					bPlaying = false; // 애니메이션 종료
+				}
 			}
 		}
 	}
@@ -199,30 +207,30 @@ void Animator::SetRotationInfo(bool bUse, float angle, Vector pivot)
 	rotationPivot = pivot;
 }
 
-void Animator::CalculateRotatePoints(POINT destPoint[3], int width, int height, Vector centerPos, float angle, Vector pivot)
-{
-	float cosA = cos(angle);
-	float sinA = sin(angle);
-
-	float pivotOffsetX = width * (pivot.x - 0.5f);
-	float pivotOffsetY = height * (pivot.y - 0.5f);
-
-	float halfWidth = width * 0.5f;
-	float halfHeight = height * 0.5f;
-
-	float x1 = -halfWidth - pivotOffsetX;
-	float y1 = -halfHeight - pivotOffsetY;
-	float x2 = halfWidth - pivotOffsetX;
-	float y2 = -halfHeight - pivotOffsetY;
-	float x3 = -halfWidth - pivotOffsetX;
-	float y3 = halfHeight - pivotOffsetY;
-
-	destPoint[0].x = centerPos.x + (x1 * cosA - y1 * sinA);
-	destPoint[0].y = centerPos.y + (x1 * sinA + y1 * cosA);
-
-	destPoint[1].x = centerPos.x + (x2 * cosA - y2 * sinA);
-	destPoint[1].y = centerPos.y + (x2 * sinA + y2 * cosA);
-
-	destPoint[2].x = centerPos.x + (x3 * cosA - y3 * sinA);
-	destPoint[2].y = centerPos.y + (x3 * sinA + y3 * cosA);
-}
+//void Animator::CalculateRotatePoints(POINT destPoint[3], int width, int height, Vector centerPos, float angle, Vector pivot)
+//{
+//	float cosA = cos(angle);
+//	float sinA = sin(angle);
+//
+//	float pivotOffsetX = width * (pivot.x - 0.5f);
+//	float pivotOffsetY = height * (pivot.y - 0.5f);
+//
+//	float halfWidth = width * 0.5f;
+//	float halfHeight = height * 0.5f;
+//
+//	float x1 = -halfWidth - pivotOffsetX;
+//	float y1 = -halfHeight - pivotOffsetY;
+//	float x2 = halfWidth - pivotOffsetX;
+//	float y2 = -halfHeight - pivotOffsetY;
+//	float x3 = -halfWidth - pivotOffsetX;
+//	float y3 = halfHeight - pivotOffsetY;
+//
+//	destPoint[0].x = centerPos.x + (x1 * cosA - y1 * sinA);
+//	destPoint[0].y = centerPos.y + (x1 * sinA + y1 * cosA);
+//
+//	destPoint[1].x = centerPos.x + (x2 * cosA - y2 * sinA);
+//	destPoint[1].y = centerPos.y + (x2 * sinA + y2 * cosA);
+//
+//	destPoint[2].x = centerPos.x + (x3 * cosA - y3 * sinA);
+//	destPoint[2].y = centerPos.y + (x3 * sinA + y3 * cosA);
+//}

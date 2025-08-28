@@ -10,6 +10,7 @@ class GrapplingHookProjectilePool : public Singleton<GrapplingHookProjectilePool
 
 public:
 	void CreatePool(int size);
+	void Destroy();
 	GrapplingHookProjectile* GetProjectile(Vector postion, Vector direction, float speed);
 	void ReturnProjectile(GrapplingHookProjectile* projectile);
 

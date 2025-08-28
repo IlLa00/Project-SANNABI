@@ -13,7 +13,7 @@ void Platform::Init()
 	
 	collisionComponent = new CollisionComponent;
 	collisionComponent->Init(this);
-	collisionComponent->SetCollisionSize(texture->GetSizeX() / 2, texture->GetSizeY() / 2);
+	collisionComponent->SetCollisionSize(texture->GetSizeX() / 2 - 50, texture->GetSizeY() / 2 - 25);
 	collisionComponent->SetCollisionChannel(ECollisionChannel::WorldDynamic);
 	collisionComponent->OnComponentBeginOverlap = [this](CollisionComponent* other, HitResult info)
 		{
@@ -60,6 +60,13 @@ void Platform::Render(HDC _hdcBack)
 	Super::Render(_hdcBack);
 
 	texture->Render(_hdcBack, position);
+}
+
+void Platform::Destroy()
+{
+	SAFE_DELETE(texture);
+
+	Super::Destroy();
 }
 
 void Platform::SetLimitPoint(float limitMinY, float limitMaxY)

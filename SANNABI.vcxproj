@@ -147,6 +147,7 @@
     <ClInclude Include="GrapplingHookProjectilePool.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LobbyScene.h" />
+    <ClInclude Include="Mari.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="GrapplingHookProjectilePool.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LobbyScene.cpp" />
+    <ClCompile Include="Mari.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>

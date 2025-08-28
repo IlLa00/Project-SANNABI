@@ -131,12 +131,14 @@ void TileMap::LoadFromFile(const wstring& filepath)
             if (buildingStream >> x >> comma >> y >> comma)
             {
                 getline(buildingStream, path);
+
                 if (x >= 0 && x < _gridWidth && y >= 0 && y < _gridHeight)
                 {
-                    // 읽어온 상대 경로를 절대 경로로 변환하여 저장
-                    filesystem::path tilemapPath(filepath);
-                    filesystem::path parentPath = tilemapPath.parent_path();
-                    filesystem::path absolutePath = filesystem::absolute(parentPath / path);
+                    // 현재 실행 파일 경로를 기준으로 절대 경로를 생성합니다.
+                    filesystem::path currentDir = filesystem::current_path();
+                    filesystem::path relativePath(path);
+                    filesystem::path absolutePath = currentDir / relativePath;
+
                     _buildingMap[y][x] = absolutePath.wstring();
                 }
             }

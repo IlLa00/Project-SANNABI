@@ -62,9 +62,6 @@ public:
 	void SetPhysicsState(EPhysicsState newState);
 	EPhysicsState GetPhysicsState() { return physicsState;}
 
-	/*void SetGrapplePoint(Vector newPoint) { grapplePoint = newPoint; }
-	Vector GetGrapplePoint() { return grapplePoint; }*/
-
 	GrapplingHookProjectile* GetCurrentProjectile() { return curPrjoectile;}
 
 	float GetDashCurve(float t);
@@ -110,7 +107,6 @@ private:
 	float dashCurrentTime = 0.f;
 	float dashTotalTime = 0.5f;
 	float dashSpeed = 1000.f;
-
 
 	// 이것들은 충돌여부를 나타냄, 실제 피직스 상태를 나타내는게 아님
 	bool bOverlapCeiling = false; 

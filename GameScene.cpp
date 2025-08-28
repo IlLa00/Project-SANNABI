@@ -4,6 +4,7 @@
 #include "TileCollisionAdapter.h"
 #include "Actor.h"
 #include "Player.h"
+#include "Mari.h"
 #include "PlayerController.h"
 #include "Turret.h"
 #include "Platform.h"
@@ -24,7 +25,7 @@ void GameScene::Init()
 	mapPath /= L"TileMap.tilemap";  
 
 	_BG = new TextureResource();
-	_BG->Load(L"./Level/Spr_Chaper4_BG_Sky_batch_batch.bmp");
+	_BG->Load(L"./Level/Spr_Chaper4_BG_Sky_batch.bmp");
 
 	if (fs::exists(mapPath)) 
 		tileMap->LoadFromFile(mapPath.wstring());
@@ -32,13 +33,13 @@ void GameScene::Init()
 	// 최적화 기법
 	HDC hdc = GetDC(_hwnd);
 	_hdcMapBack = ::CreateCompatibleDC(hdc);
-	_MapbmpBack = ::CreateCompatibleBitmap(hdc, 5000, 5000);
+	_MapbmpBack = ::CreateCompatibleBitmap(hdc, mapSizeX, mapSizeY);
 
 	HBITMAP prev = (HBITMAP)::SelectObject(_hdcMapBack, _MapbmpBack);
 	::DeleteObject(prev);
 
 	// 타일맵 배경을 핑크색을 채우기
-	::PatBlt(_hdcMapBack, 0, 0, 5000, 5000, RGB(255,255,255));
+	::PatBlt(_hdcMapBack, 0, 0, mapSizeX, mapSizeY, RGB(255,255,255));
 
 	const auto& buildingMap = tileMap->GetBuildingMap();
 	for (const auto& row : buildingMap)
@@ -120,6 +121,10 @@ void GameScene::Init()
 	player->Init();
 	actors[player]++;
 
+	mari = new Mari;
+	mari->Init();
+	actors[mari]++;
+
 	PC = new PlayerController;
 	PC->Posses(player);
 	PC->Init();
@@ -135,6 +140,7 @@ void GameScene::Init()
 void GameScene::Update(float deltaTime)
 {
 	player->Update(deltaTime);
+	mari->Update(deltaTime);
 
 	PC->Update(deltaTime);
 	
@@ -152,15 +158,16 @@ void GameScene::Render(HDC _hdcBack)
 {
 	if (_BG)
 	{
+		Vector screenPos = CameraManager::GetInstance()->ConvertScreenPos(Vector(0, 0));
+
 		// BitBlt를 사용하여 배경을 렌더링합니다.
-		::BitBlt(_hdcBack,
-			0,
-			0,
-			GWinSizeX, // 대상 너비
-			GWinSizeY, // 대상 높이
+		::StretchBlt(_hdcBack,
+			screenPos.x, screenPos.y,
+			mapSizeX, // 대상 너비
+			mapSizeY, // 대상 높이
 			_BG->_textureHdc,
-			CameraManager::GetInstance()->GetCameraPos().x, // 원본 X 좌표
-			CameraManager::GetInstance()->GetCameraPos().y, // 원본 Y 좌표
+			0, 0,
+			1920,711,
 			SRCCOPY); // 원본을 그대로 복사
 	}
 	
@@ -170,13 +177,13 @@ void GameScene::Render(HDC _hdcBack)
 		::TransparentBlt(
 			_hdcBack,
 			screenPos.x, screenPos.y,
-			5000,
-			5000,
+			mapSizeX,
+			mapSizeY,
 			_hdcMapBack,
 			0,
 			0,
-			5000,
-			5000,
+			mapSizeX,
+			mapSizeY,
 			RGB(255, 255, 255)
 		);
 	}
@@ -189,6 +196,7 @@ void GameScene::Render(HDC _hdcBack)
 		platform->Render(_hdcBack);
 
 	player->Render(_hdcBack);
+	mari->Render(_hdcBack);
 
 	if (bIsDebug)
 		tileCollisionApdater->Render(_hdcBack);
@@ -209,7 +217,6 @@ void GameScene::Destroy()
 	PC->Destroy();
 	SAFE_DELETE(PC);
 
-	
 	for (auto& pair : _buildingTextures)
 	{
 		SAFE_DELETE(pair.second);
@@ -225,4 +232,12 @@ void GameScene::Destroy()
 		SAFE_DELETE(platform);
 
 	_platforms.clear();
+
+	SAFE_DELETE(tileMap);
+	SAFE_DELETE(tileCollisionApdater);
+	SAFE_DELETE(cursorTexture);
+	SAFE_DELETE(_BG);
+
+	SAFE_DELETE(_hdcMapBack);
+	SAFE_DELETE(_MapbmpBack);
 }

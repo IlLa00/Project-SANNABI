@@ -3,6 +3,7 @@
 #include "TextureResource.h"
 #include "InputManager.h"
 #include "SoundManager.h"
+#include "CameraManager.h"
 
 void Button::Init(Vector position, const wchar_t* text)
 {
@@ -45,7 +46,7 @@ void Button::Render(HDC hdc)
 	if (currentTexture)
 		currentTexture->Render(hdc, _position, false);
 
-	HFONT oldFont = (HFONT)SelectObject(hdc, hFont);
+	HFONT oldFont = (HFONT)SelectObject(hdc, hFont); 
 
 	SetBkMode(hdc, TRANSPARENT); // 텍스트 배경 투명
 	SetTextColor(hdc, RGB(0, 255, 255)); // 시안색
@@ -60,16 +61,9 @@ bool Button::IsMouseOver()
 
 	Vector mousePos = InputManager::GetInstance()->GetMousePos();
 
-	int halfWidth = (buttonRect.right - buttonRect.left) / 2;
-	int halfHeight = (buttonRect.bottom - buttonRect.top) / 2;
-
-	int centerX = (buttonRect.left + buttonRect.right) / 2;
-	int centerY = (buttonRect.top + buttonRect.bottom) / 2;
-
-	return mousePos.x >= (centerX - halfWidth) && mousePos.x <= (centerX + halfWidth) &&
-		mousePos.y >= (centerY - halfHeight) && mousePos.y <= (centerY + halfHeight);
+	return mousePos.x >= buttonRect.left && mousePos.x <= buttonRect.right &&
+		mousePos.y >= buttonRect.top && mousePos.y <= buttonRect.bottom;
 }
-
 
 bool Button::IsClicked()
 {

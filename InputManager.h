@@ -52,6 +52,9 @@ public:
 	POINT GetMousePos() { return _mousePos; }
 	POINT GetSubMousePos() { return _subMousePos; }
 	POINT GetSub2MousePos() { return _sub2MousePos; }
+
+	void SetEndGameMode(bool newState) { bEndGame = newState; }
+
 private:
 	KeyState GetState(KeyType key) { return _states[static_cast<uint8>(key)]; }
 
@@ -64,5 +67,7 @@ private:
 	POINT _subMousePos = {};
 	POINT _sub2MousePos = {};
 	int _mouseWheelDelta = 0;
+
+	bool bEndGame = false;
 };
 

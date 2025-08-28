@@ -44,12 +44,8 @@ void Engine::Init(HWND hwnd, HWND subWnd, HWND sub2Wnd)
 	ResourceManager::GetInstance()->Init();
 
 	SoundManager::GetInstance()->Init(hwnd);
-	SoundManager::GetInstance()->LoadSound("GameScene", "D:\\KHJ\\Project-SANNABI\\Sound\\BGM_Chap4_Main_Intro.wav", SoundType::BGM);
-	SoundManager::GetInstance()->LoadSound("LobbyScene", "D:\\KHJ\\Project-SANNABI\\Sound\\BGM_Event_MainTheme.wav", SoundType::BGM);
-
-	SoundManager::GetInstance()->LoadSound("LobbyLightOn", "D:\\KHJ\\Project-SANNABI\\Sound\\SFX_TitleLightOn.wav", SoundType::SFX);
-	SoundManager::GetInstance()->LoadSound("Click", "D:\\KHJ\\Project-SANNABI\\Sound\\SFX_UI_Click.wav", SoundType::SFX);
-	SoundManager::GetInstance()->LoadSound("Hover", "D:\\KHJ\\Project-SANNABI\\Sound\\SFX_UI_Hovering.wav", SoundType::SFX);
+	SoundManager::GetInstance()->LoadSound("GameScene", "Sound\\BGM_Chap4_Main_Intro.wav", SoundType::BGM);
+	SoundManager::GetInstance()->LoadSound("LobbyScene", "Sound\\BGM_Event_MainTheme.wav", SoundType::BGM);
 
 	VFXManager::GetInstance()->Init();
 	VFXManager::GetInstance()->RegisterVFX("ChargeAim", "VFX_ChargeAim_Appear", 9, 1.f, false);

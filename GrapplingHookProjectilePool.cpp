@@ -14,6 +14,14 @@ void GrapplingHookProjectilePool::CreatePool(int size)
     }
 }
 
+void GrapplingHookProjectilePool::Destroy()
+{
+    for (auto& projectile : pool)
+        SAFE_DELETE(projectile);
+
+    pool.clear();
+}
+
 GrapplingHookProjectile* GrapplingHookProjectilePool::GetProjectile(Vector postion, Vector direction, float speed)
 {
     for (auto projectile : pool)

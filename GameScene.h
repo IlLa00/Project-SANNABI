@@ -6,6 +6,7 @@ class TileMap;
 class TileCollisionAdapter;
 class Actor;
 class Player;
+class Mari;
 class PlayerController;
 class Turret;
 class TextureResource;
@@ -34,7 +35,7 @@ private:
 
 	Turret* turret = nullptr;
 
-	Platform* test = nullptr;
+	Mari* mari = nullptr;
 
 	bool bIsDebug = false;
 

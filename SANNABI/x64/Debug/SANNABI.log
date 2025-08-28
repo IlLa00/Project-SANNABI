@@ -1,8 +1,2 @@
-﻿  TileMap.cpp
-C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(295,16): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(296,14): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(297,16): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(298,14): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(330,54): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\KHJ\SVN\Project-SANNABI\TileMap.cpp(330,40): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+﻿  SceneManager.cpp
   SANNABI.vcxproj -> C:\KHJ\SVN\Project-SANNABI\x64\Debug\SANNABI.exe

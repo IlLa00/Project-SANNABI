@@ -52,10 +52,8 @@ void CollisionManager::Init(HWND hwnd)
 
 void CollisionManager::Update()
 {
-	// 먼저 예측 충돌 처리
 	ProcessPredictiveCollisions();
 
-	// 그 다음 일반 충돌 처리
 	for (int i = 0; i < collisionComponents.size(); i++)
 	{
 		if (!collisionComponents[i]->IsActive()) continue;
@@ -74,7 +72,7 @@ void CollisionManager::Update()
 			HitResult collisionInfo = CheckAABBCollision(collisionComponents[i], collisionComponents[j]);
 			bool wasColliding = collisionPairs[pair];
 
-			if (collisionInfo.isColliding && !wasColliding) // 새로운 충돌 시작
+			if (collisionInfo.isColliding && !wasColliding) 
 			{
 				lastCollisionInfo[pair] = collisionInfo;
 
@@ -89,7 +87,7 @@ void CollisionManager::Update()
 					collisionComponents[j]->OnComponentBeginOverlap(collisionComponents[i], reversedInfo);
 				}
 			}
-			else if (!collisionInfo.isColliding && wasColliding) // 충돌 종료
+			else if (!collisionInfo.isColliding && wasColliding) 
 			{
 				HitResult lastInfo = lastCollisionInfo[pair];
 
@@ -121,7 +119,6 @@ void CollisionManager::ProcessPredictiveCollisions()
 		if (!movingComp || !movingComp->IsActive())
 			continue;
 
-		// 움직이는 객체만 체크 
 		ECollisionChannel movingChannel = movingComp->GetCollisionChannel();
 		if (movingChannel != ECollisionChannel::Character &&
 			movingChannel != ECollisionChannel::CharacterInvincible &&
@@ -132,12 +129,10 @@ void CollisionManager::ProcessPredictiveCollisions()
 		if (currentVelocity.x == 0 && currentVelocity.y == 0)
 			continue; 
 
-		// 다음 프레임 예측 위치 계산
 		Vector predictedPos = movingComp->GetOwner()->GetPosition();
 		predictedPos.x += currentVelocity.x * deltaTime;
 		predictedPos.y += currentVelocity.y * deltaTime;
 
-		// 예측 위치에서의 충돌 체크
 		for (auto* staticComp : collisionComponents)
 		{
 			if (!staticComp || !staticComp->IsActive() || staticComp == movingComp)

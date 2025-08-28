@@ -10,6 +10,7 @@ class BulletPool : public Singleton<BulletPool>
 
 public:
 	void CreatePool(int size);
+	void Destroy();
 	Bullet* GetProjectile(Vector postion, Vector direction, float speed);
 	void ReturnProjectile(Bullet* bullet);
 

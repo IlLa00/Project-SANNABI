@@ -15,7 +15,7 @@ public:
 	void Init() override;
 	void Update(float deltaTime) override;
 	void Render(HDC _hdcBack) override;
-
+	void Destroy() override;
 	void SetLimitPoint(float limitMinY, float limitMaxY);
 
 	void OnBeginOverlap(CollisionComponent* other, HitResult info);

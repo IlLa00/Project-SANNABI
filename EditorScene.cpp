@@ -628,9 +628,6 @@ void EditorScene::SaveTileMap()
 
 			file << L"[Buildings]" << endl;
 
-			// 현재 실행 파일의 경로를 기준으로 상대 경로를 계산
-			filesystem::path currentPath = filesystem::current_path();
-
 			for (int y = 0; y < GridHeight; y++)
 			{
 				for (int x = 0; x < GridWidth; x++)
@@ -638,19 +635,14 @@ void EditorScene::SaveTileMap()
 					const wstring& buildingPath = _buildingMap[y][x];
 					if (!buildingPath.empty())
 					{
-						// 절대 경로를 상대 경로로 변환
-						filesystem::path absolutePath(buildingPath);
-						filesystem::path relativePath;
+						// 파일 경로에서 파일 이름만 추출
+						filesystem::path pathObject(buildingPath);
+						wstring filename = pathObject.filename().wstring();
 
-						// 경로가 이미 상대 경로인지 확인
-						if (absolutePath.is_absolute()) {
-							relativePath = std::filesystem::relative(absolutePath, currentPath);
-						}
-						else {
-							relativePath = absolutePath;
-						}
+						// "Level\" 접두사를 붙여 새로운 상대 경로를 생성
+						wstring newRelativePath = L"Level\\" + filename;
 
-						file << x << "," << y << "," << relativePath.wstring() << std::endl;
+						file << x << "," << y << "," << newRelativePath << std::endl;
 					}
 				}
 			}
@@ -708,6 +700,8 @@ void EditorScene::LoadTileMap()
 			// 충돌 영역 초기화
 			collisionRects.clear();
 			_buildingMap.assign(GridHeight, std::vector<std::wstring>(GridWidth, L"")); // 건축물 맵도 초기화
+
+			filesystem::path baseDir = filesystem::current_path().parent_path();
 
 			wchar_t comma;
 			int width, height, tileMapW, tileMapH;
@@ -813,14 +807,23 @@ void EditorScene::LoadTileMap()
 					wistringstream buildingStream(line);
 					int x, y;
 					wchar_t comma;
-					std::wstring path;
+					wstring path;
 
 					if (buildingStream >> x >> comma >> y >> comma)
 					{
 						getline(buildingStream, path);
-						if (x >= 0 && x < GridWidth && y >= 0 && y < GridHeight)
+
+						path.erase(0, path.find_first_not_of(L" \t"));
+						path.erase(path.find_last_not_of(L" \t") + 1);
+
+						if (x >= 0 && x < GridWidth && y >= 0 && y < GridHeight && !path.empty())
 						{
-							_buildingMap[y][x] = path;
+							// 실행 파일의 상위 폴더를 기준으로 경로를 생성
+							filesystem::path currentPath = filesystem::current_path().parent_path();
+							filesystem::path loadedPath(path);
+							filesystem::path absolutePath = currentPath / loadedPath;
+
+							_buildingMap[y][x] = absolutePath.wstring();
 						}
 					}
 				}

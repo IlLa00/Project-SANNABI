@@ -43,7 +43,7 @@ void VFXManager::RegisterVFX(const string& key, const string& spriteSheetPath, i
         return;
 
     // 5개 생성
-    for (int i = 0; i < 5; ++i)
+    for (int i = 0; i < 10; ++i)
     {
         VFX* newVFX = new VFX;
         newVFX->Init(key, spriteSheetPath, frameCount, duration, loop);

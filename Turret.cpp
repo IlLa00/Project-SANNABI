@@ -11,21 +11,20 @@ void Turret::Init()
 	Super::Init();
 
 	// 포지션은 타일맵에서.. 일단 임의로 하자
-	position = Vector(1707,347);
+	position = Vector(1707, 347);
 
 	bodyRenderComponent = new SpriteRenderComponent;
 	bodyRenderComponent->Init(this);
 	bodyRenderComponent->AddAnimation("Idle", "ENE_TurretBody_Idle", 9, 1.f);
 	bodyRenderComponent->AddAnimation("Aim", "ENE_TurretBody_Aim", 11, 1.f);
 	bodyRenderComponent->AddAnimation("Shoot", "ENE_TurretBody_Shoot", 18, 1.f);
-
 	bodyRenderComponent->AddAnimation("Explosion", "ENE_ExplosionGeneral_Middle", 12, 2.f);
 	AddComponent(bodyRenderComponent);
 
 	gunRenderComponent = new SpriteRenderComponent;
 	gunRenderComponent->Init(this);
 	gunRenderComponent->SetTransformMode(ETransformMode::Relative);
-	gunRenderComponent->AddAnimation("GunIdle", "ENE_TurretGun_Idle", 9, 1.f);
+	gunRenderComponent->AddAnimation("GunIdle", "ENE_TurretGun_Idle", 8, 1.f);
 	gunRenderComponent->AddAnimation("GunAim", "ENE_TurretGun_Aim", 11, 1.f);
 	gunRenderComponent->AddAnimation("GunShoot", "ENE_TurretGun_Shoot", 18, 1.f);
 	AddComponent(gunRenderComponent);
@@ -42,6 +41,8 @@ void Turret::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
 
+	gunRenderComponent->SetPosition(position + Vector(0,-40));
+
 	if (!bDamaged)
 	{
 		// 상태변화.
@@ -49,12 +50,24 @@ void Turret::Update(float deltaTime)
 		{
 			if (turretState == ETurretState::Idle)
 			{
+				gunRenderComponent->SetUseRotation(false);
+
 				SetTurretState(ETurretState::Aiming);
 				elapsedTime = 0.f;
 			}
 			else if (turretState == ETurretState::Aiming)
 			{
 				elapsedTime += deltaTime;
+
+				gunRenderComponent->SetUseRotation(true);
+
+				if (target)
+				{
+					Vector direction = target->GetPosition() - position;
+					float gunAngle = atan2(direction.y, direction.x);
+					gunRenderComponent->SetRotation(gunAngle);
+				}
+
 				if (elapsedTime >= shootCooldown)
 				{
 					SetTurretState(ETurretState::Shooting);
@@ -64,6 +77,9 @@ void Turret::Update(float deltaTime)
 			else if (turretState == ETurretState::Shooting)
 			{
 				elapsedTime += deltaTime;
+
+				gunRenderComponent->SetUseRotation(true);
+
 				if (elapsedTime >= resetCooldown)
 				{
 					SetTurretState(ETurretState::Idle);
@@ -96,28 +112,18 @@ void Turret::Update(float deltaTime)
 		for (auto it = currentBullets.begin(); it != currentBullets.end();)
 		{
 			Bullet* bullet = *it;
-			if (!bullet)
+			if (!bullet || !bullet->IsActive())
 			{
+				if (bullet) poolInstance->ReturnProjectile(bullet);
 				it = currentBullets.erase(it);
 				continue;
 			}
 
-			bool shouldRemove = false;
+			Vector bulletPos = bullet->GetPosition();
+			Vector cameraPos = CameraManager::GetInstance()->GetCameraPos();
 
-			// 화면 밖 체크
-			if (bullet->GetPosition().x < (CameraManager::GetInstance()->GetCameraPos().x - GWinSizeX / 2) - 200 ||
-				bullet->GetPosition().x >(CameraManager::GetInstance()->GetCameraPos().x + GWinSizeX / 2) + 200 ||
-				bullet->GetPosition().y < (CameraManager::GetInstance()->GetCameraPos().y - GWinSizeY / 2) - 200 ||
-				bullet->GetPosition().y >(CameraManager::GetInstance()->GetCameraPos().y + GWinSizeY / 2) + 200)
-			{
-				shouldRemove = true;
-			}
-			else if (!bullet->IsActive())
-			{
-				shouldRemove = true;
-			}
-
-			if (shouldRemove)
+			if (abs(bulletPos.x - cameraPos.x) > GWinSizeX / 2 + 200 ||
+				abs(bulletPos.y - cameraPos.y) > GWinSizeY / 2 + 200)
 			{
 				poolInstance->ReturnProjectile(bullet);
 				it = currentBullets.erase(it);
@@ -142,7 +148,7 @@ void Turret::Update(float deltaTime)
 		{
 			bodyRenderComponent->PlayAnimation("Explosion");
 
-			if(gunRenderComponent->IsActive())
+			if (gunRenderComponent->IsActive())
 				gunRenderComponent->SetActive(false);
 
 			if (collisionComponent->IsActive())
@@ -150,19 +156,23 @@ void Turret::Update(float deltaTime)
 
 			if (perceiveComponent->IsActive())
 				perceiveComponent->SetActive(false);
+
+			for (auto& bullet : currentBullets)
+				poolInstance->ReturnProjectile(bullet);
 		}
 	}
 }
 
 void Turret::Render(HDC _hdcBack)
 {
+	if (!IsActive()) return;
+
 	Super::Render(_hdcBack);
 
 	for (auto& bullet : currentBullets)
 	{
-		if (!bullet || !bullet->IsActive()) continue;
-
-		bullet->Render(_hdcBack);
+		if (bullet && bullet->IsActive())
+			bullet->Render(_hdcBack);
 	}
 
 	DebugRender(_hdcBack);
@@ -175,7 +185,7 @@ void Turret::Destroy()
 
 	currentBullets.clear();
 	poolInstance = nullptr;
-	
+
 	Super::Destroy();
 }
 
@@ -237,7 +247,7 @@ void Turret::OnCharacterEndOverlap(CollisionComponent* other, HitResult info)
 void Turret::OnPerceiveCharacter(CollisionComponent* other, HitResult info)
 {
 	Super::OnPerceiveCharacter(other, info);
-	
+
 }
 
 void Turret::OffPerceiveCharacter(CollisionComponent* other, HitResult info)

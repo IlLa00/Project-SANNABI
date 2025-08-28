@@ -23,6 +23,13 @@ void SpriteAnimation::Init(const string& spriteSheetPath, int _frameCount, float
         SetupFrameData();
 }
 
+void SpriteAnimation::Destroy()
+{
+    SAFE_DELETE(spriteSheet);
+
+    frameRects.clear();
+}
+
 RECT SpriteAnimation::GetFrameRect(int frameIndex) const
 {
     if (frameIndex < 0 || frameIndex >= static_cast<int>(frameRects.size()))

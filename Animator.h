@@ -34,7 +34,7 @@ public:
 	Vector GetVFXPosition() { return VFXPostion; }
 
 private:
-	void CalculateRotatePoints(POINT destPoint[3], int width, int height, Vector centerPos, float angle, Vector pivot);
+	// void CalculateRotatePoints(POINT destPoint[3], int width, int height, Vector centerPos, float angle, Vector pivot);
 
 private:
 	Actor* owner;

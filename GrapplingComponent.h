@@ -29,7 +29,7 @@ private:
 	GrapplingHookProjectilePool* poolInstance = nullptr;
 	GrapplingHookProjectile* curProjectile = nullptr;
 
-	float maxChainLength = 800.0f;
+	float maxChainLength = 600.0f;
 	float fireChainLength = 1000.f;
 	float pullSpeed = 5000.0f;
 	float fireCooldown = 0.5f;

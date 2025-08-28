@@ -23,6 +23,14 @@ void BulletPool::CreatePool(int size)
     }
 }
 
+void BulletPool::Destroy()
+{
+    for (auto& bullet : pool)
+        SAFE_DELETE(bullet);
+
+    pool.clear();
+}
+
 Bullet* BulletPool::GetProjectile(Vector postion, Vector direction, float speed)
 {
     for (auto bullet : pool)

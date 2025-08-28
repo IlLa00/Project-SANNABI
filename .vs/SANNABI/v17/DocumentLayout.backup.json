@@ -3,28 +3,60 @@
   "WorkspaceRootPath": "C:\\KHJ\\SVN\\Project-SANNABI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\TileMap.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:TileMap.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\GameScene.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:GameScene.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\SceneManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:SceneManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\EditorScene.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:EditorScene.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\Animator.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:Animator.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\Defines.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:Defines.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\PhysicsComponent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:PhysicsComponent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\SpriteAnimation.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:SpriteAnimation.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\GrapplingComponent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:GrapplingComponent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\CollisionManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:CollisionManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\CollisionManager.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:CollisionManager.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\CollisionComponent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:CollisionComponent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\Engine.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:Engine.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\SoundManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:SoundManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\SANNABI.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:SANNABI.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\Animator.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:Animator.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\TileCollisionAdapter.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:TileCollisionAdapter.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|C:\\KHJ\\SVN\\Project-SANNABI\\CollisionComponent.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7F8A600B-0706-4468-9C46-0A894210FA59}|SANNABI.vcxproj|solutionrelative:CollisionComponent.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,85 +66,178 @@
       "DocumentGroups": [
         {
           "DockedWidth": 400,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "TileMap.cpp",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\TileMap.cpp",
-              "RelativeDocumentMoniker": "TileMap.cpp",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\TileMap.cpp",
-              "RelativeToolTip": "TileMap.cpp",
-              "ViewState": "AgIAAJsAAAAAAAAAAAArwKkAAAANAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "PhysicsComponent.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\PhysicsComponent.cpp",
+              "RelativeDocumentMoniker": "PhysicsComponent.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\PhysicsComponent.cpp",
+              "RelativeToolTip": "PhysicsComponent.cpp",
+              "ViewState": "AgIAAAABAAAAAAAAAAAAAMUAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-26T04:46:26.171Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "GameScene.cpp",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\GameScene.cpp",
-              "RelativeDocumentMoniker": "GameScene.cpp",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\GameScene.cpp",
-              "RelativeToolTip": "GameScene.cpp",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAAB0AAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-26T04:45:23.6Z",
+              "WhenOpened": "2025-08-28T01:29:13.336Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "Defines.cpp",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\Defines.cpp",
-              "RelativeDocumentMoniker": "Defines.cpp",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\Defines.cpp",
-              "RelativeToolTip": "Defines.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAjAAAAAAAAAA==",
+              "Title": "GrapplingComponent.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\GrapplingComponent.cpp",
+              "RelativeDocumentMoniker": "GrapplingComponent.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\GrapplingComponent.cpp",
+              "RelativeToolTip": "GrapplingComponent.cpp",
+              "ViewState": "AgIAAFUAAAAAAAAAAAAAwGsAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-26T04:35:50.127Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-28T01:23:34.432Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 7,
+              "Title": "CollisionComponent.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\CollisionComponent.cpp",
+              "RelativeDocumentMoniker": "CollisionComponent.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\CollisionComponent.cpp",
+              "RelativeToolTip": "CollisionComponent.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-08-28T00:24:20.236Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Engine.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\Engine.cpp",
+              "RelativeDocumentMoniker": "Engine.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\Engine.cpp",
+              "RelativeToolTip": "Engine.cpp",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAACYAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-08-28T02:15:09.758Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "CollisionManager.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\CollisionManager.cpp",
+              "RelativeDocumentMoniker": "CollisionManager.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\CollisionManager.cpp",
+              "RelativeToolTip": "CollisionManager.cpp",
+              "ViewState": "AgIAADsAAAAAAAAAAADwv00AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-08-28T00:24:13.086Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "CollisionManager.h",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\CollisionManager.h",
+              "RelativeDocumentMoniker": "CollisionManager.h",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\CollisionManager.h",
+              "RelativeToolTip": "CollisionManager.h",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAACUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-08-28T00:30:22.722Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "SceneManager.cpp",
               "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\SceneManager.cpp",
               "RelativeDocumentMoniker": "SceneManager.cpp",
               "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\SceneManager.cpp",
               "RelativeToolTip": "SceneManager.cpp",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABgAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-26T04:28:10.302Z",
+              "WhenOpened": "2025-08-28T02:14:57.017Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "SANNABI.cpp",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\SANNABI.cpp",
-              "RelativeDocumentMoniker": "SANNABI.cpp",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\SANNABI.cpp",
-              "RelativeToolTip": "SANNABI.cpp",
-              "ViewState": "AgIAACMBAAAAAAAAAAAAADwBAAANAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "Animator.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\Animator.cpp",
+              "RelativeDocumentMoniker": "Animator.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\Animator.cpp",
+              "RelativeToolTip": "Animator.cpp",
+              "ViewState": "AgIAADoAAAAAAAAAAAAAAN0AAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-26T04:27:33.911Z",
+              "WhenOpened": "2025-08-28T01:55:49.56Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "EditorScene.cpp",
-              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\EditorScene.cpp",
-              "RelativeDocumentMoniker": "EditorScene.cpp",
-              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\EditorScene.cpp",
-              "RelativeToolTip": "EditorScene.cpp",
-              "ViewState": "AgIAAAQDAAAAAAAAAAAkwBwDAAAuAAAAAAAAAA==",
+              "Title": "SpriteAnimation.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\SpriteAnimation.cpp",
+              "RelativeDocumentMoniker": "SpriteAnimation.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\SpriteAnimation.cpp",
+              "RelativeToolTip": "SpriteAnimation.cpp",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAAAFAAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-08-26T04:26:31.157Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-28T01:53:11.671Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Animator.h",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\Animator.h",
+              "RelativeDocumentMoniker": "Animator.h",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\Animator.h",
+              "RelativeToolTip": "Animator.h",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAiwCQAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-08-28T01:55:51.254Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "SoundManager.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\SoundManager.cpp",
+              "RelativeDocumentMoniker": "SoundManager.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\SoundManager.cpp",
+              "RelativeToolTip": "SoundManager.cpp",
+              "ViewState": "AgIAACQAAAAAAAAAAADgv0AAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-08-28T02:14:58.366Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "SANNABI.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\SANNABI.cpp",
+              "RelativeDocumentMoniker": "SANNABI.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\SANNABI.cpp",
+              "RelativeToolTip": "SANNABI.cpp",
+              "ViewState": "AgIAAJ0AAAAAAAAAAADgv68AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-08-28T02:18:10.942Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "TileCollisionAdapter.cpp",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\TileCollisionAdapter.cpp",
+              "RelativeDocumentMoniker": "TileCollisionAdapter.cpp",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\TileCollisionAdapter.cpp",
+              "RelativeToolTip": "TileCollisionAdapter.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-08-28T01:17:36.744Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "CollisionComponent.h",
+              "DocumentMoniker": "C:\\KHJ\\SVN\\Project-SANNABI\\CollisionComponent.h",
+              "RelativeDocumentMoniker": "CollisionComponent.h",
+              "ToolTip": "C:\\KHJ\\SVN\\Project-SANNABI\\CollisionComponent.h",
+              "RelativeToolTip": "CollisionComponent.h",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAB4AAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-08-28T00:25:43.135Z"
             }
           ]
         }

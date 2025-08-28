@@ -13,6 +13,7 @@ public:
 	void Init() override;
 	void Update(float deltaTime) override;
 	void Render(HDC _hdcBack) override;
+	void Destroy() override;
 
 	void Activate(Vector position, Vector direction, float speed);
 	void Deactivate();

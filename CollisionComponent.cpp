@@ -22,7 +22,7 @@ void CollisionComponent::Render(HDC hdc)
 {
 	Super::Render(hdc);
 
-	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0)); 
+	/*HPEN hPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0)); 
 	HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
 
 	Vector screenPos = CameraManager::GetInstance()->ConvertScreenPos(position);
@@ -39,7 +39,7 @@ void CollisionComponent::Render(HDC hdc)
 	LineTo(hdc, left, top);
 
 	SelectObject(hdc, hOldPen);
-	DeleteObject(hPen);
+	DeleteObject(hPen);*/
 }
 
 void CollisionComponent::Destroy()

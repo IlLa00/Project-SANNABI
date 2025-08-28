@@ -25,17 +25,25 @@ void GrapplingComponent::Update(float deltaTime)
 
 	curProjectile->Update(deltaTime);
 
-	Vector projectilePos = curProjectile->GetPosition();
+	Player* player = dynamic_cast<Player*>(owner);
+	if (!player) return;
 
-	// 사슬팔의 최대길이보다 길면 돌려주기
-	Vector player_to_projectile = projectilePos - startGrapplePostion;
-
-	if (player_to_projectile.Length() > fireChainLength)
+	if (player->GetActionState() != EPlayerActionState::GrappleFire &&
+		player->GetActionState() != EPlayerActionState::GrappleReelIn &&
+		player->GetActionState() != EPlayerActionState::GrappleSwing)
 	{
-		Player* player = dynamic_cast<Player*>(owner);
-		if (player)
+		if (curProjectile)
+		{
+			bFiring = false;
 			player->OffGrappling();
+			return;
+		}
 	}
+
+	Vector projectilePos = curProjectile->GetPosition();
+	Vector player_to_projectile = projectilePos - startGrapplePostion;
+	if (player_to_projectile.Length() > fireChainLength)
+		player->OffGrappling();
 }
 
 void GrapplingComponent::Render(HDC _hdcBack)
@@ -48,6 +56,8 @@ void GrapplingComponent::Render(HDC _hdcBack)
 
 void GrapplingComponent::Destroy()
 {
+
+
 	Super::Destroy();
 }
 

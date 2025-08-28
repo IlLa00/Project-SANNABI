@@ -20,18 +20,21 @@ void PhysicsComponent::Init(Actor* _owner)
 
 			collisionComp->OnComponentBeginOverlap = [this](CollisionComponent* other, HitResult info)
 				{
-					OnGroundBeginOverlap(other, info);
+					if (other->GetCollisionChannel() == ECollisionChannel::Projectile && other->GetOwner()->GetOwner() == owner)
+						return;
+
+					if (other->GetCollisionChannel() == ECollisionChannel::Projectile ||
+						other->GetCollisionChannel() == ECollisionChannel::DeathTile || 
+						other->GetCollisionChannel() == ECollisionChannel::Character )
+						owner->OnCharacterBeginOverlap(other, info);
+					else
+						OnGroundBeginOverlap(other, info);
 				};
 			collisionComp->OnComponentEndOverlap = [this](CollisionComponent* other, HitResult info)
 				{
 					// 사슬팔인데 플레이어와 부딪히면 처리 안함
 					if (other->GetCollisionChannel() == ECollisionChannel::Projectile && other->GetOwner()->GetOwner() == owner)
 						return;
-
-					if (other->GetCollisionChannel() == ECollisionChannel::Projectile ||
-						other->GetCollisionChannel() == ECollisionChannel::DeathTile
-						)
-						owner->OnCharacterBeginOverlap(other, info);
 					else
 						OnGroundEndOverlap(other, info);
 				};
@@ -115,6 +118,9 @@ void PhysicsComponent::Update(float deltaTime)
 
 void PhysicsComponent::Destroy()
 {
+
+
+
 	Super::Destroy();
 
 }
@@ -197,30 +203,24 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 	float currentDistance = toHookCurrent.Length(); // 0일때 예외처리
 
 	GrapplingComponent* grappleComponent = owner->GetComponent<GrapplingComponent>();
-	
 	if (!grappleComponent) return;
 
 	float maxChainLength = grappleComponent->GetMaxChainLength();
 	
+	// 최대길이보다 길면 진자운동말고 당겨오기
 	if (currentDistance > maxChainLength)
 	{
 		grappleLength = maxChainLength;
 
-		// 당기는 힘 계산
 		float excessDistance = currentDistance - maxChainLength;
 		Vector pullDirection = (curPrjoectile->GetPosition() - currentPos).Normalized();
 
-		// 거리에 비례한 당기는 힘 (스프링 처럼)
-		float pullStrength = 800.0f; // 조절 가능한 당기는 힘
+		float pullStrength = 800.0f; 
 		Vector pullForce = pullDirection * pullStrength * excessDistance;
 
-		// 현재 속도 가져오기
 		Vector currentVelocity = owner->GetVelocity();
-
-		// 당기는 힘을 속도에 추가 (가속도 형태로)
 		currentVelocity += pullForce * deltaTime;
 
-		// 공기 저항/마찰 적용 (너무 빨라지지 않도록)
 		float dampingFactor = 0.98f;
 		currentVelocity *= dampingFactor;
 
@@ -236,7 +236,7 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 
 	currentAngle = atan2f(toHookCurrent.y, toHookCurrent.x);
 
-	// 각가속도 계산 (진자 운동의 기본 공식)
+	// 진자운동
 	float angularAccel = (gravity / grappleLength) * cosf(currentAngle) * swingGravityMult;
 
 	swingInputForce -= 50.0f;
@@ -254,11 +254,11 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 		}
 	}
 
-	// 진자 운동 관성 추가 (자연스러운 스윙감)
+	// 진자 운동 관성 추가 
 	if (abs(angularVelocity) > 0.1f)
 	{
 		float swingDirection = (angularVelocity > 0) ? 1.0f : -1.0f;
-		float momentumBoost = 0.2f; // 조절 가능
+		float momentumBoost = 0.2f; 
 		angularAccel += swingDirection * momentumBoost * (swingInputForce / grappleLength);
 	}
 
@@ -284,7 +284,6 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 
 	if (!willCollide) // 충돌이 없으면
 	{
-		// 위치 업데이트
 		currentAngle += angularVelocity * deltaTime;
 
 		Vector newPos;
@@ -294,7 +293,7 @@ void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
 		owner->SetPosition(newPos);
 	}
 
-	// 속도 계산 (해제 시 필요)
+	// 속도 계산, 해제 시 자연스러운 이동을 위함
 	float tangentialSpeed = angularVelocity * grappleLength;
 
 	Vector tangent(-sinf(currentAngle), cosf(currentAngle));
@@ -617,22 +616,21 @@ void PhysicsComponent::KnockBack(Vector collisionNormal)
 {
 	if (!owner) return;
 
-	Vector knockbackDirection = Vector(collisionNormal.x, -collisionNormal.y);
+	Vector knockbackDirection = Vector(-collisionNormal.x, -collisionNormal.y);
 
-	float knockbackForce = 300.0f;     
-	float upwardForce = 250.0f;       
+	float knockbackForce = 400.0f;  
+	float upwardForce = 800.0f;       
 
 	Vector velocity = owner->GetVelocity();
-
 	Vector knockbackVelocity;
-	knockbackVelocity.x = knockbackForce * knockbackDirection.x;
-	knockbackVelocity.y = (collisionNormal.y > 0) ? upwardForce : -upwardForce;
 
-	float blendRatio = 0.7f;  // 70% 넉백
+	knockbackVelocity.x = knockbackForce * knockbackDirection.x;
+	knockbackVelocity.y = -upwardForce; 
+
+	float blendRatio = 0.8f; 
 	Vector finalVelocity = velocity * (1.0f - blendRatio) + knockbackVelocity * blendRatio;
 
-	// 최대 속도 제한
-	float maxKnockbackSpeed = 200.0f;
+	float maxKnockbackSpeed = 600.0f; 
 	if (finalVelocity.Length() > maxKnockbackSpeed)
 	{
 		finalVelocity.Normalize();
@@ -644,7 +642,8 @@ void PhysicsComponent::KnockBack(Vector collisionNormal)
 
 void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult info)
 {
-	if (other && (other->GetCollisionChannel() == ECollisionChannel::WorldStatic || other->GetCollisionChannel() == ECollisionChannel::WorldDynamic))
+	if (other && (other->GetCollisionChannel() == ECollisionChannel::WorldStatic || 
+		other->GetCollisionChannel() == ECollisionChannel::WorldDynamic))
 	{
 		Player* player = dynamic_cast<Player*>(owner);
 		if (!player) return;
@@ -718,6 +717,7 @@ void PhysicsComponent::OnGroundEndOverlap(CollisionComponent* other, HitResult i
 			bOnGround = false;
 
 			if (player->GetActionState() == EPlayerActionState::Jump) return;
+			if (player->GetActionState() == EPlayerActionState::GrappleReelIn) return;
 
 			player->UpdateActionState(EPlayerActionState::None);
 			player->UpdateMovementState(EPlayerMovementState::Fall);
@@ -823,28 +823,6 @@ float PhysicsComponent::GetDashCurve(float t)
 	if (t <= 0.0f) return 0.0f;
 	if (t >= 1.0f) return 1.0f;
 	
-	// 여러 커브 옵션 중 선택
-
-	// 옵션 1: 시작 느림 → 중간 빠름 → 끝 느림 (S-curve)
-	// return t * t * (3.0f - 2.0f * t); // smoothstep
-
-	// 옵션 2: 느린 시작 → 급가속 (제곱 커브)
-	 return t * t;
-
-	// 옵션 3: 빠른 시작 → 감속 (제곱근 커브)
-	// return sqrt(t);
-
-	// 옵션 4: 커스텀 커브 - 0.2초까지는 0.3배속, 이후 0.8배속
-	// 
-	//float timeThreshold = 0.2f / dashTotalTime; // 전체 시간 대비 비율
-	//if (t <= timeThreshold)
-	//{
-	//	return 0.3f * (t / timeThreshold);
-	//}
-	//else
-	//{
-	//	float remainingT = (t - timeThreshold) / (1.0f - timeThreshold);
-	//	return 0.3f + 0.8f * remainingT;
-	//}
+	return t * t;
 }
 

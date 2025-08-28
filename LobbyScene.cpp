@@ -7,6 +7,7 @@
 #include "SceneManager.h"
 #include "SoundManager.h"
 #include "InputManager.h"
+#include "CameraManager.h"
 
 void LobbyScene::Init()
 {
@@ -95,13 +96,22 @@ void LobbyScene::Update(float deltaTime)
         SoundManager::GetInstance()->PlaySound("Click");
         ::PostQuitMessage(0);
     }
-
-   
 }
 
 void LobbyScene::Render(HDC _hdcBack)
 {
-	currentBG->Render(_hdcBack, Vector(0, 0));
+    if (currentBG)
+    {
+        ::StretchBlt(_hdcBack,
+            0, 0,
+            GWinSizeX, // 대상 너비: GWinWidth
+            GWinSizeY, // 대상 높이: GWinHeight
+            currentBG->_textureHdc,
+            0, 0,
+            currentBG->GetSizeX(), // 원본 너비
+            currentBG->GetSizeY(), // 원본 높이
+            SRCCOPY);
+    }
 
     if (totalTime >= 3.f)
     {
@@ -112,7 +122,10 @@ void LobbyScene::Render(HDC _hdcBack)
         editorButton->Render(_hdcBack);
         exitButton->Render(_hdcBack);
 
-        cursorTexture->Render(_hdcBack, InputManager::GetInstance()->GetMousePos());
+        Vector mousePosition = InputManager::GetInstance()->GetMousePos();
+        Vector worldPosition = CameraManager::GetInstance()->ConvertWorldPos(mousePosition);
+
+        cursorTexture->Render(_hdcBack, worldPosition);
     }
 }
 

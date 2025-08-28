@@ -12,6 +12,9 @@ void InputManager::Init(HWND hwnd, HWND subwnd, HWND subwnd2)
 
 void InputManager::Update()
 {
+	if (bEndGame)
+		return;
+
 	BYTE asciiKeys[KEY_TYPE_COUNT] = {};
 	if (::GetKeyboardState(asciiKeys) == false)
 		return;

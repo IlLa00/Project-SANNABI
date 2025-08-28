@@ -65,5 +65,9 @@ private:
 
 	float explosionDuration = 2.f;
 	float elapsedTimeExplosion = 0.f;
+
+	Vector lastTargetPosition;
+	bool needsDirectionUpdate = false;
+	int bulletCleanupCounter = 0;
 };
 

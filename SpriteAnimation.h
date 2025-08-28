@@ -6,6 +6,7 @@ class SpriteAnimation
 {
 public:
     void Init(const string& spriteSheetPath, int frameCount, float duration, bool loop = true);
+    void Destroy();
 
     TextureResource* GetSpriteSheet() const { return spriteSheet; }
     int GetFrameCount() const { return frameCount; }

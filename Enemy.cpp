@@ -88,4 +88,6 @@ void Enemy::OnPerceiveCharacter(CollisionComponent* other, HitResult info)
 void Enemy::OffPerceiveCharacter(CollisionComponent* other, HitResult info)
 {
 	bDetectTarget = false;
+
+	target = nullptr;
 }
