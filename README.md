@@ -13,7 +13,8 @@ https://github.com/user-attachments/assets/f8c4c865-938c-41e9-b4fe-372d6d66b446
 <img width="3840" height="1699" alt="Untitled diagram _ Mermaid Chart-2025-08-28-064627" src="https://github.com/user-attachments/assets/66b29ae0-a5b1-4530-88b8-788fc3a8ee69" />            
 
 여러 프로젝트를 진행하다보니, 기능 구현도 물론 중요하지만 초반 설계의 중요성을 크게 느꼈습니다.      
-이에 실제 개발에 들어가기 전에 클래스 다이어그램을 제작하였습니다.          
+이에 실제 개발에 들어가기 전에 클래스 다이어그램을 제작하였고 실제 개발하는 데에 큰 도움이 되었습니다.      
+
 # 기술 설명    
 ## 컴포넌트 기반 게임 엔진 아키텍처 (Component-Based Architecture)
 모든 게임 오브젝트를 Actor로 데이터만 가지게 하고, 특정 기능을 담당하는 Component를 가지게 하여 재사용성과 결합도를 낮추어 유연한 객체 관리를 위함입니다.
