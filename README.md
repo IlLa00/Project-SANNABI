@@ -242,11 +242,9 @@ https://github.com/user-attachments/assets/f8c4c865-938c-41e9-b4fe-372d6d66b446
 </details>    
 
 ## 맵 에디터
-다양한 레벨 디자인을 가능하게 하기 위해 Windows GDI 기반의 멀티 윈도우 맵 에디터를 구현했습니다. EditorScene을 중심으로 TileEditor와 BuildingEditor 서브 윈도우가 통합된 구조로, 게임 씬의 타일, 건축물, 충돌체, 엔티티 스폰 지점을 시각적으로 배치하고 저장/로드 기능을 지원합니다.
-- **멀티 모드 편집 시스템**: Tab키로 5가지 편집 모드(Tile/Collision/Building/Enemy/Platform)를 전환하며, 각 모드에서 타일 페인팅, 충돌 영역 설정, 오브젝트 배치 등 특화된 편집 작업을 수행합니다.
-- **4레이어 타일 시스템**: 독립적인 4개의 타일 레이어로 깊이감 있는 맵을 구성할 수 있으며, 120×80 그리드(타일 크기 52px)에서 2종 타일셋(Normal/Death)을 사용합니다. 각 타일은 32비트 인코딩(상위 16비트: 타일셋 타입, 하위 16비트: 타일 인덱스)으로 효율적으로 저장됩니다.
-- **멀티 윈도우 아키텍처**: TileEditor 서브 윈도우에서 타일셋 팔레트를 제공하고, BuildingEditor 서브 윈도우에서 건축물 스프라이트를 선택합니다. 메인 윈도우는 그리드 가이드와 함께 실시간 미리보기를 제공하며, 비트맵 캐싱과 더블 버퍼링으로 플리커 없는 렌더링을 구현했습니다.
-- **확장 가능한 데이터 파이프라인**: .tilemap 텍스트 포맷으로 레이어별 인코딩된 타일 인덱스, 충돌 사각형 좌표(Normal/Death 타입 구분), 빌딩 경로, 엔티티 스폰 좌표를 직렬화하여 저장합니다. 충돌 영역은 시각적으로 구분되며(Normal: 녹색 해칭, Death: 적색 교차 해칭), 타일뿐만 아니라 건축물, 지형 충돌체, 적군 스폰지점, 무빙 플랫폼까지 에디터에서 배치할 수 있습니다.
+- **멀티 윈도우 편집 시스템**: EditorScene을 중심으로 TileEditor/BuildingEditor 서브 윈도우가 통합된 구조로, Tab키로 5가지 편집 모드(Tile/Collision/Building/Enemy/Platform)를 전환하며 비트맵 캐싱과 더블 버퍼링으로 플리커 없는 렌더링을 구현했습니다.
+- **4레이어 타일 시스템과 데이터 직렬화**: 120×80 그리드에서 독립적인 4개 레이어로 깊이감 있는 맵을 구성하며, 32비트 인코딩(상위 16비트: 타일셋 타입, 하위 16비트: 인덱스)으로 타일을 저장하고 .tilemap 텍스트 포맷으로 레이어별 타일 인덱스, 충돌 사각형, 빌딩 경로, 엔티티 스폰 좌표를 직렬화합니다.
+- **어댑터 패턴을 통한 시스템 통합**: 에디터에서 생성된 CollisionRect 구조체는 TileCollisionAdapter를 통해 런타임에 CollisionComponent로 자동 변환되어 CollisionManager에 등록되며, 적절한 CollisionChannel(WorldStatic, DeathTile)이 자동 할당되어 에디터와 게임 엔진 간의 낮은 결합도를 유지하면서도 seamless하게 통합됩니다.
    
 https://github.com/user-attachments/assets/7e237f47-22fb-42b2-bcec-37487cec6ec7
 
