@@ -1,266 +1,592 @@
-# Project SANNABI    
+# Project SANNABI
+
 컴포넌트 기반 아키텍처를 활용해 개발한 산나비 모작 WinAPI포트폴리오 입니다.     
 사용언어 : C++      
 사용 툴 : VS 2022    
 형상 관리 : GitHub Desktop     
 제작 기간 : 25.07.30 ~ 25.08.27 (1달)       
-제작 일지 : https://www.notion.so/Project-SANABI-234894b38b1080baa682d16e91d4a5b1?source=copy_link    
-# 영상
+
+**[제작 일지 (Notion)](https://www.notion.so/Project-SANABI-234894b38b1080baa682d16e91d4a5b1)**
+
+### 플레이 영상
 https://github.com/user-attachments/assets/f8c4c865-938c-41e9-b4fe-372d6d66b446
-# 들어가기 앞서,
-산나비라는 게임은 Unity Engine으로 만든 2D 플랫포머 로프액션 어드벤처 장르의 게임입니다, 원작의 스타일리쉬한 조작감을 살리는 것과 구조 설계에 최대한 집중했습니다.     
-# 초기 설계
-<img width="3840" height="1699" alt="Untitled diagram _ Mermaid Chart-2025-08-28-064627" src="https://github.com/user-attachments/assets/66b29ae0-a5b1-4530-88b8-788fc3a8ee69" />            
 
-여러 프로젝트를 진행하다보니, 기능 구현도 물론 중요하지만 초반 설계의 중요성을 크게 느꼈습니다.      
-이에 실제 개발에 들어가기 전에 클래스 다이어그램을 제작하였고 실제 개발하는 데에 큰 도움이 되었습니다.      
+---
 
-# 📋 목차
-1. [**컴포넌트 기반 게임 엔진 아키텍처**](#컴포넌트-기반-게임-엔진-아키텍처-component-based-architecture) - Actor와 Component 조합 시스템
-2. [**사슬팔과 물리 시스템**](#사슬팔과-물리-시스템) - 진자 운동 기반 그래플링 시스템
-3. [**충돌 시스템**](#충돌-시스템) - AABB 충돌 및 필터링 시스템
-4. [**맵 에디터**](#맵-에디터) - 커스텀 타일 배치 및 레벨 디자인 툴
+## 담당 시스템
+1. [컴포넌트 기반 엔진 아키텍처](#1-컴포넌트-기반-엔진-아키텍처)
+2. [사슬팔과 물리 시스템](#2-사슬팔과-물리-시스템)
+3. [충돌 시스템](#3-충돌-시스템)
+4. [맵 에디터](#4-맵-에디터)
 
-# 기술 설명    
-## 컴포넌트 기반 게임 엔진 아키텍처 (Component-Based Architecture)
-모든 게임 오브젝트를 Actor로 데이터만 가지게 하고, 특정 기능을 담당하는 Component를 가지게 하여 재사용성과 결합도를 낮추어 유연한 객체 관리를 위함입니다.
-- Actor라는 Base클래스를 만들어 공용으로 사용할 데이터들을 넣고, Actor를 상속받는 Player와 Enemy, Bullet 등등은 충돌을 담당하는 CollisionComponent, 물리를 담당하는 PhysicsComponent, 애니메이션 렌더링을 담당하는 SpriteRenderComponent 등등을 보유합니다.    
-## 사슬팔과 물리 시스템
-원작게임의 핵심 기술인 사슬팔(Grappling)시스템은 플레이어의 이동성을 극대화하고 역동적인 게임플레이를 제공합니다, 이 시스템은 단순한 이동이 아닌 물리 기반의 움직임으로 다양한 전략적 움직임을 가능하게 합니다.   
-- GrapllingComponent로 사슬팔의 발사와 부착을 담당하고, PhysicsComponent로 사슬팔에 따른 상태에 따라 물리 움직임을 다르게 합니다.
-- GrapplingHookProjectile 발사체 객체의 잦은 생성 및 삭제로 인해 **오브젝트 풀 패턴**을 사용하여 런타임 성능 저하를 방지하였습니다.
-- GrapplingHookProjectile 발사체 객체가 충돌이 일어났을때, **CollisionComponent에 바인됭된 람다 함수**로 콜리전 채널에 따른 함수를 호출하게 하여 유연하고 확장 가능한 이벤트 기반 시스템을 구현했습니다.
-- PhysicsComponent는 기본적인 이동부터 점프나 대쉬, 피격 등 모든 물리적 상호작용을 담당합니다.
-- PhysicsComponent는 EPhysicsState에 따라 고유의 물리 업데이트 로직을 적용합니다, 이는 복잡한 움직임 패턴을 효과적으로 관리하고, 상태 전환에 따른 버그 발생을 줄이는데 핵심입니다.
-- 사슬팔 부착 시, **접선 벡터와 각속도, 각가속도의 개념**을 도입한 **진자 운동 시뮬레이션**을 실행합니다.
+---
+
+## 1. 컴포넌트 기반 엔진 아키텍처
+
+### Actor - 컴포넌트 보유 기반 클래스
+
+```cpp
+class Actor
+{
+public:
+    virtual void Init();
+    virtual void Update(float deltaTime);
+    virtual void Render(HDC _hdcBack);
+    virtual void Destroy();
+    virtual void TakeDamage();
+
+    void AddComponent(Component* component);
+
+    template<typename T>
+    T* GetComponent()
+    {
+        for (Component* comp : components)
+        {
+            T* castedComp = dynamic_cast<T*>(comp);
+            if (castedComp) return castedComp;
+        }
+        return nullptr;
+    }
+
+    void SetPosition(Vector newPosition) { position = newPosition; }
+    void SetVelocity(Vector newVelocity) { velocity = newVelocity; }
+    void SetAcceleration(Vector newAcceleration) { acceleration = newAcceleration; }
+
+    Actor* GetOwner() { return owner; }
+    void SetOwner(Actor* newOwner) { owner = newOwner; }
+
+protected:
+    Vector position;
+    Vector velocity;
+    Vector acceleration;
+    float speed = 300.f;
+    Vector direction = Vector(1, 0);
+    float scale = 0.25f;
+    Actor* owner = nullptr;
+    unordered_set<Component*> components;
+};
+```
+
+### CollisionComponent - 함수 포인터 기반 이벤트
+
+```cpp
+class CollisionComponent : public Component
+{
+    using FOnComponentBeginOverlap = function<void(CollisionComponent*, HitResult)>;
+    using FOnComponentEndOverlap = function<void(CollisionComponent*, HitResult)>;
+
+public:
+    void Init(Actor* _owner) override;
+    void Update(float deltaTime) override;
+    void Render(HDC hdc) override;
+
+    void SetCollisionChannel(ECollisionChannel channel) { collisionChannel = channel; }
+    ECollisionChannel GetCollisionChannel() { return collisionChannel; }
+    RECT GetBoundingBox() const;
+
+public:
+    FOnComponentBeginOverlap OnComponentBeginOverlap;
+    FOnComponentEndOverlap OnComponentEndOverlap;
+
+private:
+    Vector position;
+    int offsetX, offsetY, width, height;
+    bool bPendingKill = false;
+    ECollisionChannel collisionChannel;
+};
+```
+
+---
+
+## 2. 사슬팔과 물리 시스템
+
 ![1-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/6a7fb0a1-f707-471f-8323-f83e7286391c)
 ![2-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/96a59514-bb06-4be6-9377-e79d22348e0e)
 
+### PhysicsComponent - EPhysicsState 기반 상태 분기
+
 <details>
-  <summary>PhysicsComponent::UpdateGrapplePhysics() 코드</summary>
-    
-    void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
+<summary><b>PhysicsComponent::Update - 상태 머신</b></summary>
+
+```cpp
+enum class EPhysicsState
+{
+    Normal, Grappling, ExtendingChain,
+    RightWallClimbing, LeftWallClimbing, CeilingHang
+};
+
+void PhysicsComponent::Update(float deltaTime)
+{
+    Super::Update(deltaTime);
+    if (!owner) return;
+
+    switch (physicsState)
     {
-    	    if (!owner) return;
-    
-    	Player* player = dynamic_cast<Player*>(owner);
-    	if (!player) return;
-    
-    	player->GetArmRenderComponent()->SetPosition(player->GetPosition() + Vector(0, -20));
-    
-    	Vector currentProjectilePos = curPrjoectile->GetPosition();
-    	Vector projectileMovement = currentProjectilePos - lastProjectilePosition;
-    
-    	Vector currentPos = owner->GetPosition() + projectileMovement;
-    	owner->SetPosition(currentPos);
-    
-    	lastProjectilePosition = currentProjectilePos;
-    
-    	Vector toHookCurrent = currentPos - currentProjectilePos;
-    	float currentDistance = toHookCurrent.Length(); // 0일때 예외처리
-    
-    	GrapplingComponent* grappleComponent = owner->GetComponent<GrapplingComponent>();
-    	if (!grappleComponent) return;
-    
-    	float maxChainLength = grappleComponent->GetMaxChainLength();
-    	
-    	// 최대길이보다 길면 진자운동말고 당겨오기
-    	if (currentDistance > maxChainLength)
-    	{
-    		grappleLength = maxChainLength;
-    
-    		float excessDistance = currentDistance - maxChainLength;
-    		Vector pullDirection = (curPrjoectile->GetPosition() - currentPos).Normalized();
-    
-    		float pullStrength = 800.0f; 
-    		Vector pullForce = pullDirection * pullStrength * excessDistance;
-    
-    		Vector currentVelocity = owner->GetVelocity();
-    		currentVelocity += pullForce * deltaTime;
-    
-    		float dampingFactor = 0.98f;
-    		currentVelocity *= dampingFactor;
-    
-    		owner->SetVelocity(currentVelocity);
-    		
-    		Vector newPosition = currentPos + currentVelocity * deltaTime;
-    		owner->SetPosition(newPosition);
-    
-    		return;
-    	}
-    
-    	grappleLength = currentDistance;
-    
-    	currentAngle = atan2f(toHookCurrent.y, toHookCurrent.x);
-    
-    	// 진자운동
-    	float angularAccel = (gravity / grappleLength) * cosf(currentAngle) * swingGravityMult;
-    
-    	swingInputForce -= 50.0f;
-    	swingInputForce = clamp(swingInputForce, 0.f, 250.f);
-    
-    	Vector direction = owner->GetDirection();
-    	if (direction.x != 0)
-    	{
-    		angularAccel += -direction.x * (swingInputForce / grappleLength);
-    
-    		if ((direction.x > 0 && angularVelocity > 0) ||
-    			(direction.x < 0 && angularVelocity < 0))
-    		{
-    			angularAccel *= timingBonusMult;
-    		}
-    	}
-    
-    	// 진자 운동 관성 추가 
-    	if (abs(angularVelocity) > 0.1f)
-    	{
-    		float swingDirection = (angularVelocity > 0) ? 1.0f : -1.0f;
-    		float momentumBoost = 0.2f; 
-    		angularAccel += swingDirection * momentumBoost * (swingInputForce / grappleLength);
-    	}
-    
-    	// 각속도 업데이트
-    	angularVelocity += angularAccel * deltaTime;
-    	angularVelocity *= swingDamping;  // 감쇠 
-    
-    	// 충돌 예상 
-    	float nextAngle = currentAngle + angularVelocity * deltaTime;
-    
-    	// 새 위치 계산 (원형 운동)
-    	Vector newPos;
-    	newPos.x = curPrjoectile->GetPosition().x + grappleLength * cosf(currentAngle);
-    	newPos.y = curPrjoectile->GetPosition().y + grappleLength * sinf(currentAngle);
-    
-    	bool willCollide = false;
-    
-    	if (bOverlapLeftWall || bOverlapRightWall || bOnGround || bOverlapCeiling)
-    	{
-    		willCollide = true;
-    		angularVelocity = 0; // 충돌 방향으로의 회전 중지
-    	}
-    
-    	if (!willCollide) // 충돌이 없으면
-    	{
-    		currentAngle += angularVelocity * deltaTime;
-    
-    		Vector newPos;
-    		newPos.x = curPrjoectile->GetPosition().x + grappleLength * cosf(currentAngle);
-    		newPos.y = curPrjoectile->GetPosition().y + grappleLength * sinf(currentAngle);
-    
-    		owner->SetPosition(newPos);
-    	}
-    
-    	// 속도 계산, 해제 시 자연스러운 이동을 위함
-    	float tangentialSpeed = angularVelocity * grappleLength;
-    
-    	Vector tangent(-sinf(currentAngle), cosf(currentAngle));
-    	Vector velocity = tangent * tangentialSpeed;
-    
-    	owner->SetVelocity(velocity);
+    case EPhysicsState::Normal:          UpdateNormalPhysics(deltaTime);   break;
+    case EPhysicsState::Grappling:       UpdateGrapplePhysics(deltaTime);  break;
+    case EPhysicsState::ExtendingChain:  UpdateExtendChainPhysics(deltaTime); break;
+    case EPhysicsState::CeilingHang:     UpdateCeilingPhysics(deltaTime);  break;
+    case EPhysicsState::RightWallClimbing:
+    case EPhysicsState::LeftWallClimbing: UpdateClimbingPhysics(deltaTime); break;
     }
-</details>    
 
-## 충돌 시스템
-- AABB충돌 방식을 기반으로, Singleton구조의 CollisionManager클래스에서 모든 충돌체를 검사합니다.
-- CollisionComponent는 Actor 또는 지형지물에 부착되어 있으며, **CollisionChannel**과 **OnComponentBeginOverlap, OnComponentEndOverlap**이라는 함수 포인터를 가지고 있습니다. CollisionChannel을 통해 다른 충돌체와의 충돌 여부를 효율적으로 설정할 수 있고, 함수 포인터를 활용하여 충돌 발생 시 실행될 기능을 자유롭게 정의함으로써 높은 다형성을 확보했습니다.
-<details>
-  <summary> 2차원배열 코드</summary>
-    
-    bool bIgnore[(int)ECollisionChannel::Max][(int)ECollisionChannel::Max] = { 0 };
-    bool bBlock[(int)ECollisionChannel::Max][(int)ECollisionChannel::Max] = { 0 };
-    bool bOverlap[(int)ECollisionChannel::Max][(int)ECollisionChannel::Max] = { 0 };
-    
-    bBlock[(int)ECollisionChannel::DeathTile][(int)ECollisionChannel::Character] = 1;
-    bIgnore[(int)ECollisionChannel::Projectile][(int)ECollisionChannel::Projectile] = 1; 
-</details>     
+    // 충돌 상태에 따른 속도 보정
+    Vector velocity = owner->GetVelocity();
+    if (bOnGround && !bJustReleasedGrapple) velocity.y = 0;
+    if (bOverlapCeiling) { velocity.y = 0; if (bJumping) bJumping = false; }
+    if (bOverlapLeftWall)  velocity.x = 0;
+    if (bOverlapRightWall) velocity.x = 0;
+    owner->SetVelocity(velocity);
+}
+```
+</details>
 
-- CollisionManager에 HitResult 구조체를 만들며 반환하는 함수를 개발하며, 이 구조체를 통해 지면 감지, 벽 타기 등 다양한 상황에 맞는 로직을 실행할 수 있게합니다.
-- CollisionChannel과 2차원 bool 배열을 통해 충돌 필터링 시스템을 구현하여 불필요한 충돌 연산을 줄였습니다, 언리얼 엔진의 충돌 시스템에서 영감을 받았고 매 프레임마다 모든 충돌체를 검사하기엔 효율성이 떨어질 것이라 생각하여 구현해보았습니다.
-- 동적인 객체에 한해 다음 프레임 위치를 예측해 발생할 수 있는 충돌을 미리 감지하는 충돌 예측 기법을 통해 터널링 현상이나 객체 겹침 현상을 방지하였습니다, 기존에 충돌체를 보유한 객체끼리 겹치는 현상이 있어 이를 방지하고자 구현해보았습니다.
-- 매 프레임마다 발생하는 콜백함수 호출로 인한 중복 이벤트 호출을 방지하기 위해, unordered_map자료구조를 사용해 정확한 상태 변화를 감지를 구현하였습니다.
+### 진자 운동 시뮬레이션
+
 <details>
-  <summary>CollisionManager::Update() 코드</summary>
-    
-    void CollisionManager::Update()
+<summary><b>PhysicsComponent::UpdateGrapplePhysics</b></summary>
+
+```cpp
+void PhysicsComponent::UpdateGrapplePhysics(float deltaTime)
+{
+    if (!owner) return;
+
+    Vector currentPos = owner->GetPosition();
+    Vector toHookCurrent = currentPos - grapplePoint;
+    float currentDistance = toHookCurrent.Length();
+
+    GrapplingComponent* grappleComponent = owner->GetComponent<GrapplingComponent>();
+    if (!grappleComponent) return;
+
+    float maxChainLength = grappleComponent->GetMaxChainLength();
+
+    // 최대 길이 초과 시 스프링처럼 당기기
+    if (currentDistance > maxChainLength)
     {
-        ProcessPredictiveCollisions();
-    	for (int i = 0; i < collisionComponents.size(); i++)
-    	{
-    		if (!collisionComponents[i]->IsActive()) continue;
-    
-    		for (int j = i + 1; j < collisionComponents.size(); j++)
-    		{
-    			if (!collisionComponents[j]->IsActive()) continue;
-    
-    			ECollisionChannel channel1 = collisionComponents[i]->GetCollisionChannel();
-    			ECollisionChannel channel2 = collisionComponents[j]->GetCollisionChannel();
-    
-    			if (bIgnore[(int)channel1][(int)channel2] || !bBlock[(int)channel1][(int)channel2])
-    				continue;
-    
-    			auto pair = make_pair(collisionComponents[i], collisionComponents[j]);
-    			HitResult collisionInfo = CheckAABBCollision(collisionComponents[i], collisionComponents[j]);
-    			bool wasColliding = collisionPairs[pair];
-    
-    			if (collisionInfo.isColliding && !wasColliding) 
-    			{
-    				lastCollisionInfo[pair] = collisionInfo;
-    
-    				if (collisionComponents[i]->OnComponentBeginOverlap)
-    					collisionComponents[i]->OnComponentBeginOverlap(collisionComponents[j], collisionInfo);
-    
-    				if (collisionComponents[j]->OnComponentBeginOverlap)
-    				{
-    					HitResult reversedInfo = collisionInfo;
-    					reversedInfo.collisionNormal.x = -collisionInfo.collisionNormal.x;
-    					reversedInfo.collisionNormal.y = -collisionInfo.collisionNormal.y;
-    					collisionComponents[j]->OnComponentBeginOverlap(collisionComponents[i], reversedInfo);
-    				}
-    			}
-    			else if (!collisionInfo.isColliding && wasColliding) 
-    			{
-    				HitResult lastInfo = lastCollisionInfo[pair];
-    
-    				if (collisionComponents[i]->OnComponentEndOverlap)
-    					collisionComponents[i]->OnComponentEndOverlap(collisionComponents[j], lastInfo);
-    
-    				if (collisionComponents[j]->OnComponentEndOverlap)
-    				{
-    					HitResult reversedInfo = lastInfo;
-    					reversedInfo.collisionNormal.x = -lastInfo.collisionNormal.x;
-    					reversedInfo.collisionNormal.y = -lastInfo.collisionNormal.y;
-    					collisionComponents[j]->OnComponentEndOverlap(collisionComponents[i], reversedInfo);
-    				}
-    
-    				lastCollisionInfo.erase(pair);
-    			}
-    
-    			collisionPairs[pair] = collisionInfo.isColliding;
-    		}
-	}
-}    
-</details>    
+        grappleLength = maxChainLength;
+        float excessDistance = currentDistance - maxChainLength;
+        Vector pullDirection = (grapplePoint - currentPos).Normalized();
 
-## 맵 에디터
-다양한 레벨 디자인을 가능하게 하기 위해 Windows GDI 기반의 멀티 윈도우 맵 에디터를 구현했습니다. EditorScene을 중심으로 TileEditor와 BuildingEditor 서브 윈도우가 통합된 구조로, 게임 씬의 타일, 건축물, 충돌체, 엔티티 스폰 지점을 시각적으로 배치하고 저장/로드 기능을 지원합니다.
-- **멀티 모드 편집 시스템**: Tab키로 5가지 편집 모드(Tile/Collision/Building/Enemy/Platform)를 전환하며, 각 모드에서 타일 페인팅, 충돌 영역 설정, 오브젝트 배치 등 특화된 편집 작업을 수행합니다.
-- **4레이어 타일 시스템**: 독립적인 4개의 타일 레이어로 깊이감 있는 맵을 구성할 수 있으며, 120×80 그리드(타일 크기 52px)에서 2종 타일셋(Normal/Death)을 사용합니다. 각 타일은 32비트 인코딩(상위 16비트: 타일셋 타입, 하위 16비트: 타일 인덱스)으로 효율적으로 저장됩니다.
-- **멀티 윈도우 아키텍처**: TileEditor 서브 윈도우에서 타일셋 팔레트를 제공하고, BuildingEditor 서브 윈도우에서 건축물 스프라이트를 선택합니다. 메인 윈도우는 그리드 가이드와 함께 실시간 미리보기를 제공하며, 비트맵 캐싱과 더블 버퍼링으로 플리커 없는 렌더링을 구현했습니다.
-- **확장 가능한 데이터 파이프라인**: .tilemap 텍스트 포맷으로 레이어별 인코딩된 타일 인덱스, 충돌 사각형 좌표(Normal/Death 타입 구분), 빌딩 경로, 엔티티 스폰 좌표를 직렬화하여 저장합니다. 충돌 영역은 시각적으로 구분되며(Normal: 녹색 해칭, Death: 적색 교차 해칭), 타일뿐만 아니라 건축물, 지형 충돌체, 적군 스폰지점, 무빙 플랫폼까지 에디터에서 배치할 수 있습니다.
-   
+        float pullStrength = 800.0f;
+        Vector pullForce = pullDirection * pullStrength * excessDistance;
+
+        Vector currentVelocity = owner->GetVelocity();
+        currentVelocity += pullForce * deltaTime;
+        currentVelocity *= 0.98f;  // 감쇠
+
+        owner->SetVelocity(currentVelocity);
+        owner->SetPosition(currentPos + currentVelocity * deltaTime);
+        return;
+    }
+
+    grappleLength = currentDistance;
+    currentAngle = atan2f(toHookCurrent.y, toHookCurrent.x);
+
+    // 각가속도 = (g / L) * cos(θ) — 진자 운동 기본 공식
+    float angularAccel = (gravity / grappleLength) * cosf(currentAngle) * swingGravityMult;
+
+    // 플레이어 입력에 따른 추가 가속
+    swingInputForce -= 50.0f;
+    swingInputForce = clamp(swingInputForce, 0.f, 250.f);
+
+    Vector direction = owner->GetDirection();
+    if (direction.x != 0)
+    {
+        angularAccel += -direction.x * (swingInputForce / grappleLength);
+
+        // 입력 방향과 스윙 방향 일치 시 타이밍 보너스
+        if ((direction.x > 0 && angularVelocity > 0) ||
+            (direction.x < 0 && angularVelocity < 0))
+            angularAccel *= timingBonusMult;
+    }
+
+    // 관성 부스트
+    if (abs(angularVelocity) > 0.1f)
+    {
+        float swingDirection = (angularVelocity > 0) ? 1.0f : -1.0f;
+        angularAccel += swingDirection * 0.2f * (swingInputForce / grappleLength);
+    }
+
+    // 각속도 업데이트 + 감쇠
+    angularVelocity += angularAccel * deltaTime;
+    angularVelocity *= swingDamping;
+
+    // 충돌 시 회전 정지
+    bool willCollide = (bOverlapLeftWall || bOverlapRightWall || bOnGround || bOverlapCeiling);
+    if (willCollide)
+        angularVelocity = 0;
+
+    if (!willCollide)
+    {
+        currentAngle += angularVelocity * deltaTime;
+        Vector newPos;
+        newPos.x = grapplePoint.x + grappleLength * cosf(currentAngle);
+        newPos.y = grapplePoint.y + grappleLength * sinf(currentAngle);
+        owner->SetPosition(newPos);
+    }
+
+    // 해제 시 자연스러운 사출을 위한 접선 속도 계산
+    float tangentialSpeed = angularVelocity * grappleLength;
+    Vector tangent(-sinf(currentAngle), cosf(currentAngle));
+    owner->SetVelocity(tangent * tangentialSpeed);
+}
+```
+</details>
+
+### 충돌면 법선벡터 기반 상태 전환
+
+<details>
+<summary><b>PhysicsComponent::OnGroundBeginOverlap</b></summary>
+
+```cpp
+void PhysicsComponent::OnGroundBeginOverlap(CollisionComponent* other, HitResult info)
+{
+    if (other && other->GetCollisionChannel() == ECollisionChannel::WorldStatic)
+    {
+        Vector normal = info.collisionNormal;
+        Player* player = dynamic_cast<Player*>(owner);
+        if (!player) return;
+
+        if (normal.x == 0 && normal.y == -1) // 지면
+        {
+            SetPhysicsState(EPhysicsState::Normal);
+            bOnGround = true;
+            player->UpdateMovementState(EPlayerMovementState::Idle);
+        }
+        else if (normal.x == 0 && normal.y == 1) // 천장
+        {
+            SetPhysicsState(EPhysicsState::CeilingHang);
+            bOverlapCeiling = true;
+            player->UpdateActionState(EPlayerActionState::Ceiling);
+        }
+        else if (normal.x == -1 && normal.y == 0) // 오른쪽 벽
+        {
+            if (bOnGround) { bBlockedRight = true; return; }
+            SetPhysicsState(EPhysicsState::RightWallClimbing);
+            bOverlapRightWall = true;
+            player->UpdateActionState(EPlayerActionState::WallGrab);
+        }
+        else if (normal.x == 1 && normal.y == 0) // 왼쪽 벽
+        {
+            if (bOnGround) { bBlockedLeft = true; return; }
+            SetPhysicsState(EPhysicsState::LeftWallClimbing);
+            bOverlapLeftWall = true;
+            player->UpdateActionState(EPlayerActionState::WallGrab);
+        }
+    }
+}
+```
+</details>
+
+### 람다 콜백 기반 이벤트 바인딩
+
+<details>
+<summary><b>PhysicsComponent::Init - CollisionComponent 콜백 바인딩</b></summary>
+
+```cpp
+void PhysicsComponent::Init(Actor* _owner)
+{
+    Super::Init(_owner);
+
+    if (owner)
+    {
+        CollisionComponent* collisionComp = owner->GetComponent<CollisionComponent>();
+        if (collisionComp)
+        {
+            collisionComp->OnComponentBeginOverlap = [this](CollisionComponent* other, HitResult info)
+            {
+                OnGroundBeginOverlap(other, info);
+            };
+            collisionComp->OnComponentEndOverlap = [this](CollisionComponent* other, HitResult info)
+            {
+                if (other->GetCollisionChannel() == ECollisionChannel::Projectile
+                    && other->GetOwner()->GetOwner() == owner)
+                    return;
+                OnGroundEndOverlap(other, info);
+            };
+        }
+    }
+}
+```
+</details>
+
+### GrapplingComponent - 오브젝트 풀 + 람다 충돌 콜백
+
+<details>
+<summary><b>GrapplingComponent::FireGrapple</b></summary>
+
+```cpp
+void GrapplingComponent::FireGrapple(Vector direction)
+{
+    if (poolInstance && !curProjectile)
+    {
+        curProjectile = poolInstance->GetProjectile(owner->GetPosition(), direction, pullSpeed);
+        if (curProjectile)
+        {
+            bFiring = true;
+            curProjectile->SetOwner(owner);
+
+            CollisionComponent* comp = curProjectile->GetComponent<CollisionComponent>();
+            if (comp)
+            {
+                // 충돌 시 콜리전 채널에 따라 분기하는 람다 바인딩
+                comp->OnComponentBeginOverlap = [this](CollisionComponent* other, HitResult result)
+                {
+                    if (!curProjectile) return;
+                    if (other && other->GetOwner() == owner) return;
+
+                    curProjectile->SetFlying(false);
+
+                    if (other->GetCollisionChannel() == ECollisionChannel::WorldStatic)
+                        OnGrappling();  // 지형 부착 → 진자 운동 시작
+                    else if (other->GetCollisionChannel() == ECollisionChannel::Character)
+                    {
+                        // 적 부착 → 대쉬 공격
+                        GrapplingHookProjectilePool::GetInstance()->ReturnProjectile(curProjectile);
+                        curProjectile = nullptr;
+                        bFiring = false;
+
+                        Player* player = dynamic_cast<Player*>(owner);
+                        if (player)
+                        {
+                            player->SetTarget(other->GetOwner());
+                            player->Dash(result.collisionPoint);
+                        }
+                    }
+                };
+            }
+        }
+    }
+}
+```
+</details>
+
+### GrapplingHookProjectilePool - 오브젝트 풀 패턴
+
+```cpp
+class GrapplingHookProjectilePool : public Singleton<GrapplingHookProjectilePool>
+{
+public:
+    void CreatePool(int size)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            GrapplingHookProjectile* projectile = new GrapplingHookProjectile();
+            projectile->Init();
+            projectile->Deactivate();
+            pool.push_back(projectile);
+        }
+    }
+
+    GrapplingHookProjectile* GetProjectile(Vector postion, Vector direction, float speed)
+    {
+        for (auto projectile : pool)
+        {
+            if (!projectile->IsActive())
+            {
+                projectile->Activate(postion, direction, speed);
+                return projectile;
+            }
+        }
+        return nullptr;
+    }
+
+    void ReturnProjectile(GrapplingHookProjectile* projectile)
+    {
+        if (projectile) projectile->Deactivate();
+    }
+
+private:
+    vector<GrapplingHookProjectile*> pool;
+};
+```
+
+---
+
+## 3. 충돌 시스템
+
+### HitResult + 채널 필터링 매트릭스
+
+```cpp
+struct HitResult
+{
+    bool isColliding = false;
+    Vector collisionNormal;  // 충돌면 법선 벡터
+    Vector collisionPoint;   // 충돌 지점
+};
+
+class CollisionManager : public Singleton<CollisionManager>
+{
+private:
+    // 채널 간 충돌 규칙 2차원 배열
+    bool bIgnore[(int)ECollisionChannel::Max][(int)ECollisionChannel::Max] = { 0 };
+    bool bBlock[(int)ECollisionChannel::Max][(int)ECollisionChannel::Max]  = { 0 };
+
+    vector<CollisionComponent*> collisionComponents;
+
+    // 상태 추적 → 중복 이벤트 방지
+    unordered_map<pair<CollisionComponent*, CollisionComponent*>, bool, PairHash> collisionPairs;
+    unordered_map<pair<CollisionComponent*, CollisionComponent*>, HitResult, PairHash> lastCollisionInfo;
+};
+```
+
+### AABB 충돌 검사 + 법선 벡터 계산
+
+<details>
+<summary><b>CollisionManager::CheckAABBCollision</b></summary>
+
+```cpp
+HitResult CollisionManager::CheckAABBCollision(CollisionComponent* comp1, CollisionComponent* comp2)
+{
+    HitResult info;
+    if (!comp1 || !comp2) return info;
+
+    RECT rect1 = comp1->GetBoundingBox();
+    RECT rect2 = comp2->GetBoundingBox();
+
+    // AABB 비교
+    if (rect1.right < rect2.left || rect1.left > rect2.right ||
+        rect1.bottom < rect2.top || rect1.top > rect2.bottom)
+        return info;
+
+    info.isColliding = true;
+
+    float overlapX = min(rect1.right, rect2.right) - max(rect1.left, rect2.left);
+    float overlapY = min(rect1.bottom, rect2.bottom) - max(rect1.top, rect2.top);
+
+    // 겹침이 작은 축 → 충돌면 판정
+    if (overlapX < overlapY)
+    {
+        if (rect1.left < rect2.left)
+        {
+            info.collisionNormal = Vector(-1, 0);
+            info.collisionPoint = Vector(rect1.right, (rect1.top + rect1.bottom) / 2.0f);
+        }
+        else
+        {
+            info.collisionNormal = Vector(1, 0);
+            info.collisionPoint = Vector(rect1.left, (rect1.top + rect1.bottom) / 2.0f);
+        }
+    }
+    else
+    {
+        if (rect1.top < rect2.top)
+        {
+            info.collisionNormal = Vector(0, -1);
+            info.collisionPoint = Vector((rect1.left + rect1.right) / 2.0f, rect1.bottom);
+        }
+        else
+        {
+            info.collisionNormal = Vector(0, 1);
+            info.collisionPoint = Vector((rect1.left + rect1.right) / 2.0f, rect1.top);
+        }
+    }
+    return info;
+}
+```
+</details>
+
+### 충돌 상태 변화 감지 + 콜백 호출
+
+<details>
+<summary><b>CollisionManager::Update</b></summary>
+
+```cpp
+void CollisionManager::Update()
+{
+    for (int i = 0; i < collisionComponents.size(); i++)
+    {
+        if (!collisionComponents[i]->IsActive()) continue;
+
+        for (int j = i + 1; j < collisionComponents.size(); j++)
+        {
+            if (!collisionComponents[j]->IsActive()) continue;
+
+            ECollisionChannel channel1 = collisionComponents[i]->GetCollisionChannel();
+            ECollisionChannel channel2 = collisionComponents[j]->GetCollisionChannel();
+
+            // 채널 필터링
+            if (bIgnore[(int)channel1][(int)channel2] ||
+                !bBlock[(int)channel1][(int)channel2])
+                continue;
+
+            auto pair = make_pair(collisionComponents[i], collisionComponents[j]);
+            HitResult collisionInfo = CheckAABBCollision(collisionComponents[i], collisionComponents[j]);
+            bool wasColliding = collisionPairs[pair];
+
+            if (collisionInfo.isColliding && !wasColliding) // 새 충돌
+            {
+                lastCollisionInfo[pair] = collisionInfo;
+
+                if (collisionComponents[i]->OnComponentBeginOverlap)
+                    collisionComponents[i]->OnComponentBeginOverlap(collisionComponents[j], collisionInfo);
+
+                if (collisionComponents[j]->OnComponentBeginOverlap)
+                {
+                    HitResult reversedInfo = collisionInfo;
+                    reversedInfo.collisionNormal.x = -collisionInfo.collisionNormal.x;
+                    reversedInfo.collisionNormal.y = -collisionInfo.collisionNormal.y;
+                    collisionComponents[j]->OnComponentBeginOverlap(collisionComponents[i], reversedInfo);
+                }
+            }
+            else if (!collisionInfo.isColliding && wasColliding) // 충돌 종료
+            {
+                HitResult lastInfo = lastCollisionInfo[pair];
+
+                if (collisionComponents[i]->OnComponentEndOverlap)
+                    collisionComponents[i]->OnComponentEndOverlap(collisionComponents[j], lastInfo);
+
+                if (collisionComponents[j]->OnComponentEndOverlap)
+                {
+                    HitResult reversedInfo = lastInfo;
+                    reversedInfo.collisionNormal.x = -lastInfo.collisionNormal.x;
+                    reversedInfo.collisionNormal.y = -lastInfo.collisionNormal.y;
+                    collisionComponents[j]->OnComponentEndOverlap(collisionComponents[i], reversedInfo);
+                }
+                lastCollisionInfo.erase(pair);
+            }
+            collisionPairs[pair] = collisionInfo.isColliding;
+        }
+    }
+}
+```
+</details>
+
+### 채널 필터링 초기화
+
+```cpp
+void CollisionManager::Init(HWND hwnd)
+{
+    // Block 관계 설정
+    bBlock[(int)ECollisionChannel::Projectile][(int)ECollisionChannel::Character]   = 1;
+    bBlock[(int)ECollisionChannel::Projectile][(int)ECollisionChannel::WorldStatic] = 1;
+    bBlock[(int)ECollisionChannel::Projectile][(int)ECollisionChannel::WorldDynamic]= 1;
+    bBlock[(int)ECollisionChannel::Character][(int)ECollisionChannel::WorldStatic]  = 1;
+    bBlock[(int)ECollisionChannel::Character][(int)ECollisionChannel::WorldDynamic] = 1;
+    bBlock[(int)ECollisionChannel::Character][(int)ECollisionChannel::Projectile]   = 1;
+    bBlock[(int)ECollisionChannel::Character][(int)ECollisionChannel::Character]    = 1;
+    bBlock[(int)ECollisionChannel::Character][(int)ECollisionChannel::Perception]   = 1;
+    // ... (양방향 대칭)
+
+    // Ignore 관계 설정
+    bIgnore[(int)ECollisionChannel::Projectile][(int)ECollisionChannel::Projectile]   = 1;
+    bIgnore[(int)ECollisionChannel::WorldStatic][(int)ECollisionChannel::WorldStatic] = 1;
+    bIgnore[(int)ECollisionChannel::WorldStatic][(int)ECollisionChannel::WorldDynamic]= 1;
+    bIgnore[(int)ECollisionChannel::WorldDynamic][(int)ECollisionChannel::WorldDynamic]= 1;
+}
+```
+
+---
+
+## 4. 맵 에디터
+
 https://github.com/user-attachments/assets/7e237f47-22fb-42b2-bcec-37487cec6ec7
 
 https://github.com/user-attachments/assets/b9eae180-8472-433c-9c2b-7b059eac8ddb
 
-- **어댑터 패턴을 통한 시스템 통합**: 맵 에디터에서 생성된 CollisionRect 구조체(RECT + CollisionType)는 TileCollisionAdapter를 통해 런타임에 CollisionComponent로 자동 변환되어 CollisionManager에 등록됩니다. 이를 통해 에디터의 타일 충돌체가 기존의 동적 객체 충돌 시스템과 seamless하게 통합되며, 적절한 CollisionChannel(WorldStatic, DeathTile)이 자동 할당됩니다. 이는 에디터와 게임 엔진 간의 낮은 결합도를 유지하면서도 기능을 확장하는데 기여했습니다.     
+### 렌더링 최적화
 
-# 트러블 슈팅   
-## 렌더링 최적화 사례    
-- 타일맵 로딩 시 프레임 드롭(60FPS 이하) 문제가 발생했습니다. 성능 프로파일러를 통해 타일 렌더링 함수의 높은 CPU 점유율을 확인했고, 이를 해결하기 위해 다음과 같은 최적화 기법을 적용했습니다.
-<img width="1614" height="752" alt="image (1)" src="https://github.com/user-attachments/assets/41fe108b-5e7b-49f1-a95c-872f6c32419c" />
+> Before
+<img width="1614" alt="image" src="https://github.com/user-attachments/assets/41fe108b-5e7b-49f1-a95c-872f6c32419c" />
 
-1. 타일맵 컬링(Culling) 적용: 화면에 보이는 타일만 렌더링하도록 하여 CPU 점유율을 4% 감소시켰습니다.
-2. 정적 요소 캐싱: 배경, 타일맵, 건축물과 같은 정적인 요소들은 매 프레임 Render 함수에서 그리는 대신, Init 함수에서 별도의 HDC에 한 번만 미리 렌더링하여 캐싱했습니다.
-3. 최적화된 WinAPI 함수 사용: 투명 처리나 크기 조절이 필요 없는 상황에서는 성능이 느린 TransparentBlt 대신 BitBlt 함수를 사용하여 렌더링 효율을 극대화했습니다.
-
-- 그 결과, 프레임을 안정적(평균 100프레임)으로 유지시켰습니다.
+> After: 평균 100 FPS 안정화
